@@ -26,8 +26,12 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-
       <v-divider></v-divider>
+      <v-list-item v-for="item in items" :key="item.title" :to="item.to">
+        <v-list-item-content>
+          {{ item.title }}
+        </v-list-item-content>
+      </v-list-item>
     </v-navigation-drawer>
     <v-content>
       <router-view/>
@@ -44,8 +48,35 @@ export default {
   name: 'App',
   data () {
     return {
-      drawer: false
+      drawer: false,
+      items: []
+      // items: [
+      //   {
+      //     title: 'home',
+      //     to: '/'
+      //   },
+      //   {
+      //     title: 'about',
+      //     to: '/about'
+      //   },
+      //   {
+      //     title: 'xxx',
+      //     to: '/xxx'
+      //   }
+      // ]
     }
+  },
+  mounted () {
+    console.log('시작했어')
+    const home = {
+      title: 'home',
+      to: '/'
+    }
+    this.items.push(home)
+    this.items.push({
+      title: 'about',
+      to: '/about'
+    })
   }
 }
 </script>
