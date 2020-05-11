@@ -29,6 +29,7 @@ export default {
   methods: {
     openDialog () {
       this.dialog = true
+      this.text = this.title
     },
     async save () {
       try {
