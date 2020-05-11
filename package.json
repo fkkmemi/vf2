@@ -1,5 +1,6 @@
 {
   "name": "vf2",
+  "description": "Vue&Firebase 2",
   "version": "0.1.0",
   "private": true,
   "scripts": {
