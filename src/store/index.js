@@ -5,8 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    editable: true
   },
   mutations: {
+    setEdit (state, edit) {
+      state.editable = edit
+    }
   },
   actions: {
   },
