@@ -1,6 +1,8 @@
 {
   "rules": {
     ".read": true,
-    ".write": true
+    "site": {
+      ".write": "root.child('users').child(auth.uid).child('level').val() == 0"
+    }
   }
 }

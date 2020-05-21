@@ -1,24 +1,59 @@
 # vf2
 
-## Project setup
-```
-npm install
+vue&firebase 2
+
+# install
+
+## firebase use
+
+```bash
+$ firebase login # If you are not logged in
+$ firebase use --add
+? Which project do you want to add? xxx-site
+? What alias do you want to use for this project? (e.g. staging) default
+
+Created alias default for xxx-site.
+Now using alias default (xxx-site)
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+## functions
+
+### key download
+
+functions/key.json download from console service account key
+
+### setting
+
+```bash
+$ firebase functions:config:set admin.email=xx@abc.com admin.db_url=https://xxx-site.firebaseio.com
 ```
 
-### Compiles and minifies for production
-```
-npm run build
+## hosting
+
+### Dependecies install
+
+Dependencies installation
+
+```bash
+$ yarn # front-end install
+$ cd functions && yarn # back-end install
+$ cd ..
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+### firebaseConfig file make
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+make file on root
+
+**./firebaseConfig.js**  
+```javascript
+export default {
+  apiKey: "AIzaSyCMJGWDiuiV91DQOqscCXiVTf2iVNHQXXX",
+  authDomain: "xxx-site.firebaseapp.com",
+  databaseURL: "https://xxx-site.firebaseio.com",
+  projectId: "xxx-site",
+  storageBucket: "xxx-site.appspot.com",
+  messagingSenderId: "654047601333",
+  appId: "1:654047601222:web:8fcdc5ea4091ec77064111",
+  measurementId: "G-Z05F3DT444"
+}
+```
