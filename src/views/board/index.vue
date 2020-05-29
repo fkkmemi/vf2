@@ -7,6 +7,7 @@
       :items-per-page="5"
       :options.sync="options"
       :server-items-length="serverItemsLength"
+      must-sort
     >
       <template v-slot:item.id="{ item }">
         <v-btn icon @click="openDialog(item)"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -46,7 +47,7 @@ export default {
         { value: 'createdAt', text: '작성일' },
         { value: 'title', text: '제목' },
         { value: 'content', text: '내용' },
-        { value: 'id', text: 'id' }
+        { value: 'id', text: 'id', sortable: false }
       ],
       items: [],
       form: {
@@ -58,16 +59,18 @@ export default {
       unsubscribe: null,
       unsubscribeCount: null,
       serverItemsLength: 0,
-      options: {},
+      options: {
+        sortBy: ['createdAt'],
+        sortDesc: [true]
+      },
       docs: []
     }
   },
   watch: {
     options: {
       handler (n, o) {
-        console.log(o)
-        console.log(n)
-        this.subscribe()
+        const arrow = n.page - o.page
+        this.subscribe(arrow)
       },
       deep: true
     }
@@ -81,19 +84,34 @@ export default {
     if (this.unsubscribeCount) this.unsubscribeCount()
   },
   methods: {
-    subscribe () {
+    subscribe (arrow) {
       this.unsubscribeCount = this.$firebase.firestore().collection('meta').doc('boards').onSnapshot((doc) => {
         if (!doc.exists) return
         this.serverItemsLength = doc.data().count
       })
-      this.unsubscribe = this.$firebase.firestore().collection('boards').limit(this.options.itemsPerPage).onSnapshot((sn) => {
+      const order = head(this.options.sortBy)
+      const sort = head(this.options.sortDesc) ? 'desc' : 'asc'
+      const limit = this.options.itemsPerPage
+
+      const ref = this.$firebase.firestore().collection('boards').orderBy(order, sort)
+      let query
+      switch (arrow) {
+        case -1: query = ref.endBefore(head(this.docs)).limitToLast(limit)
+
+          break
+        case 1: query = ref.startAfter(last(this.docs)).limit(limit)
+          break
+
+        default: query = ref.limit(limit)
+          break
+      }
+
+      this.unsubscribe = query.onSnapshot((sn) => {
         if (sn.empty) {
           this.items = []
           return
         }
         this.docs = sn.docs
-        console.log(head(sn.docs).data())
-        console.log(last(sn.docs).data())
         this.items = sn.docs.map(v => {
           const item = v.data()
           return {
