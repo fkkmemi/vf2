@@ -30,6 +30,11 @@ const routes = [
     path: '/board',
     name: 'board',
     component: () => import('../views/board/')
+  },
+  {
+    path: '/storage',
+    name: 'storage',
+    component: () => import('../views/storage')
   }
 ]
 

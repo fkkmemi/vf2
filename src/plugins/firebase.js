@@ -3,6 +3,7 @@ import * as firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firebase-database'
 import 'firebase/firebase-firestore'
+import 'firebase/firebase-storage'
 import firebaseConfig from '../../firebaseConfig'
 import store from '../store/'
 
