@@ -1,6 +1,7 @@
 <template>
   <board-index v-if="collection === 'board' && document === 'list'"></board-index>
-  <board-content v-else-if="collection === 'board'" :document="document"></board-content>
+  <board-content v-else-if="collection === 'board' && !action" :document="document"></board-content>
+  <board-form v-else-if="collection === 'board'" :document="document" :action="action"></board-form>
   <page-index v-else-if="collection === 'page' && document === 'list'"></page-index>
   <page-content v-else-if="collection === 'page'" :document="document"></page-content>
   <error-page v-else></error-page>
@@ -8,13 +9,14 @@
 <script>
 import BoardIndex from './board/index'
 import BoardContent from './board/content'
+import BoardForm from './board/form'
 import PageIndex from './page/index'
 import PageContent from './page/content'
 import ErrorPage from './error'
 
 export default {
   components: {
-    BoardIndex, BoardContent, PageIndex, PageContent, ErrorPage
+    BoardIndex, BoardContent, BoardForm, PageIndex, PageContent, ErrorPage
   },
   computed: {
     collection () {
@@ -22,6 +24,9 @@ export default {
     },
     document () {
       return this.$route.params.document
+    },
+    action () {
+      return this.$route.params.action
     }
   }
 }
