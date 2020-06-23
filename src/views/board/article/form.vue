@@ -9,9 +9,8 @@
         <v-btn icon @click="save"><v-icon>mdi-content-save</v-icon></v-btn>
         </v-toolbar>
         <v-card-text>
-          <v-text-field v-model="form.category" outlined label="종류"></v-text-field>
           <v-text-field v-model="form.title" outlined label="제목"></v-text-field>
-          <v-textarea v-model="form.description" outlined label="설명"></v-textarea>
+          <editor :initialValue="form.content" ref="editor"></editor>
         </v-card-text>
       </v-card>
     </v-form>
@@ -24,9 +23,8 @@ export default {
     return {
       unsubscribe: null,
       form: {
-        category: '',
         title: '',
-        description: ''
+        content: ''
       },
       exists: false,
       loading: false,
@@ -51,22 +49,47 @@ export default {
   },
   methods: {
     subscribe () {
+      this.ref = this.$firebase.firestore().collection('boards').doc(this.document)
       console.log(this.articleId)
-      if (this.articleId === 'new') return
+      if (!this.articleId) return
       if (this.unsubscribe) this.unsubscribe()
-      this.ref = this.$firebase.firestore().collection('boards').doc(this.document).collection('articles').doc(this.articleId)
-      this.unsubscribe = this.ref.onSnapshot(doc => {
+      this.unsubscribe = this.ref.collection('articles').doc(this.articleId).onSnapshot(doc => {
         this.exists = doc.exists
         if (this.exists) {
           const item = doc.data()
-          this.form.category = item.category
           this.form.title = item.title
-          this.form.description = item.description
         }
       })
     },
     async save () {
+      this.loading = true
+      try {
+        const createdAt = new Date()
+        const id = createdAt.getTime().toString()
+        const md = this.$refs.editor.invoke('getMarkdown')
+        const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(id + '.md').putString(md)
+        const url = await sn.ref.getDownloadURL()
+        const doc = {
+          title: this.form.title,
+          updatedAt: createdAt,
+          url: url
+        }
 
+        const batch = await this.$firebase.firestore().batch()
+
+        if (!this.articleId) {
+          doc.createdAt = createdAt
+          doc.commentCount = 0
+          batch.set(this.ref.collection('articles').doc(id), doc)
+          batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(1) })
+        } else {
+          batch.update(this.ref.collection('articles').doc(this.articleId), doc)
+        }
+        await batch.commit()
+      } finally {
+        this.loading = false
+        this.$router.push('/board/' + this.document)
+      }
     }
   }
 }
