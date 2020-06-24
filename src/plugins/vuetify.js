@@ -9,6 +9,7 @@ Vue.use(Vuetify, {
     VIcon
   }
 })
+const VuetifyObj = new Vuetify({})
 Vue.use(VuetifyToast, {
   x: 'right', // default
   y: 'bottom', // default
@@ -33,8 +34,8 @@ Vue.use(VuetifyToast, {
       color: 'purple'
     }
   },
-  property: '$toast' // default
+  property: '$toast', // default
+  $vuetify: VuetifyObj.framework
 })
 
-export default new Vuetify({
-})
+export default VuetifyObj

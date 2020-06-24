@@ -9,9 +9,9 @@
     <v-navigation-drawer app v-model="drawer" width="400">
       <site-menu :items="site.menu"></site-menu>
     </v-navigation-drawer>
-    <v-content>
+    <v-main>
       <router-view/>
-    </v-content>
+    </v-main>
     <site-footer :footer="site.footer"></site-footer>
   </v-app>
 </template>
