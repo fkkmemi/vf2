@@ -6,7 +6,16 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "firebase deploy",
+    "deploy:db": "firebase deploy --only database",
+    "deploy:fn": "firebase deploy --only functions",
+    "deploy:fs": "firebase deploy --only firestore",
+    "deploy:hs": "firebase deploy --only hosting",
+    "deploy:st": "firebase deploy --only storage",
+    "predeploy": "yarn build",
+    "predeploy:hs": "yarn build",
+    "serve:fn": "firebase serve --only functions"
   },
   "dependencies": {
     "@toast-ui/vue-editor": "^2.1.2",
