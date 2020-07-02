@@ -11,13 +11,19 @@
     must-sort
     item-key="id"
   >
+    <template v-slot:item.createdAt="{item}">
+      <display-time :time="item.createdAt"></display-time>
+
+    </template>
 
   </v-data-table>
 </template>
 <script>
 import { head, last } from 'lodash'
+import DisplayTime from '@/components/display-time'
 
 export default {
+  components: { DisplayTime },
   props: ['info', 'document'],
   data () {
     return {
