@@ -6,7 +6,7 @@
           <v-toolbar-title>게시판 글 작성</v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="$router.push('/board/' + document)"><v-icon>mdi-arrow-left</v-icon></v-btn>
-        <v-btn icon @click="save"><v-icon>mdi-content-save</v-icon></v-btn>
+        <v-btn icon @click="save" :disabled="!user"><v-icon>mdi-content-save</v-icon></v-btn>
         </v-toolbar>
         <v-card-text>
           <v-text-field v-model="form.title" outlined label="제목"></v-text-field>
@@ -34,6 +34,9 @@ export default {
   computed: {
     articleId () {
       return this.$route.query.articleId
+    },
+    user () {
+      return this.$store.state.user
     }
   },
   watch: {
@@ -80,6 +83,13 @@ export default {
         if (!this.articleId) {
           doc.createdAt = createdAt
           doc.commentCount = 0
+          doc.readCount = 0
+          doc.uid = this.$store.state.fireUser.uid
+          doc.user = {
+            email: this.user.email,
+            photoURL: this.user.photoURL,
+            displayName: this.user.displayName
+          }
           batch.set(this.ref.collection('articles').doc(id), doc)
           batch.update(this.ref, { count: this.$firebase.firestore.FieldValue.increment(1) })
         } else {

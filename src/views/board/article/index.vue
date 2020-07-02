@@ -23,7 +23,10 @@ export default {
     return {
       headers: [
         { value: 'createdAt', text: '작성일' },
-        { value: 'title', text: '제목' }
+        { value: 'title', text: '제목' },
+        { value: 'user', text: '작성자' },
+        { value: 'readCount', text: '조회수' },
+        { value: 'commentCount', text: '댓글' }
       ],
       items: [],
       unsubscribe: null,
