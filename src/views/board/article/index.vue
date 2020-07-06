@@ -13,7 +13,9 @@
   >
     <template v-slot:item.createdAt="{item}">
       <display-time :time="item.createdAt"></display-time>
-
+    </template>
+    <template v-slot:item.user.displayName="{item}">
+      <display-user :user="item.user"></display-user>
     </template>
 
   </v-data-table>
@@ -21,16 +23,17 @@
 <script>
 import { head, last } from 'lodash'
 import DisplayTime from '@/components/display-time'
+import DisplayUser from '@/components/display-user'
 
 export default {
-  components: { DisplayTime },
+  components: { DisplayTime, DisplayUser },
   props: ['info', 'document'],
   data () {
     return {
       headers: [
         { value: 'createdAt', text: '작성일' },
         { value: 'title', text: '제목' },
-        { value: 'user', text: '작성자' },
+        { value: 'user.displayName', text: '작성자' },
         { value: 'readCount', text: '조회수' },
         { value: 'commentCount', text: '댓글' }
       ],
