@@ -36,20 +36,23 @@ import DisplayTime from '@/components/display-time'
 
 export default {
   components: { DisplayTime },
-  props: ['item'],
+  props: ['document', 'item'],
   data () {
     return {
       content: ''
     }
   },
   mounted () {
-    console.log('mounted')
     this.fetch()
   },
   methods: {
     async fetch () {
       const r = await axios.get(this.item.url)
       this.content = r.data
+      await this.$firebase.firestore().collection('boards').doc(this.document).collection('articles').doc(this.item.id)
+        .update({
+          readCount: this.$firebase.firestore.FieldValue.increment(1)
+        })
     },
     async articleWrite () {
       this.$router.push({ path: this.$route.path + '/article-write', query: { articleId: this.item.id } })
