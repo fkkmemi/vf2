@@ -29,14 +29,17 @@
         수정일: <display-time :time="item.updatedAt"></display-time>
       </span>
     </v-card-actions>
+    <v-divider/>
+    <display-comment :docRef="this.ref.collection('articles').doc(this.item.id)"></display-comment>
   </v-card>
 </template>
 <script>
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
+import DisplayComment from '@/components/display-comment'
 
 export default {
-  components: { DisplayTime },
+  components: { DisplayTime, DisplayComment },
   props: ['document', 'item'],
   data () {
     return {
