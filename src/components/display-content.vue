@@ -30,7 +30,7 @@
       </span>
     </v-card-actions>
     <v-divider/>
-    <display-comment :docRef="this.ref.collection('articles').doc(this.item.id)"></display-comment>
+    <display-comment :article="item" :docRef="this.ref.collection('articles').doc(this.item.id)"></display-comment>
   </v-card>
 </template>
 <script>
