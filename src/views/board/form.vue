@@ -59,6 +59,7 @@ export default {
       })
     },
     async save () {
+      if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
       const form = {
         category: this.form.category,
         title: this.form.title,
@@ -70,9 +71,10 @@ export default {
         if (!this.exists) {
           form.createdAt = new Date()
           form.count = 0
+          form.uid = this.$store.state.fireUser.uid
           await this.ref.set(form)
         } else {
-          this.ref.update(form)
+          await this.ref.update(form)
         }
         this.$router.push('/board/' + this.document)
       } finally {
