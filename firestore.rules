@@ -8,13 +8,35 @@ service cloud.firestore {
       return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level <= level;
     }
     match /boards/{boardId} {
+      function incrementBoardCount (before, after) {
+        return before.category == after.category &&
+        before.createdAt == after.createdAt &&
+        before.updatedAt == after.updatedAt &&
+        before.title == after.title &&
+        before.description == after.description &&
+        before.uid == after.uid &&
+        before.count != after.count
+      }
       allow read: if true;
       allow create: if approvedLevel(0);
-      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || resource.data.count != request.resource.data.count; 
+      allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementBoardCount(resource.data, request.resource.data); 
+      allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid; 
       match /articles/{articleId} {
+        function incrementArticleCount (before, after) {
+          return before.url == after.url &&
+          before.createdAt == after.createdAt &&
+          before.updatedAt == after.updatedAt &&
+          before.title == after.title &&
+          before.uid == after.uid &&
+          before.user.displayName == after.user.displayName &&
+          before.user.photoURL == after.user.photoURL &&
+          before.user.email == after.user.email &&
+          (before.commentCount != after.commentCount || before.readCount != after.readCount) 
+        }
         allow read: if true;
         allow create: if approvedLevel(5);
-        allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || resource.data.commentCount != request.resource.data.commentCount; 
+        allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementArticleCount(resource.data, request.resource.data); 
+        allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid; 
         match /comments/{commentId} {
           allow read: if true;
           allow create: if approvedLevel(5);
@@ -23,7 +45,8 @@ service cloud.firestore {
       }
     }
     match /users/{userId} {
-      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow read: if (request.auth != null && request.auth.uid == userId) || approvedLevel(0)
+      allow update: if (request.auth != null && request.auth.uid == userId && resource.data.level == request.resource.data.level) || approvedLevel(0);
       allow create, delete: if false; // functions
     }
   }
