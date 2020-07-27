@@ -29,9 +29,20 @@ service cloud.firestore {
         allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementArticleCount(resource.data, request.resource.data); 
         allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid; 
         match /comments/{commentId} {
+          function incrementCommentCount (before, after) {
+            return before.comment == after.comment &&
+            before.createdAt == after.createdAt &&
+            before.updatedAt == after.updatedAt &&
+            before.uid == after.uid &&
+            before.user.displayName == after.user.displayName &&
+            before.user.photoURL == after.user.photoURL &&
+            before.user.email == after.user.email &&
+            (before.likeCount != after.likeCount || before.likeUids != after.likeUids) 
+          }
           allow read: if true;
           allow create: if approvedLevel(5);
-          allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid; 
+          allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementCommentCount(resource.data, request.resource.data); 
+          allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid; 
         }
       }
     }
