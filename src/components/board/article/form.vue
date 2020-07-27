@@ -97,6 +97,8 @@ export default {
             photoURL: this.user.photoURL,
             displayName: this.user.displayName
           }
+          doc.likeCount = 0
+          doc.likeUids = []
           await this.ref.collection('articles').doc(id).set(doc)
         } else {
           await this.$firebase.storage().ref().child('boards').child(this.boardId).child(this.articleId + '.md').putString(md)
