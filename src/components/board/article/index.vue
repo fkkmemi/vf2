@@ -116,7 +116,6 @@ export default {
     read (item) {
       this.$router.push({ path: this.$route.path + '/' + item.id })
     }
-
   }
 }
 </script>

@@ -1,16 +1,20 @@
 <template>
-  <v-container fluid>
-    <v-card v-if="article">
-      <v-toolbar color="info" dark dense flat>
+  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+    <v-card v-if="article" outlined>
+      <v-toolbar color="transparent" dense flat>
         <v-toolbar-title>
+          <v-chip color="info" label class="mr-4">뉴스</v-chip>
           {{article.title}}
         </v-toolbar-title>
         <v-spacer/>
-        <v-btn @click="articleWrite" icon><v-icon>mdi-pencil</v-icon></v-btn>
-        <v-btn @click="remove" icon><v-icon>mdi-delete</v-icon></v-btn>
+        <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
+          <v-btn @click="articleWrite" icon><v-icon>mdi-pencil</v-icon></v-btn>
+          <v-btn @click="remove" icon><v-icon>mdi-delete</v-icon></v-btn>
+        </template>
         <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
-      <v-card-text >
+      <v-divider/>
+      <v-card-text>
         <viewer v-if="content" :initialValue="content"></viewer>
         <v-container v-else>
           <v-row justify="center" align="center">
@@ -32,8 +36,23 @@
       </v-card-actions>
       <v-card-actions>
         <v-spacer/>
-        <v-btn icon @click="like">
-          <v-icon :color="liked ? 'success' : ''">mdi-thumb-up</v-icon>
+        <span class="font-italic caption mr-4">
+          작성자:
+        </span>
+        <display-user :user="article.user"></display-user>
+      </v-card-actions>
+      <v-card-actions>
+        <v-spacer/>
+        <v-sheet class="mr-4">
+          <v-icon left>mdi-eye</v-icon>
+          <span class="body-2">{{article.readCount}}</span>
+        </v-sheet>
+        <v-sheet class="mr-0">
+          <v-icon left>mdi-comment</v-icon>
+          <span class="body-2">{{article.commentCount}}</span>
+        </v-sheet>
+        <v-btn text @click="like" :color="liked ? 'success' : ''">
+          <v-icon left>mdi-thumb-up</v-icon>
           <span>{{article.likeCount}}</span>
         </v-btn>
       </v-card-actions>
@@ -41,16 +60,15 @@
       <v-card-actions class="py-0">
         <v-row no-gutters>
           <v-col cols="4">
-            <v-btn text block color="primary" @click="go(-1)"><v-icon left>mdi-menu-left</v-icon> 이전</v-btn>
+            <v-btn block text color="primary" @click="go(-1)"><v-icon left>mdi-menu-left</v-icon> 이전</v-btn>
           </v-col>
           <v-col cols="4" class="d-flex">
-            <v-divider vertical/>
-            <v-btn text block color="primary" @click="back"><v-icon left>mdi-format-list-bulleted</v-icon> 목록</v-btn>
-            <v-divider vertical/>
+            <v-divider vertical></v-divider>
+            <v-btn block text color="primary" @click="back"><v-icon left>mdi-format-list-bulleted-square</v-icon> 목록</v-btn>
+            <v-divider vertical></v-divider>
           </v-col>
           <v-col cols="4">
-            <v-btn text block color="primary" @click="go(1)"><v-icon left>mdi-menu-right</v-icon> 다음</v-btn>
-
+            <v-btn block text color="primary" @click="go(1)"><v-icon left>mdi-menu-right</v-icon> 다음</v-btn>
           </v-col>
         </v-row>
       </v-card-actions>
@@ -71,9 +89,10 @@
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
+import DisplayUser from '@/components/display-user'
 
 export default {
-  components: { DisplayTime, DisplayComment },
+  components: { DisplayTime, DisplayComment, DisplayUser },
   props: ['boardId', 'articleId'],
   data () {
     return {
@@ -85,6 +104,9 @@ export default {
     }
   },
   computed: {
+    user () {
+      return this.$store.state.user
+    },
     fireUser () {
       return this.$store.state.fireUser
     },
@@ -98,7 +120,7 @@ export default {
       this.subscribe()
     }
   },
-  created () {
+  async created () {
     this.subscribe()
   },
   destroyed () {
@@ -106,6 +128,7 @@ export default {
   },
   methods: {
     subscribe () {
+      window.scrollTo(0, 0)
       if (this.unsubscribe) this.unsubscribe()
       this.ref = this.$firebase.firestore().collection('boards').doc(this.boardId).collection('articles').doc(this.articleId)
       this.ref.update({
@@ -155,14 +178,15 @@ export default {
       }
     },
     async go (arrow) {
-      if (!this.doc) throw Error('읽지 못했음')
+      if (!this.doc) return
       const ref = this.$firebase.firestore()
         .collection('boards').doc(this.boardId)
         .collection('articles').orderBy('createdAt', 'desc')
       let sn
       if (arrow < 0) sn = await ref.endBefore(this.doc).limitToLast(1).get()
       else sn = await ref.startAfter(this.doc).limit(1).get()
-      if (sn.empty) throw Error('더이상 페이지가 없습니다')
+
+      if (sn.empty) return this.$toast.info('더이상 페이지가 없습니다')
       const doc = sn.docs[0]
 
       const us = this.$route.path.split('/')
