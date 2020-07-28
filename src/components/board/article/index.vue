@@ -39,7 +39,8 @@ export default {
         { value: 'title', text: '제목' },
         { value: 'user.displayName', text: '작성자' },
         { value: 'readCount', text: '조회수' },
-        { value: 'commentCount', text: '댓글' }
+        { value: 'commentCount', text: '댓글' },
+        { value: 'likeCount', text: '좋아요' }
       ],
       items: [],
       unsubscribe: null,

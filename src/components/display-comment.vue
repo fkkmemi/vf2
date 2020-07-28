@@ -58,6 +58,11 @@ export default {
       return this.$store.state.fireUser
     }
   },
+  watch: {
+    docRef () {
+      this.subscribe()
+    }
+  },
   created () {
     this.subscribe()
   },
@@ -85,6 +90,7 @@ export default {
     },
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
+      this.items = []
       this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
         if (sn.empty) {
           this.items = []
