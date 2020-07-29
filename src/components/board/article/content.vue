@@ -1,9 +1,9 @@
 <template>
   <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card v-if="article" outlined>
+    <v-card v-if="article" outlined :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
         <v-toolbar-title>
-          <v-chip color="info" label class="mr-4">뉴스</v-chip>
+          <v-chip color="info" small label class="mr-4">{{article.category}}</v-chip>
           {{article.title}}
         </v-toolbar-title>
         <v-spacer/>
@@ -44,17 +44,20 @@
       <v-card-actions>
         <v-spacer/>
         <v-sheet class="mr-4">
-          <v-icon left>mdi-eye</v-icon>
+          <v-icon left :color="article.readCount ? 'info' : ''">mdi-eye</v-icon>
           <span class="body-2">{{article.readCount}}</span>
         </v-sheet>
         <v-sheet class="mr-0">
-          <v-icon left>mdi-comment</v-icon>
+          <v-icon left :color="article.commentCount ? 'info' : ''">mdi-comment</v-icon>
           <span class="body-2">{{article.commentCount}}</span>
         </v-sheet>
-        <v-btn text @click="like" :color="liked ? 'success' : ''">
-          <v-icon left>mdi-thumb-up</v-icon>
-          <span>{{article.likeCount}}</span>
+        <v-btn text @click="like">
+          <v-icon left :color="liked ? 'success' : ''">mdi-thumb-up</v-icon>
+          <span class="body-2">{{article.likeCount}}</span>
         </v-btn>
+      </v-card-actions>
+      <v-card-actions>
+        <v-chip small label outlined color="info" class="mr-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip>
       </v-card-actions>
       <v-divider/>
       <v-card-actions class="py-0">
