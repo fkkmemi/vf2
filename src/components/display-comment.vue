@@ -84,19 +84,22 @@ export default {
     snapshotToItems (sn) {
       this.lastDoc = last(sn.docs)
       sn.docs.forEach(doc => {
-        const exists = this.items.some(item => doc.id === item.id)
-        if (!exists) {
-          const item = doc.data()
+        const findItem = this.items.find(item => doc.id === item.id)
+        const item = doc.data()
+        if (!findItem) {
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           this.items.push(item)
+        } else {
+          findItem.comment = item.comment
+          findItem.likeCount = item.likeCount
+          findItem.likeUids = item.likeUids
+          findItem.updatedAt = item.updatedAt.toDate()
         }
       })
       this.items.sort((before, after) => {
-        const beforeId = Number(before.id)
-        const afterId = Number(after.id)
-        return afterId - beforeId
+        return Number(after.id) - Number(before.id)
       })
     },
     subscribe () {
@@ -120,6 +123,7 @@ export default {
     },
     async save () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
+      if (!this.comment) throw Error('내용을 작성해야 합니다')
       if (this.comment.length > 10) throw Error('문자 허용치를 넘었습니다')
       const doc = {
         createdAt: new Date(),
@@ -155,8 +159,10 @@ export default {
           likeUids: this.$firebase.firestore.FieldValue.arrayUnion(this.fireUser.uid)
         })
       }
+      if (this.items.findIndex(el => el.id === comment.id) < LIMIT) return
       const doc = await this.docRef.collection('comments').doc(comment.id).get()
       const item = doc.data()
+      comment.comment = item.comment
       comment.likeCount = item.likeCount
       comment.likeUids = item.likeUids
     },

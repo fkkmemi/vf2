@@ -4,9 +4,9 @@ export default (text, limit) => {
   const ts = text.split('\n')
   const ss = []
   for (const t of ts) {
-    const fc = t.substr(0, 1)
-    if (fc === '[' || fc === '!') continue
-    ss.push(t)
+    const index = t.indexOf('data:image')
+    if (index >= 0) continue
+    if (t.length) ss.push(t)
   }
   const s = ss.join('\n')
   if (s.length > limit) {

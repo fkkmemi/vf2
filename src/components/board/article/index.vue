@@ -12,8 +12,13 @@
         <v-card-title>
           {{item.title}}
         </v-card-title>
-        <v-card-text class="text-content">
-          {{item.summary}}
+        <v-card-text>
+          <viewer v-if="item.summary" :initialValue="item.summary"></viewer>
+          <v-container v-else>
+            <v-row justify="center" align="center">
+              <v-progress-circular indeterminate></v-progress-circular>
+            </v-row>
+          </v-container>
         </v-card-text>
         <v-card-actions>
           <display-user :user="item.user"></display-user>
@@ -47,6 +52,7 @@
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+
 const LIMIT = 5
 
 export default {
@@ -73,10 +79,6 @@ export default {
     }
   },
   created () {
-    const obj = {}
-    // obj.a = 3
-    // obj.b = 3
-    console.log(Object.keys(obj).length)
     this.subscribe()
   },
   destroyed () {
@@ -94,8 +96,13 @@ export default {
           item.updatedAt = item.updatedAt.toDate()
           this.items.push(item)
         } else {
+          if (findItem.summary !== item.summary) {
+            findItem.summary = ''
+            setTimeout(() => {
+              findItem.summary = item.summary
+            }, 1000)
+          }
           findItem.title = item.title
-          findItem.summary = item.summary
           findItem.readCount = item.readCount
           findItem.commentCount = item.commentCount
           findItem.likeCount = item.likeCount
