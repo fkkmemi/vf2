@@ -37,7 +37,7 @@
               <span class="body-2">{{item.commentCount.toString().padStart(2, ' ')}}</span>
             </v-sheet>
             <v-sheet>
-              <v-icon left :color="item.likeCount ? 'success' : ''">mdi-thumb-up</v-icon>
+              <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
               <span class="body-2">{{item.likeCount}}</span>
             </v-sheet>
           </v-list-item-action>
@@ -91,7 +91,7 @@
             <span class="body-2">{{item.commentCount}}</span>
           </v-sheet>
           <v-sheet class="mr-0">
-            <v-icon left :color="item.likeCount ? 'success' : ''">mdi-thumb-up</v-icon>
+            <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
             <span class="body-2">{{item.likeCount}}</span>
           </v-sheet>
         </v-card-actions>
@@ -226,6 +226,10 @@ export default {
     },
     onIntersect (entries, observer, isIntersecting) {
       if (isIntersecting) this.more()
+    },
+    liked (item) {
+      if (!this.fireUser) return false
+      return item.likeUids.includes(this.fireUser.uid)
     }
   }
 }
