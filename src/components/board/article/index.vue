@@ -118,6 +118,7 @@ export default {
     },
     subscribe (arrow) {
       if (this.unsubscribe) this.unsubscribe()
+      this.items = []
       this.ref = this.$firebase.firestore()
         .collection('boards').doc(this.boardId)
         .collection('articles').orderBy(this.order, this.sort).limit(LIMIT)

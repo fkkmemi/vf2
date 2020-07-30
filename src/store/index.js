@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    editable: true,
+    editable: false,
     fireUser: null,
     user: null
   },

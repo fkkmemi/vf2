@@ -119,6 +119,9 @@ export default {
     }
   },
   watch: {
+    boardId () {
+      this.subscribe()
+    },
     articleId () {
       this.subscribe()
     }
