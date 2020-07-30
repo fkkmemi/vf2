@@ -16,26 +16,46 @@
     </v-card-title>
     <template v-for="(item, i) in items">
       <v-list-item :key="item.id">
-        <v-list-item-action>
-          <display-user :user="item.user"></display-user>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-subtitle class="black--text comment" v-text="item.comment"></v-list-item-subtitle>
-          <v-list-item-subtitle class="font-italic">
-            <display-time :time="item.createdAt"></display-time>
-          </v-list-item-subtitle>
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-btn @click="like(item)" text>
-            <v-icon left :color="liked(item) ? 'success': ''">mdi-thumb-up</v-icon>
-            <span>{{item.likeCount}}</span>
-          </v-btn>
-        </v-list-item-action>
-        <v-list-item-action v-if="(fireUser && fireUser.uid === item.uid) || (user && user.level === 0)">
-          <v-btn icon @click="remove(item)">
-            <v-icon>mdi-delete</v-icon>
-          </v-btn>
-        </v-list-item-action>
+        <template v-if="$vuetify.breakpoint.smAndUp">
+          <v-list-item-action>
+            <display-user :user="item.user"></display-user>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-subtitle class="black--text comment" v-text="item.comment"></v-list-item-subtitle>
+            <v-list-item-subtitle>
+              <span class="font-italic"><display-time :time="item.createdAt"></display-time></span>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-btn @click="like(item)" text>
+              <v-icon left :color="liked(item) ? 'success': ''">mdi-thumb-up</v-icon>
+              <span>{{item.likeCount}}</span>
+            </v-btn>
+          </v-list-item-action>
+          <v-list-item-action v-if="(fireUser && fireUser.uid === item.uid) || (user && user.level === 0)">
+            <v-btn icon @click="remove(item)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-list-item-action>
+        </template>
+        <template v-else>
+          <v-list-item-content>
+            <v-list-item-subtitle class="black--text comment" v-text="item.comment"></v-list-item-subtitle>
+            <v-list-item-subtitle class="d-flex justify-space-between align-center">
+              <span class="font-italic"><display-time :time="item.createdAt"></display-time></span>
+              <display-user :user="item.user" size="small"/>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-btn @click="like(item)" text>
+              <v-icon left :color="liked(item) ? 'success': ''">mdi-thumb-up</v-icon>
+              <span>{{item.likeCount}}</span>
+            </v-btn>
+            <v-btn icon @click="remove(item)" v-if="(fireUser && fireUser.uid === item.uid) || (user && user.level === 0)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-list-item-action>
+        </template>
       </v-list-item>
       <v-divider :key="i" v-if="i < items.length - 1"></v-divider>
     </template>

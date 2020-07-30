@@ -1,7 +1,62 @@
 <template>
-  <v-container fluid v-if="items.length" >
+  <v-container fluid v-if="items.length" class="pa-0">
     <template v-for="(item, i) in items">
-      <v-card :key="item.id" :class="i < items.length - 1 ? 'mb-4' : ''">
+      <template v-if="$store.state.boardTypeList">
+        <v-list-item three-line :key="item.id" :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
+          <!-- <v-list-item-action>
+            <v-btn
+              v-if="category != item.category"
+              color="info"
+              depressed
+              small
+              :to="`${$route.path}?category=${item.category}`"
+            >
+              {{item.category}}
+              <v-icon right>mdi-menu-right</v-icon>
+            </v-btn>
+
+          </v-list-item-action> -->
+          <v-list-item-content>
+            <v-list-item-title>
+              <v-btn
+                v-if="category != item.category"
+                color="info"
+                depressed
+                small
+                class="mr-4"
+                :to="`${$route.path}?category=${item.category}`"
+              >
+                {{item.category}}
+                <v-icon right>mdi-menu-right</v-icon>
+              </v-btn>
+              {{item.title}}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{getSummary(item.summary, 100, '!')}}
+            </v-list-item-subtitle>
+            <v-list-item-subtitle class="d-flex justify-space-between align-center">
+              <display-time :time="item.createdAt"></display-time>
+              <display-user :user="item.user" :size="'small'"></display-user>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-sheet>
+              <v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
+              <span class="body-2">{{item.readCount.toString().padStart(' ', 2)}}</span>
+            </v-sheet>
+            <v-sheet>
+              <v-icon left :color="item.commentCount ? 'info' : ''">mdi-comment</v-icon>
+              <span class="body-2">{{item.commentCount.toString().padStart(2, ' ')}}</span>
+            </v-sheet>
+            <v-sheet>
+              <v-icon left :color="item.likeCount ? 'success' : ''">mdi-thumb-up</v-icon>
+              <span class="body-2">{{item.likeCount}}</span>
+            </v-sheet>
+          </v-list-item-action>
+        </v-list-item>
+        <v-divider v-if="i < items.length - 1" :key="i"/>
+      </template>
+      <v-card v-else :key="item.id" :class="i < items.length - 1 ? 'mb-4' : ''" class="ma-4">
         <v-subheader>
           <!-- <v-chip color="info" label small class="mr-4">{{item.category}}</v-chip> -->
           <v-btn
@@ -34,7 +89,10 @@
           </v-card-text>
         </v-card>
         <v-card-actions>
+          <v-spacer/>
           <display-user :user="item.user"></display-user>
+        </v-card-actions>
+        <v-card-actions>
           <v-spacer/>
           <v-sheet class="mr-4">
             <v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
@@ -49,6 +107,11 @@
             <span class="body-2">{{item.likeCount}}</span>
           </v-sheet>
         </v-card-actions>
+        <v-card-text class="mb-0">
+          <v-row justify="end">
+            <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>
+          </v-row>
+        </v-card-text>
       </v-card>
     </template>
     <v-list-item v-if="lastDoc && items.length < board.count">
@@ -65,6 +128,7 @@
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+import getSummary from '@/util/getSummary'
 
 const LIMIT = 5
 
@@ -79,7 +143,8 @@ export default {
       lastDoc: null,
       order: 'createdAt',
       sort: 'desc',
-      loading: false
+      loading: false,
+      getSummary
     }
   },
   computed: {

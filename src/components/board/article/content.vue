@@ -52,6 +52,7 @@
         <display-user :user="article.user"></display-user>
       </v-card-actions>
       <v-card-actions>
+        <!-- <v-chip small label outlined color="info" class="mr-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip> -->
         <v-spacer/>
         <v-sheet class="mr-4">
           <v-icon left :color="article.readCount ? 'info' : ''">mdi-eye</v-icon>
@@ -66,9 +67,11 @@
           <span class="body-2">{{article.likeCount}}</span>
         </v-btn>
       </v-card-actions>
-      <v-card-actions>
-        <v-chip small label outlined color="info" class="mr-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip>
-      </v-card-actions>
+      <v-card-text>
+        <v-row justify="end">
+          <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip>
+        </v-row>
+      </v-card-text>
       <v-divider/>
       <v-card-actions class="py-0">
         <v-row no-gutters>
