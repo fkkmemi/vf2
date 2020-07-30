@@ -167,6 +167,7 @@ export default {
     },
     saveCategory () {
       if (this.category.length > 20) throw Error('문자 개수를 초과했습니다')
+      if (this.category === '전체') throw Error('전체는 사용 불가능합니다')
       const exists = this.form.categories.includes(this.category)
       if (exists) throw Error('사용되고 있는 종류입니다')
       this.form.categories.push(this.category)
