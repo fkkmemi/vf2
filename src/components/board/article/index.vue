@@ -13,13 +13,14 @@
             :to="`${$route.path}?category=${item.category}`"
           >
             {{item.category}}
+            <v-icon right>mdi-menu-right</v-icon>
           </v-btn>
           <display-time :time="item.createdAt"></display-time>
           <v-spacer/>
           <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
         </v-subheader>
 
-        <v-card color="transparent" flat :to="`${boardId}/${item.id}`">
+        <v-card color="transparent" flat :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
           <v-card-title>
             {{item.title}}
           </v-card-title>
@@ -69,7 +70,7 @@ const LIMIT = 5
 
 export default {
   components: { DisplayTime, DisplayUser },
-  props: ['board', 'boardId', 'category'],
+  props: ['board', 'boardId', 'category', 'tag'],
   data () {
     return {
       items: [],
@@ -176,9 +177,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.text-content {
-  white-space: pre-wrap;
-}
-</style>

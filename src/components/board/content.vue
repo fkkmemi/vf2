@@ -13,6 +13,7 @@
             background-color="info"
             dark
             single-line
+            flat
             hide-details/>
         </v-sheet>
         <v-toolbar-title v-text="board.title"></v-toolbar-title>
