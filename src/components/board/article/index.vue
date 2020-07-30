@@ -3,19 +3,6 @@
     <template v-for="(item, i) in items">
       <template v-if="$store.state.boardTypeList">
         <v-list-item three-line :key="item.id" :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
-          <!-- <v-list-item-action>
-            <v-btn
-              v-if="category != item.category"
-              color="info"
-              depressed
-              small
-              :to="`${$route.path}?category=${item.category}`"
-            >
-              {{item.category}}
-              <v-icon right>mdi-menu-right</v-icon>
-            </v-btn>
-
-          </v-list-item-action> -->
           <v-list-item-content>
             <v-list-item-title>
               <v-btn
@@ -29,8 +16,9 @@
                 {{item.category}}
                 <v-icon right>mdi-menu-right</v-icon>
               </v-btn>
-              {{item.title}}
+              <span class="hidden-xs-only" v-text="item.title"></span>
             </v-list-item-title>
+            <v-list-item-title class="hidden-sm-and-up" v-text="item.title" ></v-list-item-title>
             <v-list-item-subtitle>
               {{getSummary(item.summary, 100, '!')}}
             </v-list-item-subtitle>
