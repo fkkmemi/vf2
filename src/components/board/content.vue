@@ -24,7 +24,7 @@
         </template>
       </v-toolbar>
       <v-divider/>
-      <board-article :boardId="boardId" :board="board"></board-article>
+      <board-article :boardId="boardId" :board="board" :category="category"></board-article>
       <v-dialog v-model="dialog" max-width="300">
         <v-card>
           <v-toolbar color="transparent" dense flat>
