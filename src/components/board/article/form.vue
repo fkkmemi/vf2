@@ -1,5 +1,13 @@
 <template>
-  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+  <v-container fluid v-if="!loaded">
+    <v-skeleton-loader type="article"></v-skeleton-loader>
+  </v-container>
+  <v-container fluid v-else-if="loaded && !board">
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판 정보를 불러오지 못했습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-form>
       <v-card :loading="loading" outlined :tile="$vuetify.breakpoint.xs">
         <v-toolbar color="transparent" dense flat>
@@ -43,6 +51,13 @@
             </v-col>
           </v-row>
         </v-card-text>
+        <v-divider/>
+        <v-card-actions>
+          <v-spacer/>
+          <v-btn @click="save" :disabled="!user" text color="primary">
+            <v-icon left>mdi-content-save</v-icon> 저장
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-form>
   </v-container>
@@ -65,7 +80,8 @@ export default {
       loading: false,
       ref: null,
       article: null,
-      board: null
+      board: null,
+      loaded: false
     }
   },
   computed: {
@@ -89,7 +105,9 @@ export default {
   methods: {
     async fetch () {
       this.ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
+      this.loaded = false
       const docBoard = await this.ref.get()
+      this.loaded = true
       this.board = docBoard.data()
       if (this.articleId === 'new') return
       const doc = await this.ref.collection('articles').doc(this.articleId).get()

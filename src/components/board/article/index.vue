@@ -1,5 +1,13 @@
 <template>
-  <v-container fluid v-if="items.length" class="pa-0">
+  <v-container fluid v-if="!loaded">
+    <v-skeleton-loader type="article" v-for="i in 3" :key="i"></v-skeleton-loader>
+  </v-container>
+  <v-container fluid v-else-if="loaded && !items.length">
+    <v-alert type="warning" border="left" class="mb-0">
+      게시물이 없습니다 <v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을 작성하세요~
+    </v-alert>
+  </v-container>
+  <v-container fluid v-else class="pa-0">
     <template v-for="(item, i) in items">
       <template v-if="$store.state.boardTypeList">
         <v-list-item three-line :key="item.id" :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
@@ -34,15 +42,15 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-sheet>
+            <v-sheet class="d-flex justify-space-between">
               <v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
-              <span class="body-2">{{item.readCount.toString().padStart(' ', 2)}}</span>
+              <span class="body-2">{{item.readCount}}</span>
             </v-sheet>
-            <v-sheet>
+            <v-sheet class="d-flex justify-space-between">
               <v-icon left :color="item.commentCount ? 'info' : ''">mdi-comment</v-icon>
-              <span class="body-2">{{item.commentCount.toString().padStart(2, ' ')}}</span>
+              <span class="body-2">{{item.commentCount}}</span>
             </v-sheet>
-            <v-sheet>
+            <v-sheet class="d-flex justify-space-between">
               <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
               <span class="body-2">{{item.likeCount}}</span>
             </v-sheet>
@@ -110,13 +118,16 @@
       </v-card>
     </template>
     <v-list-item v-if="lastDoc && items.length < board.count">
-      <v-btn @click="more" v-intersect="onIntersect" text color="primary" block :loading="loading">더보기</v-btn>
+      <v-btn
+        @click="more"
+        v-intersect="onIntersect"
+        text
+        color="primary"
+        block
+        :loading="loading">
+        <v-icon>mdi-dots-horizontal</v-icon>더보기
+      </v-btn>
     </v-list-item>
-  </v-container>
-  <v-container fluid v-else>
-    <v-alert type="warning" border="left" class="mb-0">
-      게시물이 없습니다 <v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을 작성하세요~
-    </v-alert>
   </v-container>
 </template>
 <script>
@@ -141,7 +152,8 @@ export default {
       sort: 'desc',
       loading: false,
       getSummary,
-      newCheck
+      newCheck,
+      loaded: false
     }
   },
   computed: {
@@ -210,8 +222,9 @@ export default {
           .where('category', '==', this.category)
           .orderBy(this.order, this.sort).limit(LIMIT)
       }
-
+      this.loaded = false
       this.unsubscribe = this.ref.onSnapshot(sn => {
+        this.loaded = true
         if (sn.empty) {
           this.items = []
           return

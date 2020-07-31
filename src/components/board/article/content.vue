@@ -1,9 +1,16 @@
 <template>
-  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card v-if="article" outlined :tile="$vuetify.breakpoint.xs">
+  <v-container fluid v-if="!loaded">
+    <v-skeleton-loader type="article"></v-skeleton-loader>
+  </v-container>
+  <v-container fluid v-else-if="loaded && !article">
+    <v-alert type="warning" border="left" class="mb-0">
+      게시물이 없습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+    <v-card outlined :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
         <v-toolbar-title>
-          <!-- <v-chip color="info" small label class="mr-4">{{article.category}}</v-chip> -->
           <v-btn
             color="info"
             depressed
@@ -98,15 +105,7 @@
       <v-divider/>
       <display-comment :article="article" :docRef="ref"></display-comment>
     </v-card>
-    <v-card v-else>
-      <v-container>
-        <v-row justify="center" align="center">
-          <v-progress-circular indeterminate></v-progress-circular>
-        </v-row>
-      </v-container>
-    </v-card>
   </v-container>
-
 </template>
 <script>
 import axios from 'axios'
@@ -125,7 +124,8 @@ export default {
       unsubscribe: null,
       article: null,
       doc: null,
-      newCheck
+      newCheck,
+      loaded: false
     }
   },
   computed: {
@@ -162,7 +162,9 @@ export default {
       this.ref.update({
         readCount: this.$firebase.firestore.FieldValue.increment(1)
       })
+      this.loaded = false
       this.unsubscribe = this.ref.onSnapshot(doc => {
+        this.loaded = true
         if (!doc.exists) {
           this.back()
           return

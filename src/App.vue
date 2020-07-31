@@ -7,11 +7,12 @@
       <site-sign></site-sign>
     </v-app-bar>
     <v-navigation-drawer
-      app fixed disable-resize-watcher
+      app
       v-model="drawer"
       :width="$store.state.editable ? 380 : null"
       >
-      <site-menu :items="site.menu"></site-menu>
+      <!-- :width="$store.state.editable ? 380 : null" -->
+      <site-menu :items="site.menu" @close="drawer=false"></site-menu>
     </v-navigation-drawer>
     <v-main>
       <router-view/>

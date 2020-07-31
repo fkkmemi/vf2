@@ -62,7 +62,15 @@
       <v-divider :key="i" v-if="i < items.length - 1"></v-divider>
     </template>
     <v-list-item v-if="lastDoc && items.length < article.commentCount">
-      <v-btn @click="more" :loading="loading" v-intersect="onIntersect" text color="primary" block>더보기</v-btn>
+      <v-btn
+        @click="more"
+        :loading="loading"
+        v-intersect="onIntersect"
+        text
+        color="primary"
+        block>
+        <v-icon>mdi-dots-horizontal</v-icon>더보기
+      </v-btn>
     </v-list-item>
   </v-card>
 </template>
