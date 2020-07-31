@@ -17,7 +17,7 @@
     <template v-for="(item, i) in items">
       <v-list-item :key="item.id">
         <v-list-item-content>
-          <v-list-item-subtitle v-if="!item.edit" class="black--text comment" v-text="item.comment"></v-list-item-subtitle>
+          <v-list-item-subtitle v-if="!item.edit" class="black--text white-space" v-text="item.comment"></v-list-item-subtitle>
           <v-list-item-subtitle v-else>
             <v-textarea
               v-model="item.comment"
@@ -210,8 +210,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.comment {
-  white-space: pre-wrap;
-}
-</style>
