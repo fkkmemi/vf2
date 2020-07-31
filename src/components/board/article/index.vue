@@ -16,9 +16,15 @@
                 {{item.category}}
                 <v-icon right>mdi-menu-right</v-icon>
               </v-btn>
-              <span class="hidden-xs-only" v-text="item.title"></span>
+              <template v-if="!$vuetify.breakpoint.xs">
+                <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
+                <span v-text="item.title"></span>
+              </template>
             </v-list-item-title>
-            <v-list-item-title class="hidden-sm-and-up" v-text="item.title" ></v-list-item-title>
+            <v-list-item-title v-if="$vuetify.breakpoint.xs">
+              <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
+              <span v-text="item.title"></span>
+            </v-list-item-title>
             <v-list-item-subtitle>
               {{getSummary(item.summary, 100, '!')}}
             </v-list-item-subtitle>
@@ -65,6 +71,7 @@
 
         <v-card color="transparent" flat :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
           <v-card-title>
+            <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
             {{item.title}}
           </v-card-title>
           <v-card-text>
@@ -117,6 +124,7 @@ import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import getSummary from '@/util/getSummary'
+import newCheck from '@/util/newCheck'
 
 const LIMIT = 5
 
@@ -132,7 +140,8 @@ export default {
       order: 'createdAt',
       sort: 'desc',
       loading: false,
-      getSummary
+      getSummary,
+      newCheck
     }
   },
   computed: {
