@@ -51,5 +51,8 @@ service cloud.firestore {
       allow update: if (request.auth != null && request.auth.uid == userId && resource.data.level == request.resource.data.level) || approvedLevel(0);
       allow create, delete: if false; // functions
     }
+    match /tempFiles/{fileId} {
+      allow read: if approvedLevel(0);
+    }
   }
 }
