@@ -9104,3 +9104,8 @@ yorkie@^2.0.0:
     is-ci "^1.0.10"
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
+
+youtube-url@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/youtube-url/-/youtube-url-0.5.0.tgz#935107efafefd20ea5efc014d8f9c8f385e0ed1a"
+  integrity sha1-k1EH76/v0g6l78AU2PnI84Xg7Ro=
