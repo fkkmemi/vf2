@@ -16,6 +16,7 @@
             depressed
             small
             class="mr-4"
+            outlined
             @click="goCategory"
           >
             {{article.category}}
@@ -31,8 +32,9 @@
       </v-toolbar>
       <v-divider/>
       <v-card-title>
-        <v-icon color="error" left v-if="newCheck(article.updatedAt)">mdi-fire</v-icon>
-        <span v-text="article.title"></span>
+        <!-- <v-icon color="error" left v-if="newCheck(article.updatedAt)">mdi-fire</v-icon>
+        <span v-text="article.title"></span> -->
+        <display-title :item="article"></display-title>
       </v-card-title>
       <v-card-text>
         <viewer v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
@@ -107,11 +109,12 @@ import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
 import DisplayUser from '@/components/display-user'
+import DisplayTitle from '@/components/display-title'
 import newCheck from '@/util/newCheck'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
-  components: { DisplayTime, DisplayComment, DisplayUser },
+  components: { DisplayTime, DisplayComment, DisplayUser, DisplayTitle },
   props: ['boardId', 'articleId', 'action', 'category', 'tag'],
   data () {
     return {

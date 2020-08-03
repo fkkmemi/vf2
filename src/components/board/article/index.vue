@@ -12,69 +12,70 @@
       <template v-if="$store.state.boardTypeList">
         <v-list-item three-line :key="item.id" :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
           <v-list-item-content>
-            <v-list-item-title>
+            <v-list-item-title class="d-flex align-center">
               <v-btn
                 v-if="!$vuetify.breakpoint.xs && category != item.category"
                 color="info"
                 depressed
                 small
+                outlined
                 class="mr-4"
                 :to="`${$route.path}?category=${item.category}`"
               >
                 {{item.category}}
                 <v-icon right>mdi-menu-right</v-icon>
               </v-btn>
-              <template>
-                <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
-                <span v-text="item.title"></span>
-                <v-icon right v-if="item.images && item.images.length">mdi-image</v-icon>
-              </template>
+              <display-title :item="item"/>
+              <v-spacer/>
             </v-list-item-title>
             <v-list-item-subtitle class="d-flex justify-space-between align-center">
-              <display-time :time="item.createdAt"></display-time>
+              <span class="font-italic caption"><display-time :time="item.createdAt"></display-time></span>
+              <v-spacer/>
+              <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
               <display-user :user="item.user" :size="'small'"></display-user>
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-sheet class="d-flex justify-space-between">
-              <v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
-              <span class="body-2">{{item.readCount}}</span>
-            </v-sheet>
-            <v-sheet class="d-flex justify-space-between">
-              <v-icon left :color="item.commentCount ? 'info' : ''">mdi-comment</v-icon>
-              <span class="body-2">{{item.commentCount}}</span>
-            </v-sheet>
-            <v-sheet class="d-flex justify-space-between">
-              <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
-              <span class="body-2">{{item.likeCount}}</span>
-            </v-sheet>
+            <div class="d-flex flex-column justify-space-between" style="width:50px">
+              <div class="d-flex justify-space-between align-center">
+                <v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
+                <span class="body-2">{{item.readCount}}</span>
+              </div>
+              <div class="d-flex justify-space-between align-center">
+                <v-icon left :color="item.commentCount ? 'info' : ''">mdi-comment</v-icon>
+                <span class="body-2">{{item.commentCount}}</span>
+              </div>
+              <div class="d-flex justify-space-between align-center">
+                <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
+                <span class="body-2">{{item.likeCount}}</span>
+              </div>
+            </div>
           </v-list-item-action>
         </v-list-item>
         <v-divider v-if="i < items.length - 1" :key="i"/>
       </template>
       <template v-else>
         <v-card :key="item.id" :class="$vuetify.breakpoint.xs ? '' : 'ma-4'" :flat="$vuetify.breakpoint.xs">
-          <v-subheader>
+          <v-subheader v-if="category != item.category">
             <v-btn
-              v-if="category != item.category"
               color="info"
               depressed
               small
+              outlined
               class="mr-4"
               :to="`${$route.path}?category=${item.category}`"
             >
               {{item.category}}
               <v-icon right>mdi-menu-right</v-icon>
             </v-btn>
-            <display-time :time="item.createdAt"></display-time>
-            <v-spacer/>
-            <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
           </v-subheader>
 
           <v-card color="transparent" flat :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
             <v-card-title>
-              <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
-              {{item.title}}
+
+              <display-title :item="item"/>
+              <v-spacer/>
+              <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
             </v-card-title>
             <v-card-text>
               <viewer v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
@@ -89,6 +90,7 @@
             </v-card-actions>
           </v-card>
           <v-card-actions>
+            <span class="font-italic caption"><display-time :time="item.createdAt"></display-time></span>
             <v-spacer/>
             <display-user :user="item.user"></display-user>
           </v-card-actions>
@@ -136,11 +138,12 @@ import DisplayUser from '@/components/display-user'
 import getSummary from '@/util/getSummary'
 import newCheck from '@/util/newCheck'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
+import DisplayTitle from '@/components/display-title'
 
 const LIMIT = 5
 
 export default {
-  components: { DisplayTime, DisplayUser },
+  components: { DisplayTime, DisplayUser, DisplayTitle },
   props: ['board', 'boardId', 'category', 'tag'],
   data () {
     return {
@@ -206,11 +209,15 @@ export default {
           findItem.categories = item.categories
           findItem.tags = item.tags
           findItem.updatedAt = item.updatedAt.toDate()
+          findItem.important = item.important
         }
       })
       this.items.sort((before, after) => {
+        if (after.important > before.important) return 1
+        else if (after.important < before.important) return -1
         return Number(after.id) - Number(before.id)
       })
+      console.log('sorted')
     },
     subscribe (arrow) {
       if (this.unsubscribe) this.unsubscribe()
@@ -219,13 +226,17 @@ export default {
         this.ref = this.$firebase.firestore()
           .collection('boards').doc(this.boardId)
           .collection('articles')
-          .orderBy(this.order, this.sort).limit(LIMIT)
+          .orderBy('important', 'desc')
+          .orderBy(this.order, this.sort)
+          .limit(LIMIT)
       } else {
         this.ref = this.$firebase.firestore()
           .collection('boards').doc(this.boardId)
           .collection('articles')
           .where('category', '==', this.category)
-          .orderBy(this.order, this.sort).limit(LIMIT)
+          .orderBy('important', 'desc')
+          .orderBy(this.order, this.sort)
+          .limit(LIMIT)
       }
       this.loaded = false
       this.unsubscribe = this.ref.onSnapshot(sn => {
@@ -235,6 +246,7 @@ export default {
           return
         }
         this.snapshotToItems(sn)
+        console.log('here')
       })
     },
     read (item) {

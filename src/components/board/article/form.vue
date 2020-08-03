@@ -19,6 +19,17 @@
         <v-divider/>
         <v-card-text>
           <v-row>
+            <v-col cols="12" sm="2" v-if="board">
+              <v-select
+                v-model="form.important"
+                :items="[
+                  { value: 0, text: '일반'},
+                  { value: 1, text: '공지'},
+                  { value: 2, text: '중요'}
+                ]"
+                label="유형"
+                outlined hide-details />
+            </v-col>
             <v-col cols="12" sm="4" v-if="board">
               <v-combobox
                 v-model="form.category"
@@ -26,7 +37,7 @@
                 label="종류"
                 outlined hide-details />
             </v-col>
-            <v-col cols="12" sm="8" v-if="board">
+            <v-col cols="12" sm="6" v-if="board">
               <v-combobox
                 v-model="form.tags"
                 :items="board.tags"
@@ -85,7 +96,8 @@ export default {
         tags: [],
         title: '',
         content: '',
-        images: []
+        images: [],
+        important: 0
       },
       exists: false,
       loading: false,
@@ -148,8 +160,9 @@ export default {
       this.form.tags = item.tags
       this.form.images = item.images
       if (!item.images) this.form.images = []
+      this.form.important = item.important
       const { data } = await axios.get(item.url)
-      this.form.content = data
+      this.form.content = typeof data === 'string' ? data : data.toString()
     },
     async save () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
@@ -165,7 +178,8 @@ export default {
           tags: this.form.tags,
           images: this.findImagesFromDoc(md, this.form.images), // this.form.images,
           updatedAt: new Date(),
-          summary: getSummary(md, 300, 'data:image')
+          summary: getSummary(md, 300, 'data:image'),
+          important: this.form.important
         }
         if (!this.exists) {
           const fn = this.articleId + '-' + this.fireUser.uid + '.md'
