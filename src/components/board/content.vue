@@ -25,7 +25,6 @@
           <v-icon color="error" left v-if="newCheck(board.updatedAt)">mdi-fire</v-icon>
           <span v-text="board.title"></span>
         </template>
-
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
         <v-btn icon @click="$store.commit('toggleBoardType')">
@@ -36,10 +35,6 @@
         </template>
       </v-toolbar>
       <v-divider/>
-      <v-card-title v-if="$vuetify.breakpoint.xs">
-        <v-icon color="error" left v-if="newCheck(board.updatedAt)">mdi-fire</v-icon>
-        <span v-text="board.title"></span>
-      </v-card-title>
       <board-article :boardId="boardId" :board="board" :category="category"></board-article>
       <v-dialog v-model="dialog" max-width="300">
         <v-card>
@@ -50,6 +45,16 @@
             <v-btn icon @click="dialog=false"><v-icon>mdi-close</v-icon></v-btn>
           </v-toolbar>
           <v-divider/>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>
+                게시판 이름
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{board.title}}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title>

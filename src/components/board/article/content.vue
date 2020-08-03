@@ -21,10 +21,6 @@
             {{article.category}}
             <v-icon v-if="!category" right>mdi-menu-right</v-icon>
           </v-btn>
-          <template v-if="!$vuetify.breakpoint.xs">
-            <v-icon color="error" left v-if="newCheck(article.updatedAt)">mdi-fire</v-icon>
-            <span v-text="article.title"></span>
-          </template>
         </v-toolbar-title>
         <v-spacer/>
         <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
@@ -34,19 +30,17 @@
         <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-divider/>
-      <v-card-title v-if="$vuetify.breakpoint.xs">
+      <v-card-title>
         <v-icon color="error" left v-if="newCheck(article.updatedAt)">mdi-fire</v-icon>
         <span v-text="article.title"></span>
       </v-card-title>
       <v-card-text>
-        <viewer ref="viewer" v-if="content" :initialValue="content" @load="onEditorLoad"></viewer>
+        <viewer v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
         <v-container v-else>
           <v-row justify="center" align="center">
             <v-progress-circular indeterminate></v-progress-circular>
           </v-row>
         </v-container>
-        <v-divider></v-divider>
-        <!-- <div v-html="html"></div> -->
       </v-card-text>
       <v-card-actions>
         <v-spacer/>
@@ -68,7 +62,6 @@
         <display-user :user="article.user"></display-user>
       </v-card-actions>
       <v-card-actions>
-        <!-- <v-chip small label outlined color="info" class="mr-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip> -->
         <v-spacer/>
         <v-sheet class="mr-4">
           <v-icon left :color="article.readCount ? 'info' : ''">mdi-eye</v-icon>
@@ -122,14 +115,18 @@ export default {
   props: ['boardId', 'articleId', 'action', 'category', 'tag'],
   data () {
     return {
+      tuiOptions: {
+        linkAttribute: {
+          target: '_blank'
+        }
+      },
       content: '',
       ref: null,
       unsubscribe: null,
       article: null,
       doc: null,
       newCheck,
-      loaded: false,
-      html: ''
+      loaded: false
     }
   },
   computed: {
@@ -187,33 +184,7 @@ export default {
     async fetch (url) {
       this.content = ''
       const r = await axios.get(url)
-      const html = typeof r.data === 'string' ? r.data : r.data.toString()
-      // html += '<br>aaa<br><div><iframe width="560" height="315" src="https://www.youtube.com/embed/oveihslJtXE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
-      // this.content = link2embed(html)
-      // console.log(html)
-      this.content = html
-    },
-    onEditorLoad (v) {
-      const el = v.preview.el
-      this.html = addYoutubeIframe(el)
-      // console.log(el.firstChild.children)
-      // for (const c of el.firstChild.children) {
-      //   const span = document.createElement('span')
-      //   const content = document.createTextNode('My Text')
-      //   span.appendChild(content)
-      //   c.appendChild(span)
-      //   console.log(c)
-      // }
-
-      // console.log(v)
-      // console.log(v.preview.el)
-      // const html = v.preview.el.innerHTML
-      // console.log(typeof this.html)
-      // console.log(html)
-      // console.log(v.convertor.renderHTML())
-      // v.markdownValue += 'zxcv'
-      // const s = this.$refs.viewer.invoke('getHtml')
-      // console.log(s)
+      this.content = typeof r.data === 'string' ? r.data : r.data.toString()
     },
     async articleWrite () {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
@@ -273,6 +244,9 @@ export default {
       const us = this.$route.path.split('/')
       us.pop()
       this.$router.push({ path: us.join('/'), query: { category: this.article.category } })
+    },
+    onViewerLoad (v) {
+      addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
     }
   }
 }
