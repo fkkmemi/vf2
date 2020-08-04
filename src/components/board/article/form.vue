@@ -13,7 +13,7 @@
         <v-toolbar color="transparent" dense flat>
           <v-toolbar-title>게시물 작성</v-toolbar-title>
           <v-spacer/>
-          <v-btn icon @click="save" :disabled="!user"><v-icon>mdi-content-save</v-icon></v-btn>
+          <!-- <v-btn icon @click="save" :disabled="!user"><v-icon>mdi-content-save</v-icon></v-btn> -->
           <v-btn icon @click="$router.push('/board/' + boardId)"><v-icon>mdi-close</v-icon></v-btn>
         </v-toolbar>
         <v-divider/>
@@ -74,6 +74,7 @@
         <v-divider/>
         <v-card-actions>
           <v-spacer/>
+          <v-btn text @click="$router.push('/board/' + boardId)"><v-icon left>mdi-close</v-icon>취소</v-btn>
           <v-btn @click="save" :disabled="!user" text color="primary">
             <v-icon left>mdi-content-save</v-icon> 저장
           </v-btn>

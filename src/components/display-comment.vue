@@ -49,7 +49,7 @@
             >
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon @click="remove(item)" v-if="(fireUser && fireUser.uid === item.uid) || (user && user.level === 0)">
+            <v-btn color="error" icon @click="remove(item)" v-if="(fireUser && fireUser.uid === item.uid) || (user && user.level === 0)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
             <v-btn @click="like(item)" text>
@@ -164,6 +164,7 @@ export default {
     async save () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
       if (!this.comment) throw Error('내용을 작성해야 합니다')
+      if (this.article.commentCount > 100) throw Error('댓글 개수 허용치를 넘었습니다')
       if (this.comment.length > 300) throw Error('문자 허용치를 넘었습니다')
       const doc = {
         createdAt: new Date(),

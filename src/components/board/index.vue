@@ -6,7 +6,7 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container fluid v-else-if="loaded && !items.length">
+  <v-container fluid v-else-if="(loaded && !items.length) && (!user || (user && user.level > 0))">
     <v-alert type="warning" border="left" class="mb-0">
       게시판이 없습니다
     </v-alert>
