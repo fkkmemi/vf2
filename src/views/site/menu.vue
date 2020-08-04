@@ -202,7 +202,15 @@ export default {
       items.splice(i + arrow, 0, ...items.splice(i, 1))
       this.save()
     },
-    removeItem (items, i) {
+    async removeItem (items, i) {
+      const r = await this.$swal.fire({
+        title: '정말 삭제하시겠습니까?',
+        text: '삭제 후 되돌릴 수 없습니다.',
+        icon: 'error',
+        // confirmButtonText: 'Cool',
+        showCancelButton: true
+      })
+      if (!r.value) return
       items.splice(i, 1)
       this.save()
     }
