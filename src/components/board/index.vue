@@ -49,7 +49,7 @@
           <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item) in items" :key="item.id">
             <v-card height="100%">
               <v-subheader>
-                <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
+                <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
                 {{item.title}}
                 <v-spacer/>
                 <template v-if="user && user.level === 0">

@@ -63,8 +63,8 @@
       </v-card-actions>
       <v-card-actions>
         <v-spacer/>
-        <v-btn text @click="like" :color="liked ? 'success' : ''">
-          <!-- <v-icon left>mdi-thumb-up</v-icon> -->
+        <v-btn rounded @click="like" :color="liked ? 'success' : ''">
+          <v-icon left>mdi-thumb-up-outline</v-icon>
           좋아요
           <!-- <span class="body-2">{{article.likeCount}}</span> -->
         </v-btn>
@@ -118,7 +118,6 @@ import DisplayComment from '@/components/display-comment'
 import DisplayUser from '@/components/display-user'
 import DisplayTitle from '@/components/display-title'
 import DisplayCount from '@/components/display-count'
-import newCheck from '@/util/newCheck'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
@@ -136,7 +135,6 @@ export default {
       unsubscribe: null,
       article: null,
       doc: null,
-      newCheck,
       loaded: false
     }
   },

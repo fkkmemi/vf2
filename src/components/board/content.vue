@@ -22,7 +22,7 @@
             hide-details/>
         </v-sheet>
         <template v-if="!$vuetify.breakpoint.xs">
-          <v-icon color="error" left v-if="newCheck(board.updatedAt)">mdi-fire</v-icon>
+          <v-icon color="error" left v-if="newCheck(board.updatedAt, 'days', 1)">mdi-fire</v-icon>
           <span v-text="board.title"></span>
         </template>
         <v-spacer/>
