@@ -113,7 +113,7 @@
       </v-btn>
     </v-list-item>
     <template v-else>
-      <v-divider/>
+      <v-divider v-if="items.length"/>
       <v-card-title>
         <v-textarea
           v-model="comment"

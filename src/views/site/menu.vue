@@ -9,7 +9,7 @@
           0.0.1
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-action>
+      <v-list-item-action v-if="user && user.level === 0">
         <v-btn @click="$store.commit('setEdit', !$store.state.editable)" icon>
           <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'"></v-icon>
         </v-btn>
@@ -142,6 +142,14 @@ export default {
         title: '',
         to: ''
       }
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.state.user
+    },
+    fireUser () {
+      return this.$store.state.fireUser
     }
   },
   methods: {
