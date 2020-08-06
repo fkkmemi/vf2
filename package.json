@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build && cp -rf ./dist/index.html ./functions/index.html",
     "lint": "vue-cli-service lint",
     "deploy": "firebase deploy",
     "deploy:db": "firebase deploy --only database",
