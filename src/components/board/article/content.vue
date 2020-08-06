@@ -192,8 +192,25 @@ export default {
         item.createdAt = item.createdAt.toDate()
         item.updatedAt = item.updatedAt.toDate()
         if (!this.article || this.article.url !== item.url) this.fetch(item.url)
+        this.setMeta(item)
         this.article = item
       }, console.error)
+    },
+    setMeta (item) {
+      const descriptionNode = document.querySelector('head meta[name="description"]')
+      const ogTitleNode = document.querySelector('head meta[property="og:title"]')
+      const ogDescriptionNode = document.querySelector('head meta[property="og:description"]')
+      const ogImageNode = document.querySelector('head meta[property="og:image"]')
+
+      const title = item.title
+      const description = item.summary.substr(0, 80)
+      const image = item.images.length ? item.images[0].thumbUrl : '/logo.png'
+
+      document.title = title
+      descriptionNode.setAttribute('content', description)
+      ogTitleNode.setAttribute('content', title)
+      ogDescriptionNode.setAttribute('content', description)
+      ogImageNode.setAttribute('content', image)
     },
     async fetch (url) {
       this.content = ''
