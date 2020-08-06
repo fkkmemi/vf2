@@ -27,7 +27,7 @@
         </template>
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
-        <v-btn icon @click="$store.commit('toggleBoardType')">
+        <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
           <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
         </v-btn>
         <template v-if="user">

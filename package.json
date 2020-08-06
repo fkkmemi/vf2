@@ -14,7 +14,7 @@
     "deploy:hs": "firebase deploy --only hosting",
     "deploy:st": "firebase deploy --only storage",
     "predeploy": "yarn build",
-    "predeploy:hs": "yarn build",
+    "predeploy:hs": "yarn build && firebase deploy --only functions:seo",
     "serve:fn": "firebase serve --only functions"
   },
   "dependencies": {
