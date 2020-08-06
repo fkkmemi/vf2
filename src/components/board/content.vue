@@ -48,6 +48,16 @@
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title>
+                게시판 유형
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{board.type}}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>
                 게시판 이름
               </v-list-item-title>
               <v-list-item-subtitle>

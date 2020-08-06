@@ -202,7 +202,7 @@ export default {
       const ogDescriptionNode = document.querySelector('head meta[property="og:description"]')
       const ogImageNode = document.querySelector('head meta[property="og:image"]')
 
-      const title = item.title
+      const title = item.title + ' : memi'
       const description = item.summary.substr(0, 80)
       const image = item.images.length ? item.images[0].thumbUrl : '/logo.png'
 

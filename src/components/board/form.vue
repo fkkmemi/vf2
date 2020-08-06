@@ -18,9 +18,20 @@
         </v-toolbar>
         <v-divider/>
         <v-card-text>
-          <v-text-field v-model="form.category" outlined label="종류"></v-text-field>
-          <v-text-field v-model="form.title" outlined label="제목"></v-text-field>
-          <v-textarea v-model="form.description" outlined label="설명" hide-details></v-textarea>
+          <v-row>
+            <v-col cols="12" sm="4">
+              <v-text-field v-model="form.category" outlined label="게시판 종류"></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="4">
+              <v-select v-model="form.type" :items="types" outlined label="게시판 유형" :disabled="exists"></v-select>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field v-model="form.title" outlined label="제목"></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-textarea v-model="form.description" outlined label="설명" hide-details></v-textarea>
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-text>
           <v-card outlined>
@@ -100,14 +111,16 @@ export default {
         title: '',
         description: '',
         categories: [],
-        tags: []
+        tags: [],
+        type: ''
       },
       exists: false,
       loading: false,
       ref: null,
       category: '',
       tag: '',
-      loaded: false
+      loaded: false,
+      types: ['일반', '갤러리', '페이지']
     }
   },
   computed: {
@@ -137,17 +150,28 @@ export default {
         this.form.description = item.description
         this.form.categories = item.categories
         this.form.tags = item.tags
+        this.form.type = item.type
       }
     },
     async save () {
       if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
       if (!this.form.category || !this.form.title) throw Error('종류 제목은 필수 항목입니다')
+
+      const r = await this.$swal.fire({
+        title: '정말 추가하시겠습니까?',
+        text: '추가 후 게시판 형태를 변경할 수 없습니다.',
+        icon: 'warning',
+        // confirmButtonText: 'Cool',
+        showCancelButton: true
+      })
+      if (!r.value) return
       const form = {
         category: this.form.category,
         title: this.form.title,
         description: this.form.description,
         categories: this.form.categories,
         tags: this.form.tags,
+        type: this.form.type,
         updatedAt: new Date()
       }
       this.loading = true
