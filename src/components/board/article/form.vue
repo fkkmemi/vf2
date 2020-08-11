@@ -70,7 +70,25 @@ export default {
       this.loaded = false
       const doc = await ref.get()
       this.loaded = true
-      if (doc.exists) this.board = doc.data()
+      if (!doc.exists) return
+      this.board = doc.data()
+      this.setMeta(this.board)
+    },
+    setMeta (item) {
+      const descriptionNode = document.querySelector('head meta[name="description"]')
+      const ogTitleNode = document.querySelector('head meta[property="og:title"]')
+      const ogDescriptionNode = document.querySelector('head meta[property="og:description"]')
+      const ogImageNode = document.querySelector('head meta[property="og:image"]')
+
+      const title = item.title + ' 글쓰기 : memi'
+      const description = item.description.substr(0, 80)
+      const image = '/logo.png'
+
+      document.title = title
+      descriptionNode.setAttribute('content', description)
+      ogTitleNode.setAttribute('content', title)
+      ogDescriptionNode.setAttribute('content', description)
+      ogImageNode.setAttribute('content', image)
     }
   }
 }
