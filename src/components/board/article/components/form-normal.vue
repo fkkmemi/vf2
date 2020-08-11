@@ -22,7 +22,7 @@
               outlined hide-details />
           </v-col>
           <v-col cols="12" sm="4">
-            <v-combobox
+            <v-select
               v-model="form.category"
               :items="board.categories"
               label="종류"

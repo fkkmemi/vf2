@@ -19,10 +19,10 @@ const db = admin.firestore()
 // App ID and API Key are stored in functions config variables
 const ALGOLIA_ID = functions.config().algolia.app_id
 const ALGOLIA_ADMIN_KEY = functions.config().algolia.api_key
-// const ALGOLIA_SEARCH_KEY = functions.config().algolia.search_key
 
 const ALGOLIA_INDEX_NAME = 'boards'
 const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY)
+const index = client.initIndex(ALGOLIA_INDEX_NAME)
 
 exports.createUser = functions.region(region).auth.user().onCreate(async (user) => {
   const { uid, email, displayName, photoURL } = user
@@ -89,13 +89,65 @@ const removeOldTempFiles = async () => {
   await batch.commit()
 }
 
+// const download = async () => {
+//   const ps = []
+//   ps.push('boards')
+//   ps.push('talk')
+//   ps.push('1597138520334-fzukPbXJZCR0NrtxHBaXd2oR7jX2.md')
+//   console.log('down')
+//   try {
+//     const r = await admin.storage().bucket().file(ps.join('/'))
+//       .download()
+//       .catch(e => console.error('storage remove err: ' + e.message))
+//     console.log(r)
+//   } catch (e) {
+//     console.error('storage remove err: ' + e.message)
+//   }
+// }
+// download()
+
 exports.onCreateBoardArticle = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}')
   .onCreate(async (snap, context) => {
+    const doc = snap.data()
+
+    let content = doc.summary
+    if (doc.summary && doc.summary.length >= 300) {
+      const ps = []
+      ps.push('boards')
+      ps.push(context.params.bid)
+      ps.push(context.params.aid + '-' + doc.uid + '.md')
+      const bf = await admin.storage().bucket().file(ps.join('/'))
+        .download()
+        .catch(e => console.error('storage download err: ' + e.message))
+      content = bf.toString()
+    }
+
+    const algoliaDoc = {
+      // objectId: `${context.params.bid}-${context.params.aid}`,
+      boardId: context.params.bid,
+      articleId: context.params.aid,
+      createdAt: doc.createdAt.toDate(),
+      updatedAt: doc.updatedAt.toDate(),
+      title: doc.title,
+      content: content,
+      email: doc.user.email,
+      displayName: doc.user.displayName,
+      category: doc.category,
+      tags: doc.tags
+    }
+
+    try {
+      const r = await index.saveObject(algoliaDoc, { autoGenerateObjectIDIfNotExist: true })
+      // r is objectID, taskID
+      await snap.ref.update({ objectID: r.objectID })
+    } catch (e) {
+      console.log('algolia err: ' + e.message)
+    }
+
     const set = {
       count: admin.firestore.FieldValue.increment(1)
     }
-    const doc = snap.data()
     if (doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
     if (doc.tags.length) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
     try {
@@ -124,33 +176,6 @@ exports.onCreateBoardArticle = functions.region(region).firestore
     }
 
     await removeOldTempFiles()
-
-    // Add an 'objectID' field which Algolia requires
-
-    const algoliaDoc = {
-      // objectId: `${context.params.bid}-${context.params.aid}`,
-      boardId: context.params.bid,
-      articleId: context.params.aid,
-      createdAt: doc.createdAt.toDate(),
-      title: doc.title,
-      content: doc.summary,
-      email: doc.user.email,
-      displayName: doc.user.displayName,
-      category: doc.category,
-      tags: doc.tags,
-      readCount: doc.readCount,
-      commentCount: doc.commentCount,
-      likeCount: doc.likeCount
-    }
-
-    // Write to the algolia index
-    const index = client.initIndex(ALGOLIA_INDEX_NAME)
-    try {
-      const r = await index.saveObject(algoliaDoc, { autoGenerateObjectIDIfNotExist: true })
-      console.log(r)
-    } catch (e) {
-      console.log('algolia err: ' + e.message)
-    }
   })
 
 // const test = async () => {
@@ -183,8 +208,9 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
     const set = {}
     const beforeDoc = change.before.data()
     const doc = change.after.data()
+    if (doc.objectID !== beforeDoc.objectID) return
     if (doc.category && beforeDoc.category !== doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
-    if (doc.tags.length && isEqual(beforeDoc.tags, doc.tags)) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
+    if (doc.tags.length && !isEqual(beforeDoc.tags, doc.tags)) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
     if (Object.keys(set).length) await db.collection('boards').doc(context.params.bid).update(set)
 
     const deleteImages = beforeDoc.images.filter(before => {
@@ -212,16 +238,43 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
       ids.push(image.id)
       thumbIds.push(image.thumbId)
     })
-    try {
-      const batch = db.batch()
-      const sn = await db.collection('tempFiles').where('id', 'in', ids).get()
-      sn.docs.forEach(doc => batch.delete(doc.ref))
-      const snt = await db.collection('tempFiles').where('id', 'in', thumbIds).get()
-      snt.docs.forEach(doc => batch.delete(doc.ref))
-      await batch.commit()
-    } catch (e) {
-      console.error('tempFiles remove err: ' + e.message)
+    if (ids.length) {
+      try {
+        const batch = db.batch()
+        const sn = await db.collection('tempFiles').where('id', 'in', ids).get()
+        sn.docs.forEach(doc => batch.delete(doc.ref))
+        const snt = await db.collection('tempFiles').where('id', 'in', thumbIds).get()
+        snt.docs.forEach(doc => batch.delete(doc.ref))
+        await batch.commit()
+      } catch (e) {
+        console.error('tempFiles remove err: ' + e.message)
+      }
     }
+
+    if (!doc.objectID) return
+    const algoliaDoc = {
+      objectID: doc.objectID,
+      updatedAt: doc.updatedAt.toDate()
+    }
+    if (beforeDoc.title !== doc.title) algoliaDoc.title = doc.title
+    // if (beforeDoc.content !== doc.content) algoliaDoc.content = doc.content
+    if (beforeDoc.category !== doc.category) algoliaDoc.category = doc.category
+    if (!isEqual(beforeDoc.tags, doc.tags)) algoliaDoc.tags = doc.tags
+
+    let content = doc.summary
+    if (doc.summary && doc.summary.length >= 300) {
+      const ps = []
+      ps.push('boards')
+      ps.push(context.params.bid)
+      ps.push(context.params.aid + '-' + doc.uid + '.md')
+      const bf = await admin.storage().bucket().file(ps.join('/'))
+        .download()
+        .catch(e => console.error('storage download err: ' + e.message))
+      content = bf.toString()
+    }
+    if (beforeDoc.summary !== content) algoliaDoc.content = content
+
+    await index.partialUpdateObject(algoliaDoc).catch(e => console.error('algolia update err: ' + e.message))
   })
 
 exports.onDeleteBoardArticle = functions.region(region).firestore
@@ -259,9 +312,12 @@ exports.onDeleteBoardArticle = functions.region(region).firestore
     imgs.push('boards')
     imgs.push(context.params.bid)
     imgs.push(context.params.aid)
-    return admin.storage().bucket().deleteFiles({
+    await admin.storage().bucket().deleteFiles({
       prefix: imgs.join('/')
-    })
+    }).catch(e => console.error('storage deleteFiles err: ' + e.message))
+
+    if (!doc.objectID) return
+    await index.deleteObject(doc.objectID).catch(e => console.error('algolia update err: ' + e.message))
   })
 
 exports.onCreateBoardComment = functions.region(region).firestore
@@ -321,7 +377,7 @@ exports.seo = functions.https.onRequest(async (req, res) => {
 
   const ps = req.path.split('/')
   ps.shift()
-  ps.forEach((v, i) => console.log(i, v))
+  // ps.forEach((v, i) => console.log(i, v))
   if (ps.length !== 3) return res.send(html)
   const mainCollection = pluralize(ps.shift())
   const board = ps.shift()
