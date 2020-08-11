@@ -1,5 +1,6 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
+const algoliasearch = require('algoliasearch')
 const serviceAccount = require('./key.json')
 const region = functions.config().admin.region || 'us-central1'
 
@@ -11,6 +12,17 @@ admin.initializeApp({
 
 const rdb = admin.database()
 const db = admin.firestore()
+
+// Initialize Algolia, requires installing Algolia dependencies:
+// https://www.algolia.com/doc/api-client/javascript/getting-started/#install
+//
+// App ID and API Key are stored in functions config variables
+const ALGOLIA_ID = functions.config().algolia.app_id
+const ALGOLIA_ADMIN_KEY = functions.config().algolia.api_key
+// const ALGOLIA_SEARCH_KEY = functions.config().algolia.search_key
+
+const ALGOLIA_INDEX_NAME = 'boards'
+const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY)
 
 exports.createUser = functions.region(region).auth.user().onCreate(async (user) => {
   const { uid, email, displayName, photoURL } = user
@@ -112,7 +124,54 @@ exports.onCreateBoardArticle = functions.region(region).firestore
     }
 
     await removeOldTempFiles()
+
+    // Add an 'objectID' field which Algolia requires
+
+    const algoliaDoc = {
+      // objectId: `${context.params.bid}-${context.params.aid}`,
+      boardId: context.params.bid,
+      articleId: context.params.aid,
+      createdAt: doc.createdAt.toDate(),
+      title: doc.title,
+      content: doc.summary,
+      email: doc.user.email,
+      displayName: doc.user.displayName,
+      category: doc.category,
+      tags: doc.tags
+    }
+
+    // Write to the algolia index
+    const index = client.initIndex(ALGOLIA_INDEX_NAME)
+    try {
+      const r = await index.saveObject(algoliaDoc, { autoGenerateObjectIDIfNotExist: true })
+      console.log(r)
+    } catch (e) {
+      console.log('algolia err: ' + e.message)
+    }
   })
+
+// const test = async () => {
+//   const algoliaDoc = {
+//     // objectId: '1597110382006',
+//     title: 'test',
+//     content: 'abcd efg abcd',
+//     email: 'fkkmemi@gmail.com',
+//     displayName: 'memi dev',
+//     category: 'cat test',
+//     tags: ['abc', 'xxx']
+//   }
+
+//   // Write to the algolia index
+//   const index = client.initIndex(ALGOLIA_INDEX_NAME)
+//   try {
+//     const r = await index.saveObject(algoliaDoc, { autoGenerateObjectIDIfNotExist: true })
+//     console.log(r)
+//   } catch (e) {
+//     console.log('eeeee')
+//     console.log(e.message)
+//   }
+// }
+// test()
 
 exports.onUpdateBoardArticle = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}')

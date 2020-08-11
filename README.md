@@ -28,6 +28,19 @@ functions/key.json download from console service account key
 $ firebase functions:config:set admin.email=xx@abc.com admin.db_url=https://xxx-site.firebaseio.com admin.region=asia-northeast1 admin.bucket_url=memi-vf2.appspot.com
 ```
 
+## algolia
+
+```bash
+$ firebase functions:config:set algolia.app_id=yourAppId algolia.api_key=yourAdminKey algolia.search_key=yourSearchKey
+```
+
+### serve
+
+```bash
+$ firebase functions:config:get > .runtimeconfig.json
+$ firebase serve
+```
+
 ## hosting
 
 ### Dependecies install
