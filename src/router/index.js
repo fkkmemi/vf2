@@ -22,6 +22,10 @@ const routes = [
     component: () => import('@/views/board/article')
   },
   {
+    path: '/search',
+    component: () => import('@/views/board/search')
+  },
+  {
     path: '*',
     name: 'error',
     component: () => import('../views/error')
