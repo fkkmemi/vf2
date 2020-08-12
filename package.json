@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build && cp -rf ./dist/index.html ./functions/index.html",
+    "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "deploy": "firebase deploy",
     "deploy:db": "firebase deploy --only database",
@@ -13,8 +13,8 @@
     "deploy:fs": "firebase deploy --only firestore",
     "deploy:hs": "firebase deploy --only hosting",
     "deploy:st": "firebase deploy --only storage",
-    "predeploy": "yarn build",
-    "predeploy:hs": "yarn build && firebase deploy --only functions:seo",
+    "predeploy": "vue-cli-service build && cp -rf ./dist/index.html ./functions/index.html",
+    "predeploy:hs": "vue-cli-service build && cp -rf ./dist/index.html ./functions/index.html && firebase deploy --only functions:seo",
     "serve:fn": "firebase serve --only functions"
   },
   "dependencies": {

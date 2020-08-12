@@ -9,6 +9,8 @@
   </v-container>
 </template>
 <script>
+import setMeta from '@/util/setMeta'
+
 export default {
   data () {
     return {
@@ -17,6 +19,7 @@ export default {
     }
   },
   mounted () {
+    setMeta({ title: '메인페이지', description: '메인페이지', image: '/logo.png' })
     this.goPage()
   },
   methods: {
