@@ -1,9 +1,9 @@
 <template>
   <div>
     <v-list-item>
-      <v-list-item-icon tile>
-        <v-img contain :max-height="50" :max-width="80" :src="site.image"></v-img>
-      </v-list-item-icon>
+      <v-list-item-avatar>
+        <v-img contain :src="site.image"></v-img>
+      </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title class="title">
           {{site.title}}
