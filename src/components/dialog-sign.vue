@@ -91,6 +91,14 @@
                   로그인
                 </v-btn>
               </v-card-actions>
+              <v-card-title class="caption">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn text color="primary" v-bind="attrs" v-on="on" @click="sendPasswordResetEmail">비밀번호를 잊으셨나요?</v-btn>
+                </template>
+                <span>클릭시 작성된 이메일로 비밀번호 초기화 메일이 전송됩니다</span>
+              </v-tooltip>
+            </v-card-title>
             </template>
 
             <template v-else>
@@ -152,18 +160,23 @@ export default {
   },
   methods: {
     async signInWithEmail () {
-      // localStorage.setItem('temp1', '')
-      const r = localStorage.getItem('temp1')
-      if (r) console.log('ok')
-      else console.log('nok')
-      console.log(typeof r)
-      console.log(r)
-      const r2 = JSON.parse(r)
-      if (r2) console.log('ok 2')
-      else console.log('nok 2')
-      console.log(typeof r2)
-      console.log(r2)
-      throw Error('나중에 만들께요')
+      if (!this.email || !this.password) throw Error('이메일, 비밀번호를 입력하세요')
+      this.loading = true
+      try {
+        await this.$firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+      } finally {
+        this.loading = false
+      }
+    },
+    async sendPasswordResetEmail () {
+      if (!this.email) throw Error('이메일을 입력하세요')
+      this.loading = true
+      try {
+        await this.$firebase.auth().sendPasswordResetEmail(this.email)
+        this.$toasted.global.notice(this.email + ' 로 패스워드 초기화 메일을 전송했습니다')
+      } finally {
+        this.loading = false
+      }
     },
     async signUpWithEmail () {
       if (!this.email || !this.password || !this.displayName) throw Error('내용을 채워주세요')
@@ -171,10 +184,8 @@ export default {
       try {
         localStorage.setItem('userDisplayName', this.displayName)
         const sn = await this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-        // this.$store.commit('user', { displayName: this.displayName })
-
         await sn.user.sendEmailVerification()
-        this.$toasted.global.notice('가입이 완료되었습니다. 이메일을 확인해주세요')
+        this.$toasted.global.notice(`가입이 완료되었습니다. ${sn.user.email}의 이메일을 확인해주세요`)
       } finally {
         this.loading = false
       }

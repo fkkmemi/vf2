@@ -17,6 +17,7 @@
       <site-menu :items="site.menu" @close="drawer=false"></site-menu>
     </v-navigation-drawer>
     <v-main>
+      <banner-email-confirm v-if="user && !user.emailVerified" />
       <router-view/>
     </v-main>
     <site-footer :footer="site.footer"></site-footer>
@@ -29,9 +30,10 @@ import SiteFooter from '@/views/site/footer'
 import SiteMenu from '@/views/site/menu'
 import SiteSign from '@/views/site/sign'
 import SiteSearch from '@/views/site/search'
+import BannerEmailConfirm from '@/components/banner-email-confirm'
 
 export default {
-  components: { SiteTitle, SiteFooter, SiteMenu, SiteSign, SiteSearch },
+  components: { SiteTitle, SiteFooter, SiteMenu, SiteSign, SiteSearch, BannerEmailConfirm },
   name: 'App',
   data () {
     return {
@@ -56,6 +58,11 @@ export default {
         title: '타이틀 로드중 ...',
         footer: '바닥 로드중 ...'
       }
+    }
+  },
+  computed: {
+    user () {
+      return this.$store.state.user
     }
   },
   created () {

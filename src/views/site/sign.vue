@@ -20,11 +20,23 @@
   </v-dialog>
   <v-menu offset-y v-else :close-on-content-click="false">
     <template v-slot:activator="{ on }">
-      <v-btn icon v-on="on">
+      <v-badge
+        overlap
+        dot
+        color="error"
+        :value="!user.emailVerified"
+      >
+        <v-btn icon v-on="on">
+          <v-avatar size="32">
+            <v-img :src="user.photoURL"></v-img>
+          </v-avatar>
+        </v-btn>
+      </v-badge>
+      <!-- <v-btn icon v-on="on">
         <v-avatar size="32">
           <v-img :src="user.photoURL"></v-img>
         </v-avatar>
-      </v-btn>
+      </v-btn> -->
     </template>
     <v-card>
       <v-list>
@@ -39,7 +51,9 @@
         </v-list-item>
         <v-list-item>
           <v-list-item-avatar>
+            <v-badge overlap dot :value="!user.emailVerified" color="error">
               <v-icon>mdi-email</v-icon>
+            </v-badge>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>이메일</v-list-item-title>
@@ -92,6 +106,10 @@ export default {
   methods: {
     signOut () {
       this.$firebase.auth().signOut()
+    },
+    emailConfirm () {
+      // location.reload()
+      this.$firebase.auth().currentUser.getIdToken(true)
     }
   }
 }
