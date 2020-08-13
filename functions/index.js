@@ -24,6 +24,18 @@ const ALGOLIA_INDEX_NAME = 'boards'
 const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY)
 const index = client.initIndex(ALGOLIA_INDEX_NAME)
 
+const initialize = async () => {
+  await index.setSettings({
+    searchableAttributes: [
+      'title',
+      'unordered(content)',
+      'category',
+      'tags',
+      'displayName'
+    ]
+  })
+}
+
 exports.createUser = functions.region(region).auth.user().onCreate(async (user) => {
   const { uid, email, displayName, photoURL } = user
   const time = new Date()
@@ -44,6 +56,7 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
   } catch (e) {
     await db.collection('meta').doc('users').set({ count: 1 })
   }
+  if (u.level === 0) await initialize()
 })
 
 exports.deleteUser = functions.region(region).auth.user().onDelete(async (user) => {
@@ -60,15 +73,6 @@ exports.onCreateBoard = functions.region(region).firestore
     } catch (e) {
       await db.collection('meta').doc('boards').set({ count: 1 })
     }
-    await index.setSettings({
-      searchableAttributes: [
-        'title',
-        'unordered(content)',
-        'category',
-        'tags',
-        'displayName'
-      ]
-    })
   })
 
 exports.onDeleteBoard = functions.region(region).firestore

@@ -152,10 +152,32 @@ export default {
   },
   methods: {
     async signInWithEmail () {
+      // localStorage.setItem('temp1', '')
+      const r = localStorage.getItem('temp1')
+      if (r) console.log('ok')
+      else console.log('nok')
+      console.log(typeof r)
+      console.log(r)
+      const r2 = JSON.parse(r)
+      if (r2) console.log('ok 2')
+      else console.log('nok 2')
+      console.log(typeof r2)
+      console.log(r2)
       throw Error('나중에 만들께요')
     },
     async signUpWithEmail () {
-      throw Error('나중에 만들께요')
+      if (!this.email || !this.password || !this.displayName) throw Error('내용을 채워주세요')
+      this.loading = true
+      try {
+        localStorage.setItem('userDisplayName', this.displayName)
+        const sn = await this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+        // this.$store.commit('user', { displayName: this.displayName })
+
+        await sn.user.sendEmailVerification()
+        this.$toasted.global.notice('가입이 완료되었습니다. 이메일을 확인해주세요')
+      } finally {
+        this.loading = false
+      }
     },
     async signInWithGoogle () {
       const provider = new this.$firebase.auth.GoogleAuthProvider()

@@ -18,8 +18,25 @@ const subscribe = (fu) => {
     if (doc.exists) {
       const user = doc.data()
       user.uid = fu.uid
-      if (!user.displayName) user.displayName = fu.displayName || '손님'
-      if (!user.photoURL) user.photoURL = fu.photoURL || '/user.png'
+      user.emailVerified = fu.emailVerified
+
+      const set = {}
+      if (!user.displayName) {
+        let displayName = fu.displayName || '손님'
+        const userDisplayName = localStorage.getItem('userDisplayName')
+        if (userDisplayName) {
+          displayName = userDisplayName
+          localStorage.removeItem('userDisplayName')
+        }
+        user.displayName = displayName
+        set.displayName = displayName
+      }
+      if (!user.photoURL) {
+        const photoURL = fu.photoURL || '/user.png'
+        user.photoURL = photoURL
+        set.photoURL = photoURL
+      }
+      if (Object.keys(set).length) ref.update(set)
       store.commit('setUser', user)
     }
   }, console.error)

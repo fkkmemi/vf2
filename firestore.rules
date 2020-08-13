@@ -5,7 +5,7 @@ service cloud.firestore {
     //   allow read, write;
     // }
     function approvedLevel (level) {
-      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level <= level;
+      return request.auth != null && request.auth.token.email_verified && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level <= level;
     }
     match /boards/{boardId} {
       allow read: if true;
@@ -48,8 +48,8 @@ service cloud.firestore {
       }
     }
     match /users/{userId} {
-      allow read: if (request.auth != null && request.auth.uid == userId) || approvedLevel(0)
-      allow update: if (request.auth != null && request.auth.uid == userId && resource.data.level == request.resource.data.level) || approvedLevel(0);
+      allow read: if approvedLevel(0) || (request.auth != null && request.auth.uid == userId);
+      allow update: if approvedLevel(0) || (request.auth != null && request.auth.uid == userId && resource.data.level == request.resource.data.level);
       allow create, delete: if false; // functions
     }
     match /tempFiles/{fileId} {
