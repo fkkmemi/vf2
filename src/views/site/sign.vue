@@ -76,6 +76,7 @@
       <v-card-actions>
         <v-spacer/>
         <v-btn color="primary" @click="signOut">
+          <v-icon left>mdi-exit-to-app</v-icon>
           로그아웃
         </v-btn>
       </v-card-actions>

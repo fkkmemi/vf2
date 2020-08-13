@@ -150,12 +150,13 @@ export default {
       if (!md) throw Error('내용은 필수 항목입니다')
       this.loading = true
       try {
+        const createdAt = new Date(Number(this.articleId))
         const doc = {
           title: this.form.title,
           category: this.form.category,
           tags: this.form.tags,
           images: this.findImagesFromDoc(md, this.form.images), // this.form.images,
-          updatedAt: new Date(),
+          updatedAt: createdAt,
           summary: getSummary(md, 300, 'data:image'),
           important: this.form.important
         }
@@ -163,7 +164,7 @@ export default {
           const fn = this.articleId + '-' + this.fireUser.uid + '.md'
           const sn = await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           doc.url = await sn.ref.getDownloadURL()
-          doc.createdAt = new Date()
+          doc.createdAt = createdAt
           doc.commentCount = 0
           doc.readCount = 0
           doc.uid = this.$store.state.fireUser.uid

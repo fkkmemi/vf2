@@ -231,8 +231,8 @@ export default {
     back () {
       const us = this.$route.path.split('/')
       us.pop()
-      if (this.category) this.$router.push({ path: us.join('/'), query: { category: this.category } })
-      else this.$router.push({ path: us.join('/') })
+      if (this.category) this.$router.push({ path: us.join('/'), query: { category: this.category, createdAt: this.articleId } })
+      else this.$router.push({ path: us.join('/'), query: { createdAt: this.articleId } })
     },
     async like () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')

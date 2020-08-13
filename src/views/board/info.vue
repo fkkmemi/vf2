@@ -1,5 +1,5 @@
 <template>
-  <board-content v-if="!action" :boardId="info" :category="category" :tag="tag" />
+  <board-content v-if="!action" :boardId="info" :category="category" :tag="tag" :createdAt="createdAt" />
   <board-form v-else :boardId="info" :action="action" />
 </template>
 <script>
@@ -19,6 +19,9 @@ export default {
     },
     tag () {
       return this.$route.query.tag
+    },
+    createdAt () {
+      return this.$route.query.createdAt
     }
   }
 }

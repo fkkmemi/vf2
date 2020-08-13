@@ -23,8 +23,9 @@
         </v-sheet>
         <template v-if="!$vuetify.breakpoint.xs">
           <v-icon color="error" left v-if="newCheck(board.updatedAt, 'days', 1)">mdi-fire</v-icon>
-          <span v-text="board.title"></span>
+          <span v-text="board.title" class="mr-2"></span>
         </template>
+        <v-chip color="info" small>{{board.count}}</v-chip>
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
         <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
@@ -35,7 +36,7 @@
         </template>
       </v-toolbar>
       <v-divider/>
-      <board-article :boardId="boardId" :board="board" :category="category"></board-article>
+      <board-article :boardId="boardId" :board="board" :category="category" :createdAt="createdAt"></board-article>
       <v-dialog v-model="dialog" max-width="400">
         <v-card>
           <v-toolbar color="transparent" dense flat>
@@ -151,7 +152,7 @@ import newCheck from '@/util/newCheck'
 
 export default {
   components: { BoardArticle, DisplayTime, DisplayUser },
-  props: ['boardId', 'category', 'tag'],
+  props: ['boardId', 'category', 'tag', 'createdAt'],
   data () {
     return {
       unsubscribe: null,

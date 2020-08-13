@@ -8,12 +8,23 @@
     </v-alert>
   </v-container>
   <v-container fluid v-else class="pa-0">
+    <v-list-item v-if="createdAt && firstDoc">
+      <v-btn
+        @click="moreBefore"
+        v-intersect="onIntersectBefore"
+        text
+        color="primary"
+        block
+        :loading="loadingBefore">
+        <v-icon>mdi-dots-horizontal</v-icon>더보기
+      </v-btn>
+    </v-list-item>
     <template v-if="board.type === '일반'">
       <list-compact v-if="$store.state.boardTypeList" :items="items" :boardId="boardId" :category="category"/>
       <list-normal v-else :items="items" :boardId="boardId" :category="category"/>
     </template>
     <list-gallery v-else :items="items" :boardId="boardId" :category="category"/>
-    <v-list-item v-if="lastDoc && items.length < board.count">
+    <v-list-item v-if="lastDoc">
       <v-btn
         @click="more"
         v-intersect="onIntersect"
@@ -27,7 +38,7 @@
   </v-container>
 </template>
 <script>
-import { last } from 'lodash'
+import { head, last } from 'lodash'
 import ListCompact from './components/list-compact'
 import ListNormal from './components/list-normal'
 import ListGallery from './components/list-gallery'
@@ -37,7 +48,7 @@ const LIMIT = 5
 
 export default {
   components: { ListCompact, ListNormal, ListGallery },
-  props: ['board', 'boardId', 'category', 'tag'],
+  props: ['board', 'boardId', 'category', 'tag', 'createdAt'],
   data () {
     return {
       items: [],
@@ -47,7 +58,10 @@ export default {
       order: 'createdAt',
       sort: 'desc',
       loading: false,
-      loaded: false
+      loaded: false,
+      firstDoc: null,
+      query: null,
+      loadingBefore: false
     }
   },
   computed: {
@@ -75,7 +89,11 @@ export default {
   },
   methods: {
     snapshotToItems (sn) {
-      this.lastDoc = last(sn.docs)
+      // if (sn.empty) {
+      //   this.firstDoc = null
+      //   this.lastDoc = null
+      //   return
+      // }
       sn.docs.forEach(doc => {
         const findItem = this.items.find(item => doc.id === item.id)
         const item = doc.data()
@@ -104,37 +122,54 @@ export default {
         }
       })
       this.items.sort((before, after) => {
-        if (after.important > before.important) return 1
-        else if (after.important < before.important) return -1
+        if (!this.createdAt) {
+          if (after.important > before.important) return 1
+          else if (after.important < before.important) return -1
+        }
         return Number(after.id) - Number(before.id)
       })
     },
     subscribe (arrow) {
       if (this.unsubscribe) this.unsubscribe()
       this.items = []
+      this.ref = this.$firebase.firestore()
+        .collection('boards').doc(this.boardId)
+        .collection('articles')
+
       if (!this.category) {
-        this.ref = this.$firebase.firestore()
-          .collection('boards').doc(this.boardId)
-          .collection('articles')
-          .orderBy('important', 'desc')
-          .orderBy(this.order, this.sort)
-          .limit(LIMIT)
+        if (!this.createdAt) {
+          this.query = this.ref
+            .orderBy('important', 'desc')
+            .orderBy(this.order, this.sort)
+        } else {
+          this.query = this.ref
+            // .orderBy('important', 'desc') // todo: more index need...
+            .where('createdAt', '<=', new Date(Number(this.createdAt)))
+            .orderBy(this.order, this.sort)
+        }
       } else {
-        this.ref = this.$firebase.firestore()
-          .collection('boards').doc(this.boardId)
-          .collection('articles')
-          .where('category', '==', this.category)
-          .orderBy('important', 'desc')
-          .orderBy(this.order, this.sort)
-          .limit(LIMIT)
+        if (!this.createdAt) {
+          this.query = this.ref
+            .where('category', '==', this.category)
+            .orderBy('important', 'desc')
+            .orderBy(this.order, this.sort)
+        } else {
+          this.query = this.ref
+            .where('category', '==', this.category)
+            // .orderBy('important', 'desc')
+            .where('createdAt', '<=', new Date(Number(this.createdAt)))
+            .orderBy(this.order, this.sort)
+        }
       }
       this.loaded = false
-      this.unsubscribe = this.ref.onSnapshot(sn => {
+      this.unsubscribe = this.query.limit(LIMIT).onSnapshot(sn => {
         this.loaded = true
         if (sn.empty) {
           this.items = []
           return
         }
+        this.firstDoc = head(sn.docs)
+        this.lastDoc = last(sn.docs)
         this.snapshotToItems(sn)
         setMeta({
           title: this.board.title + ' ' + this.getCategory + ' 목록',
@@ -144,18 +179,63 @@ export default {
       })
     },
     async more () {
+      if (!this.loaded) return
       if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
-      if (this.loading) return
+      // if (this.loading) return
       this.loading = true
       try {
-        const sn = await this.ref.startAfter(this.lastDoc).get()
-        this.snapshotToItems(sn)
+        const sn = await this.query.startAfter(this.lastDoc).limit(LIMIT).get()
+        this.lastDoc = last(sn.docs)
+        if (sn.docs.length < LIMIT) this.lastDoc = null
+        if (!sn.empty) this.snapshotToItems(sn)
       } finally {
         this.loading = false
       }
     },
     onIntersect (entries, observer, isIntersecting) {
       if (isIntersecting) this.more()
+    },
+    async moreBefore () {
+      if (this.loadingBefore) return
+      if (!this.firstDoc) throw Error('더이상 데이터가 없습니다')
+      this.loadingBefore = true
+      try {
+        let query
+        if (!this.category) {
+          if (!this.createdAt) {
+            query = this.ref
+              .orderBy('important', 'desc')
+              .orderBy(this.order, this.sort)
+          } else {
+            query = this.ref
+              // .orderBy('important', 'desc')
+              .where('createdAt', '>', new Date(Number(this.createdAt)))
+              .orderBy(this.order, this.sort)
+          }
+        } else {
+          if (!this.createdAt) {
+            query = this.ref
+              .where('category', '==', this.category)
+              .orderBy('important', 'desc')
+              .orderBy(this.order, this.sort)
+          } else {
+            query = this.ref
+              .where('category', '==', this.category)
+              // .orderBy('important', 'desc')
+              .where('createdAt', '>', new Date(Number(this.createdAt)))
+              .orderBy(this.order, this.sort)
+          }
+        }
+        const sn = await query.endBefore(this.firstDoc).limitToLast(LIMIT).get()
+        this.firstDoc = head(sn.docs)
+        if (sn.docs.length < LIMIT) this.firstDoc = null
+        if (!sn.empty) this.snapshotToItems(sn)
+      } finally {
+        this.loadingBefore = false
+      }
+    },
+    onIntersectBefore (entries, observer, isIntersecting) {
+      if (isIntersecting) this.moreBefore()
     }
   }
 }
