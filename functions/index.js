@@ -249,7 +249,11 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
     const beforeDoc = change.before.data()
     const doc = change.after.data()
     if (doc.objectID !== beforeDoc.objectID) return
-    // if (doc.category && beforeDoc.category !== doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+    if (doc.category && beforeDoc.category !== doc.category) {
+      // set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+      set[`categoryCount.${beforeDoc.category}`] = admin.firestore.FieldValue.increment(-1)
+      set[`categoryCount.${doc.category}`] = admin.firestore.FieldValue.increment(1)
+    }
     if (doc.tags.length && !isEqual(beforeDoc.tags, doc.tags)) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
     if (Object.keys(set).length) await db.collection('boards').doc(context.params.bid).update(set)
 
