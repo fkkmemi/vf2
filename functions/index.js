@@ -32,22 +32,46 @@ const initialize = async () => {
       'category',
       'tags',
       'displayName'
+    ],
+    indexLanguages: ['ko'],
+    queryLanguages: ['ko'],
+    ranking: [
+      'typo',
+      'geo',
+      'words',
+      'filters',
+      'proximity',
+      'attribute',
+      'exact',
+      'custom'
+    ],
+    customRanking: [
+      'desc(articleId)',
+      'asc(boardId)',
+      'asc(category)',
+      'asc(title)'
     ]
-  })
+  }).catch(e => console.error('algolia init err: ' + e.message))
+  console.log('initialized')
 }
 
+// initialize()
+
 exports.createUser = functions.region(region).auth.user().onCreate(async (user) => {
-  const { uid, email, displayName, photoURL } = user
+  const { uid, email, displayName, photoURL, providerData, emailVerified } = user
   const time = new Date()
   const u = {
     email,
-    displayName: displayName || '손님',
+    displayName,
     photoURL: photoURL || '/user.png',
     createdAt: time,
+    updatedAt: time,
     level: email === functions.config().admin.email ? 0 : 5,
     visitedAt: time,
-    visitCount: 0
+    visitCount: 0,
+    emailVerified
   }
+  if (providerData && providerData.length) u.providerId = providerData[0].providerId
   await db.collection('users').doc(uid).set(u)
   u.createdAt = time.getTime()
   await rdb.ref('users').child(uid).set(u)

@@ -18,7 +18,6 @@ const subscribe = (fu) => {
     if (doc.exists) {
       const user = doc.data()
       user.uid = fu.uid
-      user.emailVerified = fu.emailVerified
 
       const set = {}
       if (!user.displayName) {
@@ -31,10 +30,8 @@ const subscribe = (fu) => {
         user.displayName = displayName
         set.displayName = displayName
       }
-      if (!user.photoURL) {
-        const photoURL = fu.photoURL || '/user.png'
-        user.photoURL = photoURL
-        set.photoURL = photoURL
+      if (user.emailVerified !== fu.emailVerified) {
+        set.emailVerified = fu.emailVerified
       }
       if (Object.keys(set).length) ref.update(set)
       store.commit('setUser', user)

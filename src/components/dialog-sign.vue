@@ -164,6 +164,7 @@ export default {
       this.loading = true
       try {
         await this.$firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+        this.$emit('close')
       } finally {
         this.loading = false
       }
@@ -186,6 +187,7 @@ export default {
         const sn = await this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         await sn.user.sendEmailVerification()
         this.$toasted.global.notice(`가입이 완료되었습니다. ${sn.user.email}의 이메일을 확인해주세요`)
+        this.$emit('close')
       } finally {
         this.loading = false
       }
@@ -197,6 +199,7 @@ export default {
         await this.$firebase.auth().signInWithPopup(provider)
         // const sn = await this.$firebase.auth().signInWithPopup(provider)
         // this.$store.commit('setFireUser', sn.user)
+        this.$emit('close')
       } finally {
         this.loading = false
       }

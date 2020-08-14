@@ -1,7 +1,11 @@
 <template>
   <v-card outlined class="mb-4" :to="`/board/${item.boardId}/${item.articleId}`">
-    <v-card-subtitle class="text--primary body-1 text-truncate">
-      <display-title :item="item"/>
+    <v-card-subtitle class="text--primary body-1 text-truncate d-flex align-center">
+      <v-btn color="primary" depressed small :to="`/board/${item.boardId}`">
+        {{item.boardId}}
+        <v-icon right>mdi-menu-right</v-icon>
+      </v-btn>
+      <span class="ml-4"><display-title :item="item"/></span>
       <v-spacer/>
     </v-card-subtitle>
     <v-card-text>

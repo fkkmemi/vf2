@@ -92,3 +92,9 @@ public/logo.png 추가
 public/favicon.ico 추가
 
 없을 경우 resource 디렉토리에서 복사해서 넣어야함
+
+## fire storage init
+
+```bash
+$ gsutil cors set cors.json gs://your-projectId.appspot.com
+```

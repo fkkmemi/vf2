@@ -126,7 +126,7 @@ export default {
       category: '',
       tag: '',
       loaded: false,
-      types: ['일반', '갤러리', '페이지'],
+      types: ['일반', '갤러리'],
       beforeCategories: []
       // categoryCount: {}
     }
