@@ -10,10 +10,10 @@
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-card outlined :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
-        <v-sheet width="100" class="mr-4">
+        <v-sheet width="120" class="mr-4">
           <v-select
             :value="getCategory"
-            :items="board.categories"
+            :items="categories"
             @change="changeCategory"
             dense
             outlined
@@ -25,7 +25,6 @@
           <v-icon color="error" left v-if="newCheck(board.updatedAt, 'days', 1)">mdi-fire</v-icon>
           <span v-text="board.title" class="mr-2"></span>
         </template>
-        <v-chip color="info" small>{{board.count}}</v-chip>
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
         <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
@@ -99,20 +98,21 @@
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title>
-                게시물수
-              </v-list-item-title>
-              <v-list-item-subtitle class="font-italic">
-                {{board.count}}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>
                 등록된 종류
               </v-list-item-title>
               <v-list-item-subtitle class="white-space">
-                <v-chip color="primary" label small outlined v-for="item in board.categories" :key="item" class="mt-2 mr-2" v-text="item"></v-chip>
+                <v-chip
+                  color="primary"
+                  label
+                  small
+                  outlined
+                  v-for="item in board.categories"
+                  :key="item"
+                  class="mt-2 mr-2">
+                  <span class="caption mr-2">{{item}}</span>
+                  <span class="caption" v-if="item === '전체'"> ({{board.count}})</span>
+                  <span class="caption" v-else> ({{board.categoryCount[item]}})</span>
+                </v-chip>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -160,7 +160,8 @@ export default {
       loading: false,
       dialog: false,
       newCheck,
-      loaded: false
+      loaded: false,
+      categories: []
     }
   },
   watch: {
@@ -195,6 +196,11 @@ export default {
         item.createdAt = item.createdAt.toDate()
         item.updatedAt = item.updatedAt.toDate()
         item.categories.unshift('전체')
+        this.categories = item.categories.map(v => {
+          return { value: v, text: `${v} (${item.categoryCount[v]})` }
+        })
+        this.categories.unshift({ value: '전체', text: `전체 (${item.count})` })
+        // .item.categories.unshift('전체')
         this.board = item
       }, console.error)
     },

@@ -161,7 +161,10 @@ exports.onCreateBoardArticle = functions.region(region).firestore
     const set = {
       count: admin.firestore.FieldValue.increment(1)
     }
-    if (doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+
+    set[`categoryCount.${doc.category}`] = admin.firestore.FieldValue.increment(1)
+
+    // if (doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
     if (doc.tags.length) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
     try {
       await db.collection('boards').doc(context.params.bid).update(set)
@@ -222,7 +225,7 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
     const beforeDoc = change.before.data()
     const doc = change.after.data()
     if (doc.objectID !== beforeDoc.objectID) return
-    if (doc.category && beforeDoc.category !== doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
+    // if (doc.category && beforeDoc.category !== doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
     if (doc.tags.length && !isEqual(beforeDoc.tags, doc.tags)) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
     if (Object.keys(set).length) await db.collection('boards').doc(context.params.bid).update(set)
 
@@ -293,8 +296,13 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
 exports.onDeleteBoardArticle = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}')
   .onDelete(async (snap, context) => {
+    const doc = snap.data()
+    const set = {
+      count: admin.firestore.FieldValue.increment(-1)
+    }
+    set[`categoryCount.${doc.category}`] = admin.firestore.FieldValue.increment(-1)
     await db.collection('boards').doc(context.params.bid)
-      .update({ count: admin.firestore.FieldValue.increment(-1) })
+      .update(set)
       .catch(e => console.error('boards update err: ' + e.message))
 
     try {
@@ -310,7 +318,6 @@ exports.onDeleteBoardArticle = functions.region(region).firestore
     }
 
     // remove storage
-    const doc = snap.data()
     const ps = []
     ps.push('boards')
     ps.push(context.params.bid)

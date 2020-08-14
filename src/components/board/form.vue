@@ -45,8 +45,10 @@
                 v-for="(item, i) in form.categories"
                 :key="i"
                 class="mr-2 mb-2">
-                {{item}} <v-icon small right @click="removeCategory(item, i)">mdi-close</v-icon>
-                </v-chip>
+                <span class="caption mr-2">{{item}}</span>
+                <span class="caption"> {{form.categoryCount[item]}}</span>
+                <v-icon small right @click="removeCategory(item, i)">mdi-close</v-icon>
+              </v-chip>
             </v-card-text>
             <v-card-actions>
               <div width="100">
@@ -115,7 +117,8 @@ export default {
         description: '',
         categories: [],
         tags: [],
-        type: ''
+        type: '',
+        categoryCount: {}
       },
       exists: false,
       loading: false,
@@ -123,7 +126,9 @@ export default {
       category: '',
       tag: '',
       loaded: false,
-      types: ['일반', '갤러리', '페이지']
+      types: ['일반', '갤러리', '페이지'],
+      beforeCategories: []
+      // categoryCount: {}
     }
   },
   computed: {
@@ -151,56 +156,66 @@ export default {
       const doc = await this.ref.get()
       this.loaded = true
       this.exists = doc.exists
-      if (this.exists) {
-        const item = doc.data()
-        this.form.category = item.category
-        this.form.title = item.title
-        this.form.description = item.description
-        this.form.categories = item.categories
-        this.form.tags = item.tags
-        this.form.type = item.type
-      }
+      if (!this.exists) return
+      const item = doc.data()
+      this.form.category = item.category
+      this.form.title = item.title
+      this.form.description = item.description
+      this.form.categories = item.categories
+      this.form.tags = item.tags
+      this.form.type = item.type
+      this.form.categoryCount = item.categoryCount || {}
+      this.beforeCategories = item.categories.slice(0)
     },
     async save () {
       if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
       if (!this.form.category || !this.form.title) throw Error('종류 제목은 필수 항목입니다')
 
       const r = await this.$swal.fire({
-        title: '정말 추가하시겠습니까?',
-        text: '추가 후 게시판 형태를 변경할 수 없습니다.',
+        title: '정말 추가/변경 하시겠습니까?',
+        text: '처음 추가 후 게시판 형태를 변경할 수 없습니다.',
         icon: 'warning',
         // confirmButtonText: 'Cool',
         showCancelButton: true
       })
       if (!r.value) return
-      const form = {
+      const createdAt = new Date()
+      const doc = {
         category: this.form.category,
         title: this.form.title,
         description: this.form.description,
         categories: this.form.categories,
         tags: this.form.tags,
         type: this.form.type,
-        updatedAt: new Date()
+        updatedAt: createdAt,
+        categoryCount: this.form.categoryCount
       }
       this.loading = true
       try {
         if (!this.exists) {
-          form.createdAt = new Date()
-          form.count = 0
-          form.uid = this.$store.state.fireUser.uid
-          form.user = {
+          doc.createdAt = createdAt
+          doc.count = 0
+          doc.uid = this.$store.state.fireUser.uid
+          doc.user = {
             email: this.$store.state.user.email,
             photoURL: this.$store.state.user.photoURL,
             displayName: this.$store.state.user.displayName
           }
-          form.readCount = 0
-          form.commentCount = 0
-          form.likeCount = 0
-          // form.categories = ['일반']
-          // form.tags = ['vue', 'firebase']
-          await this.ref.set(form)
+          doc.readCount = 0
+          doc.commentCount = 0
+          doc.likeCount = 0
+          await this.ref.set(doc)
         } else {
-          await this.ref.update(form)
+          this.beforeCategories.forEach(before => {
+            const c = this.form.categories.find(after => before === after)
+            if (!c) doc[`categoryCount.${before}`] = this.$firebase.firestore.FieldValue.delete()
+          })
+          this.form.categories.forEach(after => {
+            const c = this.beforeCategories.find(before => before === after)
+            if (!c) doc[`categoryCount.${after}`] = 0
+          })
+
+          await this.ref.update(doc)
         }
         this.$router.push('/board/' + this.boardId)
       } finally {
@@ -213,12 +228,14 @@ export default {
       const exists = this.form.categories.includes(this.category)
       if (exists) throw Error('사용되고 있는 종류입니다')
       this.form.categories.push(this.category)
+      this.form.categoryCount[this.category] = 0
       this.category = ''
     },
     async removeCategory (item, i) {
       const sn = await this.ref.collection('articles').where('category', '==', item).limit(1).get()
       if (!sn.empty) throw Error('사용되고 있는 종류입니다')
       this.form.categories.splice(i, 1)
+      delete this.form.categoryCount[item]
     },
     saveTag () {
       if (this.tag.length > 20) throw Error('문자 개수를 초과했습니다')

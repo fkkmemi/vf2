@@ -32,11 +32,6 @@
           </v-avatar>
         </v-btn>
       </v-badge>
-      <!-- <v-btn icon v-on="on">
-        <v-avatar size="32">
-          <v-img :src="user.photoURL"></v-img>
-        </v-avatar>
-      </v-btn> -->
     </template>
     <v-card>
       <v-list>

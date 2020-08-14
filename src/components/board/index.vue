@@ -109,21 +109,11 @@
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    게시물수
-                  </v-list-item-title>
-                  <v-list-item-subtitle class="font-italic">
-                    {{item.count}}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
               <v-divider/>
               <v-list-item
                 :to="`${$route.path}/${item.id}`">
                 <v-list-item-content>
-                  전체
+                  전체 ({{item.count}})
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-btn icon>
@@ -137,7 +127,7 @@
                   :key="category"
                   :to="`${$route.path}/${item.id}?category=${category}`">
                   <v-list-item-content>
-                    {{category}}
+                    {{category}} ({{item.categoryCount[category]}})
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-btn icon>
