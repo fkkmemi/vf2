@@ -7,7 +7,7 @@
       <v-spacer/>
       <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
       <template v-if="user">
-        <v-btn icon @click="articleWrite" :disabled="user.level > 4"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn icon @click="articleWrite" :disabled="!user"><v-icon>mdi-plus</v-icon></v-btn>
       </template>
       </v-toolbar>
       <v-divider/>

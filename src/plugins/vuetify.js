@@ -12,11 +12,28 @@ Vue.use(Vuetify, {
     VIcon
   }
 })
+const theme = {
+  themes: {
+    light: {
+      primary: '#344059',
+      secondary: '#BFBFBF', // #FFCDD2
+      accent: '#2C4027',
+      info: '#4E7DA6'
+      // success: '#2C4027'
+    }
+    // dark: {
+    //   primary: colors.brown.darken1, // #E53935
+    //   secondary: colors.deepPurple.lighten4, // #FFCDD2
+    //   accent: colors.indigo.base // #3F51B5
+    // }
+  }
+}
 const VuetifyObj = new Vuetify({
   lang: {
     locales: { en, ko },
     current: 'ko'
-  }
+  },
+  theme
 })
 Vue.use(VuetifyToast, {
   x: 'right', // default

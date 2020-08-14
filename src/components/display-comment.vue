@@ -124,7 +124,7 @@ export default {
     async save () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
       if (!this.comment) throw Error('내용을 작성해야 합니다')
-      if (this.comment.length > 10) throw Error('문자 허용치를 넘었습니다')
+      if (this.comment.length > 300) throw Error('문자 허용치를 넘었습니다')
       const doc = {
         createdAt: new Date(),
         updatedAt: new Date(),
