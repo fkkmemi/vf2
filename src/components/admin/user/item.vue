@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-4">
+  <v-card :class="isXs ? '' : 'ma-4'" :tile="isXs" :flat="isXs">
     <v-list-item>
       <v-list-item-avatar>
         <v-img :src="item.photoURL"/>
@@ -23,9 +23,12 @@
           {{item.email}}
         </v-list-item-subtitle>
         <v-list-item-subtitle class="caption">
-          방문일: <display-time :time="item.visitedAt"/> |
           수정일: <display-time :time="item.updatedAt"/> |
           가입일: <display-time :time="item.createdAt"/>
+        </v-list-item-subtitle>
+        <v-list-item-subtitle class="caption">
+          방문일: <display-time :time="item.visitedAt"/> |
+          방문횟수: {{item.visitCount}}
         </v-list-item-subtitle>
         <!-- <v-list-item-subtitle class="caption">
           수정일: <display-time :time="item.updatedAt"/>
@@ -81,6 +84,9 @@ export default {
       level: this.item.level,
       dialog: false
     }
+  },
+  computed: {
+    isXs () { return this.$vuetify.breakpoint.xs }
   },
   methods: {
     async save () {

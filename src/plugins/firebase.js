@@ -12,8 +12,12 @@ firebase.auth().languageCode = 'ko'
 
 let unsubscribe = null
 
-const subscribe = (fu) => {
+const subscribe = async (fu) => {
   const ref = firebase.firestore().collection('users').doc(fu.uid)
+  await ref.update({
+    visitedAt: new Date(),
+    visitCount: firebase.firestore.FieldValue.increment(1)
+  }).catch(e => console.error('visit update err: ' + e.message))
   unsubscribe = ref.onSnapshot(doc => {
     if (doc.exists) {
       const user = doc.data()

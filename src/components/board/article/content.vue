@@ -117,6 +117,7 @@
   </v-container>
 </template>
 <script>
+import 'highlight.js/styles/github.css'
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
@@ -126,6 +127,17 @@ import DisplayCount from '@/components/display-count'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 import setMeta from '@/util/setMeta'
 import getImageUrlFromMd from '@/util/getImageUrlFromMd'
+import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'
+import hljs from 'highlight.js/lib/highlight'
+import javascript from 'highlight.js/lib/languages/javascript'
+import bash from 'highlight.js/lib/languages/bash'
+import dart from 'highlight.js/lib/languages/dart'
+import vue from 'vue-highlight.js/lib/languages/vue'
+
+hljs.registerLanguage('javascript', javascript)
+hljs.registerLanguage('bash', bash)
+hljs.registerLanguage('dart', dart)
+hljs.registerLanguage('vue', vue)
 
 export default {
   components: { DisplayTime, DisplayComment, DisplayUser, DisplayTitle, DisplayCount },
@@ -135,7 +147,8 @@ export default {
       tuiOptions: {
         linkAttribute: {
           target: '_blank'
-        }
+        },
+        plugins: [[codeSyntaxHighlight, { hljs }]]
       },
       content: '',
       ref: null,
