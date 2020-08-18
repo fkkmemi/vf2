@@ -47,6 +47,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "important",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "category",
           "order": "ASCENDING"
         },

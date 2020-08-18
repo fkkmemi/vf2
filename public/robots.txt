@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+
+Allow: /
+Disallow: /search
+Disallow: /board
+Disallow: /board/*
+Disallow: /admin
+Disallow: /admin/user
