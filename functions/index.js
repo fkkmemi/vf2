@@ -527,6 +527,22 @@ exports.sitemap = functions.https.onRequest(async (req, res) => {
   )
 })
 
+exports.sitemapBoard = functions.https.onRequest(async (req, res) => {
+  const path = require('path')
+  const id = path.basename(req.path, path.extname(req.path))
+
+  // const xml = await writeSitemap(id)
+  try {
+    const xml = await admin.storage().bucket().file('sitemaps/' + id + '.xml').download()
+      .catch(e => console.error('storage xml upload err: ' + e.message))
+    res.set('Content-Type', 'text/xml')
+    res.send(xml.toString())
+  } catch (e) {
+    console.error('storage xml download err: ' + e.message)
+    res.send('storage xml download err: ' + e.message)
+  }
+})
+
 const writeSitemap = async (id) => {
   const builder = require('xmlbuilder')
   const xml = builder
@@ -553,11 +569,44 @@ const writeSitemap = async (id) => {
   })
 }
 
-exports.sitemapBoard = functions.https.onRequest(async (req, res) => {
-  const path = require('path')
-  const id = path.basename(req.path, path.extname(req.path))
+const setSitemap = async () => {
+  const boards = await db.collection('boards').get()
+    .catch(e => console.error('boards err:' + e.message))
+  if (boards.empty) return null
 
-  const xml = await writeSitemap(id)
-  res.set('Content-Type', 'text/xml')
-  res.send(xml.toString())
-})
+  const sitemapLogs = await db.collection('sitemapLogs').orderBy('createdAt', 'desc').limit(1).get()
+    .catch(e => console.error('sitemapLogs get err:' + e.message))
+  let sitemap = null
+  if (!sitemapLogs.empty) sitemap = sitemapLogs.docs[0].data()
+
+  const createdAt = new Date()
+  const set = { createdAt }
+
+  for (const doc of boards.docs) {
+    const board = doc.data()
+    set[doc.id] = {}
+    set[doc.id].count = board.count
+    if (sitemap && sitemap[doc.id] && sitemap[doc.id].count === board.count) continue
+    const xml = await writeSitemap(doc.id)
+      .catch(e => console.error('writeSitemap err: ' + e.message))
+    const bpath = 'sitemaps/' + doc.id + '.xml'
+    await admin.storage().bucket().file(bpath).save(xml)
+      .catch(e => console.error('storage xml upload err: ' + e.message))
+    console.log('storage updated ' + bpath)
+  }
+  await db.collection('sitemapLogs').doc(createdAt.getTime().toString()).set(set)
+    .catch(e => console.error('sitemapLogs add err:' + e.message))
+
+  console.log('setSitemap done')
+  return null
+}
+// setSitemap()
+
+exports.sitemapScheduled = functions.runWith({ timeoutSeconds: 300, memory: '512MB' }).pubsub.schedule('0 4 * * *')
+  .timeZone('Asia/Seoul')
+  .onRun(async (context) => {
+    // every 4:00 run
+    console.log('sitemapScheduled ' + new Date().toLocaleString())
+    await setSitemap()
+    return null
+  })
