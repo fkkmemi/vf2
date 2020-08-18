@@ -34,6 +34,12 @@ $ firebase functions:config:set admin.email=xx@abc.com admin.db_url=https://xxx-
 $ firebase functions:config:set algolia.app_id=yourAppId algolia.api_key=yourAdminKey algolia.search_key=yourSearchKey
 ```
 
+## sitemap
+
+```bash
+$ firebase functions:config:set admin.domain=xxx.com
+```
+
 ### serve
 
 ```bash

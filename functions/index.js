@@ -481,3 +481,47 @@ exports.seo = functions.https.onRequest(async (req, res) => {
   ogImageNode.setAttribute('content', image)
   res.status(200).send(root.toString())
 })
+
+exports.sitemap = functions.https.onRequest(async (req, res) => {
+  const builder = require('xmlbuilder')
+
+  // var xml = builder.create('root')
+  //   .ele('xmlbuilder')
+  //   .ele('repo', { type: 'git' }, 'git://github.com/oozcitak/xmlbuilder-js.git')
+  //   .end({ pretty: true })
+
+  // console.log(xml)
+  // return res.send(xml)
+
+  const xml = builder
+    .create('sitemapindex', { encoding: 'UTF-8' })
+    .att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
+
+  const sn = await db.collection('boards').get()
+  if (sn.empty) {
+    return res.send(
+      xml.end({
+        pretty: true,
+        indent: '  ',
+        newline: '\n',
+        allowEmpty: false
+      })
+    )
+  }
+  const url = 'https://' + functions.config().admin.domain
+
+  sn.docs.forEach(doc => {
+    const sm = xml.ele('sitemap')
+    sm.ele('loc', url + '/sitemap/' + doc.id + '.xml')
+    sm.ele('lastmod', doc.data().updatedAt.toDate().toISOString())
+  })
+
+  return res.send(
+    xml.end({
+      pretty: true,
+      indent: '  ',
+      newline: '\n',
+      allowEmpty: false
+    })
+  )
+})

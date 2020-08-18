@@ -18,6 +18,10 @@
         "source": "/board/*/*",
         "function" : "seo"
       },
+      { 
+        "source": "/sitemap.xml",
+        "function" : "sitemap"
+      },
       {
         "source": "**",
         "destination": "/index.html"
