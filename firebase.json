@@ -22,6 +22,10 @@
         "source": "/sitemap.xml",
         "function" : "sitemap"
       },
+      { 
+        "source": "/sitemap/*",
+        "function" : "sitemapBoard"
+      },
       {
         "source": "**",
         "destination": "/index.html"
