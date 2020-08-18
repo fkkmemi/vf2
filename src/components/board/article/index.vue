@@ -122,10 +122,8 @@ export default {
         }
       })
       this.items.sort((before, after) => {
-        if (!this.createdAt) {
-          if (after.important > before.important) return 1
-          else if (after.important < before.important) return -1
-        }
+        if (after.important > before.important) return 1
+        else if (after.important < before.important) return -1
         return Number(after.id) - Number(before.id)
       })
     },
@@ -135,15 +133,18 @@ export default {
       this.ref = this.$firebase.firestore()
         .collection('boards').doc(this.boardId)
         .collection('articles')
+      this.ref.where('important', '>', 0).orderBy('important', 'desc').get()
+        .then(sn => this.snapshotToItems(sn))
+        .catch(console.error)
 
       if (!this.category) {
         if (!this.createdAt) {
           this.query = this.ref
-            .orderBy('important', 'desc')
+            .where('important', '==', 0)
             .orderBy(this.order, this.sort)
         } else {
           this.query = this.ref
-            // .orderBy('important', 'desc') // todo: more index need...
+            .where('important', '==', 0)
             .where('createdAt', '<=', new Date(Number(this.createdAt)))
             .orderBy(this.order, this.sort)
         }
@@ -151,12 +152,12 @@ export default {
         if (!this.createdAt) {
           this.query = this.ref
             .where('category', '==', this.category)
-            .orderBy('important', 'desc')
+            .where('important', '==', 0)
             .orderBy(this.order, this.sort)
         } else {
           this.query = this.ref
             .where('category', '==', this.category)
-            // .orderBy('important', 'desc')
+            .where('important', '==', 0)
             .where('createdAt', '<=', new Date(Number(this.createdAt)))
             .orderBy(this.order, this.sort)
         }
@@ -176,7 +177,7 @@ export default {
           description: this.board.description.substr(0, 80),
           image: '/logo.png'
         })
-      })
+      }, console.error)
     },
     async more () {
       if (!this.loaded) return
@@ -204,11 +205,11 @@ export default {
         if (!this.category) {
           if (!this.createdAt) {
             query = this.ref
-              .orderBy('important', 'desc')
+              .where('important', '==', 0)
               .orderBy(this.order, this.sort)
           } else {
             query = this.ref
-              // .orderBy('important', 'desc')
+              .where('important', '==', 0)
               .where('createdAt', '>', new Date(Number(this.createdAt)))
               .orderBy(this.order, this.sort)
           }
@@ -216,12 +217,12 @@ export default {
           if (!this.createdAt) {
             query = this.ref
               .where('category', '==', this.category)
-              .orderBy('important', 'desc')
+              .where('important', '==', 0)
               .orderBy(this.order, this.sort)
           } else {
             query = this.ref
               .where('category', '==', this.category)
-              // .orderBy('important', 'desc')
+              .where('important', '==', 0)
               .where('createdAt', '>', new Date(Number(this.createdAt)))
               .orderBy(this.order, this.sort)
           }

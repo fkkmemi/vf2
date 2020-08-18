@@ -9,10 +9,10 @@
     </v-app-bar>
     <v-navigation-drawer
       app
-      v-model="drawer"
-      :clipped="$vuetify.breakpoint.lgAndUp"
-      :width="$store.state.editable ? 380 : null"
-      >
+      fixed
+      disable-resize-watcher
+      :width="$store.state.editable ? 380 : 256"
+      v-model="drawer">
       <!-- :width="$store.state.editable ? 380 : null" -->
       <site-menu :items="site.menu" @close="drawer=false"></site-menu>
     </v-navigation-drawer>

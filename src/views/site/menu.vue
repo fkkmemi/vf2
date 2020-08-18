@@ -13,13 +13,13 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action v-if="user && user.level === 0">
-        <v-btn @click="$store.commit('setEdit', !$store.state.editable)" icon>
-          <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'"></v-icon>
+        <v-btn @click="$store.commit('setEdit', !$store.state.editable)" icon small>
+          <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'" small></v-icon>
         </v-btn>
       </v-list-item-action>
       <v-list-item-action>
-        <v-btn @click="$emit('close')" icon>
-          <v-icon>mdi-close</v-icon>
+        <v-btn @click="$emit('close')" icon small>
+          <v-icon small>mdi-close</v-icon>
         </v-btn>
       </v-list-item-action>
     </v-list-item>
@@ -41,10 +41,10 @@
               <v-icon color="error" right v-if="newCheck(new Date(item.createdAt), 'days', 1)">mdi-fire</v-icon>
             </v-list-item-title>
             <v-list-item-subtitle v-if="$store.state.editable">
-              <v-btn icon @click="openDialogItem(i)"><v-icon>mdi-pencil</v-icon></v-btn>
-              <v-btn icon @click="moveItem(items, i, -1)" v-if="i > 0"><v-icon>mdi-chevron-double-up</v-icon></v-btn>
-              <v-btn icon @click="moveItem(items, i, 1)" v-if="i < items.length - 1"><v-icon>mdi-chevron-double-down</v-icon></v-btn>
-              <v-btn icon @click="removeItem(items, i)"><v-icon>mdi-delete</v-icon></v-btn>
+              <v-btn icon @click="openDialogItem(i)" small><v-icon small>mdi-pencil</v-icon></v-btn>
+              <v-btn icon @click="moveItem(items, i, -1)" v-if="i > 0" small> <v-icon small>mdi-chevron-double-up</v-icon></v-btn>
+              <v-btn icon @click="moveItem(items, i, 1)" v-if="i < items.length - 1" small><v-icon small>mdi-chevron-double-down</v-icon></v-btn>
+              <v-btn icon @click="removeItem(items, i)" small><v-icon small>mdi-delete</v-icon></v-btn>
             </v-list-item-subtitle>
           </v-list-item-content>
         </template>
@@ -62,10 +62,10 @@
               <v-icon color="error" right v-if="newCheck(new Date(subItem.createdAt), 'days', 1)">mdi-fire</v-icon>
             </v-list-item-title>
             <v-list-item-subtitle v-if="$store.state.editable">
-              <v-btn icon @click="openDialogSubItem(i, j)"><v-icon>mdi-pencil</v-icon></v-btn>
-              <v-btn icon @click="moveItem(item.subItems, j, -1)" v-if="j > 0"><v-icon>mdi-chevron-double-up</v-icon></v-btn>
-              <v-btn icon @click="moveItem(item.subItems, j, 1)" v-if="j < item.subItems.length - 1"><v-icon>mdi-chevron-double-down</v-icon></v-btn>
-              <v-btn icon @click="removeItem(item.subItems, j)"><v-icon>mdi-delete</v-icon></v-btn>
+              <v-btn icon @click="openDialogSubItem(i, j)" small><v-icon small>mdi-pencil</v-icon></v-btn>
+              <v-btn icon @click="moveItem(item.subItems, j, -1)" v-if="j > 0" small><v-icon small>mdi-chevron-double-up</v-icon></v-btn>
+              <v-btn icon @click="moveItem(item.subItems, j, 1)" v-if="j < item.subItems.length - 1" small><v-icon small>mdi-chevron-double-down</v-icon></v-btn>
+              <v-btn icon @click="removeItem(item.subItems, j)" small><v-icon small>mdi-delete</v-icon></v-btn>
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action v-if="$store.state.editable">
@@ -227,7 +227,6 @@ export default {
     },
     openDialogItem (index) {
       this.selectedItemIndex = index
-      this.formItem.createdAt = new Date().getTime()
       if (index < 0) {
         this.formItem.icon = 'mdi-crosshairs-question'
         this.formItem.title = ''
@@ -240,6 +239,7 @@ export default {
       this.dialogItem = true
     },
     async saveItem () {
+      this.formItem.createdAt = new Date().getTime()
       if (this.selectedItemIndex < 0) this.items.push(this.formItem)
       else {
         this.items[this.selectedItemIndex].icon = this.formItem.icon
@@ -252,7 +252,6 @@ export default {
     openDialogSubItem (index, subIndex) {
       this.selectedItemIndex = index
       this.selectedSubItemIndex = subIndex
-      this.formSubItem.createdAt = new Date().getTime()
       if (subIndex < 0) {
         this.formSubItem.title = ''
         this.formSubItem.to = ''
@@ -265,6 +264,7 @@ export default {
       this.dialogSubItem = true
     },
     async saveSubItem () {
+      this.formSubItem.createdAt = new Date().getTime()
       if (this.selectedSubItemIndex < 0) {
         if (!this.items[this.selectedItemIndex].subItems) this.items[this.selectedItemIndex].subItems = []
         this.items[this.selectedItemIndex].subItems.push({
