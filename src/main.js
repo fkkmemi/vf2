@@ -10,6 +10,7 @@ import './plugins/toast'
 import './plugins/swal'
 import './plugins/search'
 import './error'
+import './registerServiceWorker'
 
 Vue.config.productionTip = false
 

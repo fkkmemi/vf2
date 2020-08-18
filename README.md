@@ -98,3 +98,13 @@ public/favicon.ico 추가
 ```bash
 $ gsutil cors set cors.json gs://your-projectId.appspot.com
 ```
+
+## pwa icon move
+
+```bash
+$ cd resource
+$ vue-asset-generate -a logo.png -o img
+```
+
+- favicon.ico, manifest.json -> public/
+- img/ -> public img/icons

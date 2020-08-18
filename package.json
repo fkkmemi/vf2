@@ -1,8 +1,8 @@
 {
   "name": "vf2",
-  "description": "Vue&Firebase 2",
   "version": "0.1.0",
   "private": true,
+  "description": "Vue&Firebase 2",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -26,6 +26,7 @@
     "core-js": "^3.6.4",
     "firebase": "^7.14.2",
     "moment": "^2.27.0",
+    "register-service-worker": "^1.7.1",
     "sweetalert2": "^9.17.1",
     "vue": "^2.6.11",
     "vue-highlight.js": "^3.1.0",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/cli-plugin-pwa": "~4.5.0",
     "@vue/cli-plugin-router": "~4.3.0",
     "@vue/cli-plugin-vuex": "~4.3.0",
     "@vue/cli-service": "~4.3.0",
