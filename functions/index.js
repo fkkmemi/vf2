@@ -495,7 +495,7 @@ exports.sitemap = functions.https.onRequest(async (req, res) => {
 
   const xml = builder
     .create('sitemapindex', { encoding: 'UTF-8' })
-    .att('xmlns', 'https://www.sitemaps.org/schemas/sitemap/0.9')
+    .att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
   res.set('Content-Type', 'text/xml')
 
   const sn = await db.collection('boards').get()
@@ -547,11 +547,11 @@ const writeSitemap = async (id) => {
   const builder = require('xmlbuilder')
   const xml = builder
     .create('urlset', { encoding: 'UTF-8' })
-    .att('xmlns', 'https://www.sitemaps.org/schemas/sitemap/0.9')
-    .att('xmlns:news', 'https://www.google.com/schemas/sitemap-news/0.9')
-    .att('xmlns:xhtml', 'https://www.w3.org/1999/xhtml')
-    .att('xmlns:image', 'https://www.google.com/schemas/sitemap-image/1.1')
-    .att('xmlns:video', 'https://www.google.com/schemas/sitemap-video/1.1')
+    .att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
+    .att('xmlns:news', 'http://www.google.com/schemas/sitemap-news/0.9')
+    .att('xmlns:xhtml', 'http://www.w3.org/1999/xhtml')
+    .att('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1')
+    .att('xmlns:video', 'http://www.google.com/schemas/sitemap-video/1.1')
 
   const sn = await db.collection('boards').doc(id).collection('articles').get()
   if (sn.empty) return xml

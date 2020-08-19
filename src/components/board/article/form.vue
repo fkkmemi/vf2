@@ -13,13 +13,15 @@
       :boardId="boardId"
       :articleId="articleId"
       :action="action"
-      :board="board" />
+      :board="board"
+      :category="category" />
     <form-gallery
       v-else
       :boardId="boardId"
       :articleId="articleId"
       :action="action"
-      :board="board" />
+      :board="board"
+      :category="category"  />
   </v-container>
 </template>
 <script>
@@ -29,7 +31,7 @@ import setMeta from '@/util/setMeta'
 
 export default {
   components: { FormNormal, FormGallery },
-  props: ['boardId', 'articleId', 'action'],
+  props: ['boardId', 'articleId', 'action', 'category'],
   data () {
     return {
       loading: false,

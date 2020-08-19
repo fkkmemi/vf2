@@ -3,9 +3,11 @@
     <v-app-bar app color="primary" dark :clipped-left="$vuetify.breakpoint.lgAndUp">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <site-title :title="site.title"></site-title>
+      <!-- <v-btn @click="test">test</v-btn> -->
       <v-spacer/>
       <site-search/>
       <site-sign></site-sign>
+      <!-- <v-btn icon><v-icon>mdi-certificate</v-icon></v-btn> -->
     </v-app-bar>
     <v-navigation-drawer
       app
@@ -81,6 +83,15 @@ export default {
         console.log(e.message)
       })
     }
+    // async test () {
+    //   await this.$firebase.database().ref()
+    //     .child('users').child('alTVPFgdQqNrxnQxGtAgAH8nXgU2').update({
+    //       updatedAt: new Date().getTime(),
+    //       settings: {
+    //         view: 'compact'
+    //       }
+    //     })
+    // }
   }
 }
 </script>

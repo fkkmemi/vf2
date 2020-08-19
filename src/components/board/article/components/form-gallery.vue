@@ -5,7 +5,7 @@
         <v-toolbar-title>겔러리 게시물 작성</v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="save" :disabled="!user"><v-icon>mdi-content-save</v-icon></v-btn>
-        <v-btn icon @click="$router.push('/board/' + boardId)"><v-icon>mdi-close</v-icon></v-btn>
+        <v-btn icon @click="back"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-divider/>
       <v-card-text>
@@ -92,11 +92,11 @@ import setMdFromImageUrl from '@/util/setMdFromImageUrl'
 import getImageUrlFromMd from '@/util/getImageUrlFromMd'
 
 export default {
-  props: ['boardId', 'articleId', 'action', 'board'],
+  props: ['boardId', 'articleId', 'action', 'board', 'category'],
   data () {
     return {
       form: {
-        category: '',
+        category: this.category,
         tags: [],
         title: '',
         content: '',
@@ -164,6 +164,7 @@ export default {
       if (this.form.images.length && (this.form.content !== this.form.images[0].url)) { this.form.images = [] }
       const md = setMdFromImageUrl(this.form.content)
       try {
+        const createdAt = new Date(Number(this.articleId))
         const doc = {
           title: this.form.title,
           category: this.form.category,
@@ -177,7 +178,7 @@ export default {
           const fn = this.articleId + '-' + this.fireUser.uid + '.md'
           const sn = await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           doc.url = await sn.ref.getDownloadURL()
-          doc.createdAt = new Date()
+          doc.createdAt = createdAt
           doc.commentCount = 0
           doc.readCount = 0
           doc.uid = this.$store.state.fireUser.uid
@@ -192,6 +193,7 @@ export default {
           this.exists = true
           this.$router.push('/board/' + this.boardId)
         } else {
+          if (this.article.createdAt.toDate().getTime() !== createdAt.getTime()) doc.createdAt = createdAt
           const fn = this.articleId + '-' + this.article.uid + '.md'
           await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           await this.ref.update(doc)
@@ -236,6 +238,11 @@ export default {
       this.form.images[0] = image
       this.form.content = image.url
       return image
+    },
+    back () {
+      const next = { path: '/board/' + this.boardId }
+      if (this.category) next.query = { category: this.category }
+      this.$router.push(next)
     }
   }
 }

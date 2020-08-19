@@ -20,18 +20,18 @@
   </v-dialog>
   <v-menu offset-y v-else :close-on-content-click="false">
     <template v-slot:activator="{ on }">
-      <v-badge
+      <!-- <v-badge
         overlap
         dot
         color="error"
         :value="!user.emailVerified"
-      >
+      > -->
         <v-btn icon v-on="on">
           <v-avatar size="32">
             <v-img :src="user.photoURL"></v-img>
           </v-avatar>
         </v-btn>
-      </v-badge>
+      <!-- </v-badge> -->
     </template>
     <v-card>
       <v-list>

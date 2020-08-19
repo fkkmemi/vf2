@@ -208,7 +208,12 @@ export default {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
     },
     async articleWrite () {
-      this.$router.push({ path: this.$route.path + '/' + new Date().getTime(), query: { action: 'write' } })
+      const to = {
+        path: this.$route.path + '/' + new Date().getTime(),
+        query: { action: 'write' }
+      }
+      if (this.category) to.query.category = this.category
+      this.$router.push(to)
     },
     changeCategory (item) {
       if (item === '전체') this.$router.push(this.$route.path)

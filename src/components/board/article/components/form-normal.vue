@@ -5,7 +5,7 @@
         <v-toolbar-title>게시물 작성</v-toolbar-title>
         <v-spacer/>
         <v-btn icon @click="save" :disabled="!user"><v-icon>mdi-content-save</v-icon></v-btn>
-        <v-btn icon @click="$router.push('/board/' + boardId)"><v-icon>mdi-close</v-icon></v-btn>
+        <v-btn icon @click="back"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-divider/>
       <v-card-text>
@@ -79,11 +79,11 @@ import getSummary from '@/util/getSummary'
 import imageCompress from '@/util/imageCompress'
 
 export default {
-  props: ['boardId', 'articleId', 'action', 'board'],
+  props: ['boardId', 'articleId', 'action', 'board', 'category'],
   data () {
     return {
       form: {
-        category: '',
+        category: this.category,
         tags: [],
         title: '',
         content: '',
@@ -156,7 +156,7 @@ export default {
           category: this.form.category,
           tags: this.form.tags,
           images: this.findImagesFromDoc(md, this.form.images), // this.form.images,
-          updatedAt: createdAt,
+          updatedAt: new Date(),
           summary: getSummary(md, 300, 'data:image'),
           important: this.form.important
         }
@@ -179,6 +179,7 @@ export default {
           this.exists = true
           this.$router.push('/board/' + this.boardId)
         } else {
+          if (this.article.createdAt.toDate().getTime() !== createdAt.getTime()) doc.createdAt = createdAt
           const fn = this.articleId + '-' + this.article.uid + '.md'
           await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           await this.ref.update(doc)
@@ -229,6 +230,11 @@ export default {
           callback(image.url, 'img')
         })
         .catch(console.error)
+    },
+    back () {
+      const next = { path: '/board/' + this.boardId }
+      if (this.category) next.query = { category: this.category }
+      this.$router.push(next)
     }
   }
 }

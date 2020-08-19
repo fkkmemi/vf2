@@ -98,13 +98,17 @@ export default {
         showCancelButton: true
       })
       if (!r.value) return
-      const set = {
-        updatedAt: new Date(),
-        level: this.level
-      }
+      await this.$firebase.database().ref()
+        .child('users').child(this.item.id).update({
+          updatedAt: new Date().getTime(),
+          level: this.level
+        })
       await this.$firebase.firestore()
         .collection('users').doc(this.item.id)
-        .update(set)
+        .update({
+          updatedAt: new Date(),
+          level: this.level
+        })
       this.dialog = false
     }
   }

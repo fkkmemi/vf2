@@ -1,6 +1,6 @@
 <template>
   <article-content v-if="!action" :boardId="info" :articleId="article" :category="category" :tag="tag" />
-  <article-form v-else :boardId="info" :articleId="article" :action="action" />
+  <article-form v-else :boardId="info" :articleId="article" :category="category" :action="action" />
 </template>
 <script>
 import ArticleContent from '@/components/board/article/content'

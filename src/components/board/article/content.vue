@@ -212,8 +212,12 @@ export default {
     },
     async fetch (item) {
       this.content = ''
-      const r = await axios.get(item.url)
-      this.content = typeof r.data === 'string' ? r.data : r.data.toString()
+      if (item.summary.length > 300) {
+        const r = await axios.get(item.url)
+        this.content = typeof r.data === 'string' ? r.data : r.data.toString()
+      } else {
+        this.content = item.summary
+      }
 
       let imgSrc = '/logo.png'
       if (this.article.images.length) imgSrc = this.article.images[0].thumbUrl
@@ -228,7 +232,11 @@ export default {
       })
     },
     async articleWrite () {
-      this.$router.push({ path: this.$route.path, query: { action: 'write' } })
+      const to = {
+        path: '/board/' + this.boardId + '/' + this.articleId,
+        query: { action: 'write', category: this.article.category }
+      }
+      this.$router.push(to)
     },
     async remove () {
       const r = await this.$swal.fire({

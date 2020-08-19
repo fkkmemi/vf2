@@ -23,7 +23,7 @@
         <v-list-item-content>
           <v-list-item-subtitle v-if="!item.edit" class="black--text white-space">
             <v-icon color="primary" v-for="i in replyDepth(item)" :key="i">mdi-subdirectory-arrow-right</v-icon>
-            <v-icon color="error" left v-if="newCheck(item.updatedAt, 'minutes', 10)">mdi-fire</v-icon> {{item.comment}}
+            <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon> {{item.comment}}
             <!-- <span>{{item.no}}</span> 디버깅용 -->
           </v-list-item-subtitle>
           <v-list-item-subtitle v-else>
@@ -309,7 +309,7 @@ export default {
       return depth
     },
     replyToggle (item) {
-      item.replyComment = `[${item.user.displayName}] `
+      item.replyComment = `@${item.user.displayName} `
       item.replyEdit = !item.replyEdit
     },
     liked (item) {

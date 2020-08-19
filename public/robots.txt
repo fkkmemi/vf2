@@ -2,7 +2,6 @@ User-agent: *
 
 Allow: /
 Disallow: /search
-Disallow: /board
-Disallow: /board/*
 Disallow: /admin
 Disallow: /admin/user
+Disallow: /settings
