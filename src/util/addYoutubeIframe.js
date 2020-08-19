@@ -35,7 +35,6 @@ export default (el, bp) => {
     p.doc.parentNode.insertBefore(document.createElement('br'), p.doc)
     p.doc.parentNode.insertBefore(document.createElement('p'), p.doc.nextSibling)
   })
-  // console.log(el)
 
   return el.innerHTML
 }

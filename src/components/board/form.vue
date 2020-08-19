@@ -25,6 +25,9 @@
             <v-col cols="12" sm="4">
               <v-select v-model="form.type" :items="types" outlined label="게시판 유형" :disabled="exists"></v-select>
             </v-col>
+            <v-col cols="12" sm="4">
+              <v-switch v-model="form.main" outlined label="메인에 표시"></v-switch>
+            </v-col>
             <v-col cols="12">
               <v-text-field v-model="form.title" outlined label="제목"></v-text-field>
             </v-col>
@@ -118,7 +121,8 @@ export default {
         categories: [],
         tags: [],
         type: '',
-        categoryCount: {}
+        categoryCount: {},
+        main: false
       },
       exists: false,
       loading: false,
@@ -166,6 +170,8 @@ export default {
       this.form.type = item.type
       this.form.categoryCount = item.categoryCount || {}
       this.beforeCategories = item.categories.slice(0)
+      if (item.main === undefined) this.form.main = false
+      else this.form.main = item.main
     },
     async save () {
       if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
@@ -188,7 +194,8 @@ export default {
         tags: this.form.tags,
         type: this.form.type,
         updatedAt: createdAt,
-        categoryCount: this.form.categoryCount
+        categoryCount: this.form.categoryCount,
+        main: this.form.main
       }
       this.loading = true
       try {

@@ -79,7 +79,7 @@ import getImageUrlFromMd from '@/util/getImageUrlFromMd'
 
 export default {
   components: { DisplayTime, DisplayUser, DisplayCount },
-  props: ['items', 'boardId', 'category'],
+  props: ['items', 'boardId', 'category', 'isWidget'],
   data () {
     return {
       newCheck,

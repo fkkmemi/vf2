@@ -80,7 +80,7 @@ export default {
         }
         this.site = v
       }, (e) => {
-        console.log(e.message)
+        console.error(e.message)
       })
     }
     // async test () {

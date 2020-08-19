@@ -218,6 +218,7 @@ export default {
       })
     },
     subscribe () {
+      if (this.unsubscribe) this.unsubscribe()
       setMeta({
         title: '게시판 전체 목록',
         description: '게시판 전체 목록입니다',

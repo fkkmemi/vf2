@@ -23,7 +23,7 @@
       <list-compact v-if="$store.state.boardTypeList || isWidget" :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
       <list-normal v-else :items="items" :boardId="boardId" :category="category"/>
     </template>
-    <list-gallery v-else :items="items" :boardId="boardId" :category="category"/>
+    <list-gallery v-else :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
     <v-list-item v-if="lastDoc && !isWidget">
       <v-btn
         @click="more"
@@ -44,7 +44,7 @@ import ListNormal from './components/list-normal'
 import ListGallery from './components/list-gallery'
 import setMeta from '@/util/setMeta'
 
-const LIMIT = 5
+const LIMIT = 4
 
 export default {
   components: { ListCompact, ListNormal, ListGallery },
@@ -82,7 +82,6 @@ export default {
     }
   },
   created () {
-    console.log(this.isWidget)
     this.subscribe()
   },
   destroyed () {

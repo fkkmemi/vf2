@@ -224,7 +224,7 @@ export default {
     },
     async fetch (item) {
       this.content = ''
-      if (item.summary.length > 300) {
+      if (item.summary.length >= 300) {
         const r = await axios.get(item.url)
         this.content = typeof r.data === 'string' ? r.data : r.data.toString()
       } else {
