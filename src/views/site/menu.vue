@@ -218,6 +218,10 @@ export default {
     async save () {
       try {
         this.loading = true
+        this.items.forEach((item, i) => {
+          if (i === 0) item.active = true
+          else item.active = false
+        })
         await this.$firebase.database().ref().child('site').child('menu').set(this.items)
       } finally {
         this.dialogItem = false
