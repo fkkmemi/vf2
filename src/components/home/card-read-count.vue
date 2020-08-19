@@ -1,6 +1,6 @@
 <template>
-  <v-card class="ma-4">
-    <v-card-subtitle>게시물 현황</v-card-subtitle>
+  <v-card class="mx-4">
+    <v-card-subtitle>조회수 현황</v-card-subtitle>
     <v-card-text>
       <v-sparkline
         :value="values"
@@ -23,42 +23,22 @@
   </v-card>
 </template>
 <script>
-const LIMIT = 5
 
 export default {
-  data () {
-    return {
-      items: [],
-      values: []
-    }
-  },
-  created () {
-    this.fetch()
-  },
-  destroyed () {
-  },
-  methods: {
-    async fetch () {
-      const sn = await this.$firebase.firestore()
-        .collection('sitemapLogs')
-        .orderBy('createdAt').limitToLast(LIMIT).get()
-      if (sn.empty) return
-      const items = sn.docs.map(doc => {
-        const item = doc.data()
-        item.createdAt = item.createdAt.toDate()
-        return item
-      })
-      items.forEach(item => {
+  props: ['items'],
+  computed: {
+    values () {
+      const vals = []
+      this.items.forEach(item => {
         let sum = 0
         for (const [key, value] of Object.entries(item)) {
           if (key === 'createdAt') continue
-          sum += value.count
+          sum += value.readCount
           // console.log(`${key}: ${value.count}`)
         }
-        this.values.push(sum)
+        vals.push(sum)
       })
-      console.log(this.values)
-      this.items = items
+      return vals
     }
   }
 }

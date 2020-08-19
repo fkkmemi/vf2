@@ -543,7 +543,7 @@ exports.sitemapBoard = functions.https.onRequest(async (req, res) => {
   }
 })
 
-const writeSitemap = async (id) => {
+const writeSitemap = async (id, items) => {
   const builder = require('xmlbuilder')
   const xml = builder
     .create('urlset', { encoding: 'UTF-8' })
@@ -553,13 +553,14 @@ const writeSitemap = async (id) => {
     .att('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1')
     .att('xmlns:video', 'http://www.google.com/schemas/sitemap-video/1.1')
 
-  const sn = await db.collection('boards').doc(id).collection('articles').get()
-  if (sn.empty) return xml
+  // const sn = await db.collection('boards').doc(id).collection('articles').get()
+  // if (sn.empty) return xml
   const url = 'https://' + functions.config().admin.domain
-  sn.docs.forEach(doc => {
+  // sn.docs.forEach(doc => {
+  items.forEach(item => {
     const sm = xml.ele('url')
-    sm.ele('loc', url + '/board/' + id + '/' + doc.id)
-    sm.ele('lastmod', doc.data().updatedAt.toDate().toISOString())
+    sm.ele('loc', url + '/board/' + id + '/' + id)
+    sm.ele('lastmod', item.updatedAt.toDate().toISOString())
   })
   return xml.end({
     pretty: true,
@@ -574,10 +575,10 @@ const setSitemap = async () => {
     .catch(e => console.error('boards err:' + e.message))
   if (boards.empty) return null
 
-  const sitemapLogs = await db.collection('sitemapLogs').orderBy('createdAt', 'desc').limit(1).get()
-    .catch(e => console.error('sitemapLogs get err:' + e.message))
-  let sitemap = null
-  if (!sitemapLogs.empty) sitemap = sitemapLogs.docs[0].data()
+  // const sitemapLogs = await db.collection('sitemapLogs').orderBy('createdAt', 'desc').limit(1).get()
+  //   .catch(e => console.error('sitemapLogs get err:' + e.message))
+  // let sitemap = null
+  // if (!sitemapLogs.empty) sitemap = sitemapLogs.docs[0].data()
 
   const createdAt = new Date()
   const set = { createdAt }
@@ -586,8 +587,27 @@ const setSitemap = async () => {
     const board = doc.data()
     set[doc.id] = {}
     set[doc.id].count = board.count
-    if (sitemap && sitemap[doc.id] && sitemap[doc.id].count === board.count) continue
-    const xml = await writeSitemap(doc.id)
+    set[doc.id].readCount = 0
+    set[doc.id].commentCount = 0
+    set[doc.id].likeCount = 0
+    // if (sitemap && sitemap[doc.id] && sitemap[doc.id].count === board.count) continue
+    const sn = await db.collection('boards').doc(doc.id).collection('articles').limit(10000).get()
+    if (sn.empty) continue
+    const items = []
+    sn.docs.forEach(d => {
+      const item = d.data()
+      set[doc.id].readCount += item.readCount
+      set[doc.id].commentCount += item.commentCount
+      set[doc.id].likeCount += item.likeCount
+      items.push(item)
+    })
+    await doc.ref.update({
+      readCount: set[doc.id].readCount,
+      commentCount: set[doc.id].commentCount,
+      likeCount: set[doc.id].likeCount
+    }).catch(e => console.error('count update err: ' + e.message))
+
+    const xml = await writeSitemap(doc.id, items)
       .catch(e => console.error('writeSitemap err: ' + e.message))
     const bpath = 'sitemaps/' + doc.id + '.xml'
     await admin.storage().bucket().file(bpath).save(xml)
