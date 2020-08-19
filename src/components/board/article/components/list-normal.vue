@@ -2,7 +2,7 @@
   <div>
     <template v-for="(item, i) in items">
       <v-card :key="item.id" :class="$vuetify.breakpoint.xs ? '' : 'ma-4'" :flat="$vuetify.breakpoint.xs">
-        <v-card color="transparent" flat :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
+        <v-card color="transparent" flat :to="category ? `/board/${boardId}/${item.id}?category=${category}`:`/board/${boardId}/${item.id}`">
           <v-card-subtitle class="text--primary body-1" :class="item.important > 0 ? 'text-truncate': ''">
             <display-title :item="item"/>
             <v-spacer/>
@@ -23,7 +23,7 @@
               </v-btn>
               <v-btn
                 v-if="fireUser && fireUser.uid === item.uid"
-                :to="`${boardId}/${item.id}?action=write`"
+                :to="`/board/${boardId}/${item.id}?action=write`"
                 text color="primary">
                 <v-icon left>mdi-pencil</v-icon>수정하기
               </v-btn>
@@ -48,7 +48,7 @@
                 small
                 outlined
                 class="mr-4 mb-2"
-                :to="`${$route.path}?category=${item.category}`"
+                :to="`/board/${boardId}?category=${item.category}`"
               >
                 {{item.category}}
                 <v-icon right>mdi-menu-right</v-icon>
@@ -90,9 +90,6 @@ export default {
     }
   },
   methods: {
-    read (item) {
-      this.$router.push({ path: this.$route.path + '/' + item.id })
-    },
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)

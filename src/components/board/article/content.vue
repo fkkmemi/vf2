@@ -208,6 +208,18 @@ export default {
         item.updatedAt = item.updatedAt.toDate()
         if (!this.article || this.article.url !== item.url) this.fetch(item)
         this.article = item
+
+        let imgSrc = '/logo.png'
+        if (this.article.images.length) imgSrc = this.article.images[0].thumbUrl
+        else {
+          const src = getImageUrlFromMd(this.content)
+          if (src) imgSrc = src
+        }
+        setMeta({
+          title: item.title,
+          description: item.summary.substr(0, 80),
+          image: imgSrc
+        })
       }, console.error)
     },
     async fetch (item) {
@@ -218,18 +230,6 @@ export default {
       } else {
         this.content = item.summary
       }
-
-      let imgSrc = '/logo.png'
-      if (this.article.images.length) imgSrc = this.article.images[0].thumbUrl
-      else {
-        const src = getImageUrlFromMd(this.content)
-        if (src) imgSrc = src
-      }
-      setMeta({
-        title: item.title,
-        description: item.summary.substr(0, 80),
-        image: imgSrc
-      })
     },
     async articleWrite () {
       const to = {
@@ -250,10 +250,12 @@ export default {
       await this.ref.delete()
     },
     back () {
-      const us = this.$route.path.split('/')
-      us.pop()
-      if (this.category) this.$router.push({ path: us.join('/'), query: { category: this.category, createdAt: this.articleId } })
-      else this.$router.push({ path: us.join('/'), query: { createdAt: this.articleId } })
+      const to = {
+        path: '/board/' + this.boardId,
+        query: { createdAt: this.articleId }
+      }
+      if (this.category) to.query.category = this.category
+      this.$router.push(to)
     },
     async like () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
@@ -291,16 +293,16 @@ export default {
       if (sn.empty) throw Error('더이상 페이지가 없습니다')
       const doc = sn.docs[0]
 
-      const us = this.$route.path.split('/')
-      us.pop()
-      us.push(doc.id)
-      if (this.category) this.$router.push({ path: us.join('/'), query: { category: this.category } })
-      else this.$router.push({ path: us.join('/') })
+      const to = { path: '/board/' + this.boardId + '/' + doc.id }
+      if (this.category) to.query = { category: this.category }
+      this.$router.push(to)
     },
     goCategory () {
-      const us = this.$route.path.split('/')
-      us.pop()
-      this.$router.push({ path: us.join('/'), query: { category: this.article.category } })
+      const to = {
+        path: '/board/' + this.boardId,
+        query: { category: this.article.category }
+      }
+      this.$router.push(to)
     },
     onViewerLoad (v) {
       addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)

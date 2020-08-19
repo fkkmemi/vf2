@@ -35,7 +35,7 @@
               </v-card-text>
               <v-card-actions v-if="boardId">
                 <v-btn
-                  :to="`${$route.path}/${boardId}`"
+                  :to="`/board/${boardId}`"
                   x-large
                   color="primary"
                   text
@@ -55,7 +55,7 @@
                 <template v-if="user && user.level === 0">
                   <v-btn
                     icon
-                    :to="`${$route.path}/${item.id}?&action=write`">
+                    :to="`/board/${item.id}?&action=write`">
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                   <v-btn
@@ -111,7 +111,7 @@
               </v-list-item>
               <v-divider/>
               <v-list-item
-                :to="`${$route.path}/${item.id}`">
+                :to="`/board/${item.id}`">
                 <v-list-item-content>
                   전체 ({{item.count}})
                 </v-list-item-content>
@@ -125,7 +125,7 @@
               <template v-for="(category, i) in item.categories">
                 <v-list-item
                   :key="category"
-                  :to="`${$route.path}/${item.id}?category=${category}`">
+                  :to="`/board/${item.id}?category=${category}`">
                   <v-list-item-content>
                     {{category}} ({{item.categoryCount[category]}})
                   </v-list-item-content>

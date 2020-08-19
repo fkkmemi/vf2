@@ -39,7 +39,7 @@
                 <v-list-item-subtitle>
                   <v-icon v-if="item.important === 1" small left color="success">mdi-bell-ring</v-icon>
                   <v-icon v-else-if="item.important === 2" small left color="warning">mdi-alert-circle</v-icon>
-                  <v-icon v-if="newCheck(item.updatedAt, 'hours', 1)" small color="error" left>mdi-fire</v-icon>
+                  <v-icon v-if="newCheck(item.updatedAt, 'days', 1)" small color="error" left>mdi-fire</v-icon>
                   <span>{{item.title}}</span>
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -94,9 +94,6 @@ export default {
   created () {
   },
   methods: {
-    read (item) {
-      this.$router.push({ path: this.$route.path + '/' + item.id })
-    },
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)

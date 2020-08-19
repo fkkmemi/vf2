@@ -1,26 +1,37 @@
 <template>
-  <v-container fluid v-if="!loaded">
+  <!-- <v-container fluid v-if="!loaded">
     <v-skeleton-loader type="article"></v-skeleton-loader>
   </v-container>
   <v-container fluid v-else>
     <v-alert v-if="!empty" type="warning" border="left" class="mb-0">
       검색된 게시판이 없습니다
     </v-alert>
+  </v-container> -->
+  <v-container fluid>
+    <v-row>
+      <v-col cols="12" sm="6">
+        <board-content :boardId="'lecture'" :isWidget="true" />
+      </v-col>
+      <v-col cols="12" sm="6">
+        <board-content :boardId="'community'" :isWidget="true" />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
 import setMeta from '@/util/setMeta'
+import BoardContent from '@/components/board/content'
 
 export default {
+  components: { BoardContent },
   data () {
     return {
       empty: false,
       loaded: false
     }
   },
-  mounted () {
+  created () {
     setMeta({ title: '메인페이지', description: '메인페이지', image: '/logo.png' })
-    this.goPage()
   },
   methods: {
     async goPage () {

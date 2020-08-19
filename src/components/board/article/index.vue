@@ -20,11 +20,11 @@
       </v-btn>
     </v-list-item>
     <template v-if="board.type === '일반'">
-      <list-compact v-if="$store.state.boardTypeList" :items="items" :boardId="boardId" :category="category"/>
+      <list-compact v-if="$store.state.boardTypeList || isWidget" :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
       <list-normal v-else :items="items" :boardId="boardId" :category="category"/>
     </template>
     <list-gallery v-else :items="items" :boardId="boardId" :category="category"/>
-    <v-list-item v-if="lastDoc">
+    <v-list-item v-if="lastDoc && !isWidget">
       <v-btn
         @click="more"
         v-intersect="onIntersect"
@@ -48,7 +48,7 @@ const LIMIT = 5
 
 export default {
   components: { ListCompact, ListNormal, ListGallery },
-  props: ['board', 'boardId', 'category', 'tag', 'createdAt'],
+  props: ['board', 'boardId', 'category', 'tag', 'createdAt', 'isWidget'],
   data () {
     return {
       items: [],
@@ -82,6 +82,7 @@ export default {
     }
   },
   created () {
+    console.log(this.isWidget)
     this.subscribe()
   },
   destroyed () {
@@ -133,11 +134,13 @@ export default {
       this.ref = this.$firebase.firestore()
         .collection('boards').doc(this.boardId)
         .collection('articles')
-      this.ref.where('important', '>', 0).orderBy('important', 'desc').get()
-        .then(sn => this.snapshotToItems(sn))
-        .catch(console.error)
 
       if (!this.category) {
+        this.ref
+          .where('important', '>', 0)
+          .orderBy('important', 'desc').get()
+          .then(sn => this.snapshotToItems(sn))
+          .catch(console.error)
         if (!this.createdAt) {
           this.query = this.ref
             .where('important', '==', 0)
@@ -149,6 +152,12 @@ export default {
             .orderBy(this.order, this.sort)
         }
       } else {
+        this.ref
+          .where('category', '==', this.category)
+          .where('important', '>', 0)
+          .orderBy('important', 'desc').get()
+          .then(sn => this.snapshotToItems(sn))
+          .catch(console.error)
         if (!this.createdAt) {
           this.query = this.ref
             .where('category', '==', this.category)
@@ -165,19 +174,16 @@ export default {
       this.loaded = false
       this.unsubscribe = this.query.limit(LIMIT).onSnapshot(sn => {
         this.loaded = true
-        if (sn.empty) {
-          this.items = []
-          return
-        }
+        if (sn.empty) return
         this.firstDoc = head(sn.docs)
         this.lastDoc = last(sn.docs)
         this.snapshotToItems(sn)
-        setMeta({
-          title: this.board.title + ' ' + this.getCategory + ' 목록',
-          description: this.board.description.substr(0, 80),
-          image: '/logo.png'
-        })
       }, console.error)
+      setMeta({
+        title: this.board.title + ' ' + this.getCategory + ' 목록',
+        description: this.board.description.substr(0, 80),
+        image: '/logo.png'
+      })
     },
     async more () {
       if (!this.loaded) return

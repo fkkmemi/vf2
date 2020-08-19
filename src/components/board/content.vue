@@ -27,15 +27,22 @@
         </template>
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
-        <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
-          <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
-        </v-btn>
+        <template v-if="!isWidget">
+          <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
+            <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
+          </v-btn>
+        </template>
         <template v-if="user">
           <v-btn icon @click="articleWrite" :disabled="!user"><v-icon>mdi-plus</v-icon></v-btn>
         </template>
       </v-toolbar>
       <v-divider/>
-      <board-article :boardId="boardId" :board="board" :category="category" :createdAt="createdAt"></board-article>
+      <board-article
+        :boardId="boardId"
+        :board="board"
+        :category="category"
+        :createdAt="createdAt"
+        :isWidget="isWidget"></board-article>
       <v-dialog v-model="dialog" max-width="400">
         <v-card>
           <v-toolbar color="transparent" dense flat>
@@ -152,7 +159,7 @@ import newCheck from '@/util/newCheck'
 
 export default {
   components: { BoardArticle, DisplayTime, DisplayUser },
-  props: ['boardId', 'category', 'tag', 'createdAt'],
+  props: ['boardId', 'category', 'tag', 'createdAt', 'isWidget'],
   data () {
     return {
       unsubscribe: null,
@@ -205,19 +212,19 @@ export default {
       }, console.error)
     },
     async write () {
-      this.$router.push({ path: this.$route.path, query: { action: 'write' } })
+      this.$router.push({ path: '/board/' + this.boardId, query: { action: 'write' } })
     },
     async articleWrite () {
       const to = {
-        path: this.$route.path + '/' + new Date().getTime(),
+        path: '/board/' + this.boardId + '/' + new Date().getTime(),
         query: { action: 'write' }
       }
       if (this.category) to.query.category = this.category
       this.$router.push(to)
     },
     changeCategory (item) {
-      if (item === '전체') this.$router.push(this.$route.path)
-      else this.$router.push({ path: this.$route.path, query: { category: item } })
+      if (item === '전체') this.$router.push('/board/' + this.boardId)
+      else this.$router.push({ path: '/board/' + this.boardId, query: { category: item } })
     }
   }
 }

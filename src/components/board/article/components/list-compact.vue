@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-for="(item, i) in items">
-      <v-list-item three-line :key="item.id" :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
+      <v-list-item :three-line="!isWidget" :key="item.id" :to="category ? `/board/${boardId}/${item.id}?category=${category}`:`/board/${boardId}/${item.id}`">
         <v-list-item-content>
           <v-list-item-subtitle class="d-flex align-center text--primary body-1">
             <v-btn
@@ -11,7 +11,7 @@
               small
               outlined
               class="mr-4"
-              :to="`${$route.path}?category=${item.category}`"
+              :to="`/board/${boardId}?category=${item.category}`"
             >
               {{item.category}}
               <v-icon right>mdi-menu-right</v-icon>
@@ -19,14 +19,14 @@
             <display-title :item="item"/>
             <v-spacer/>
           </v-list-item-subtitle>
-          <v-list-item-subtitle class="d-flex justify-space-between align-center">
+          <v-list-item-subtitle v-if="!isWidget" class="d-flex justify-space-between align-center">
             <span class="font-italic caption"><display-time :time="item.createdAt"></display-time></span>
             <v-spacer/>
             <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
             <display-user :user="item.user" :size="'small'"></display-user>
           </v-list-item-subtitle>
         </v-list-item-content>
-        <v-list-item-action>
+        <v-list-item-action v-if="!isWidget">
           <display-count :item="item" :column="true"></display-count>
         </v-list-item-action>
       </v-list-item>
@@ -44,7 +44,7 @@ import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
   components: { DisplayTime, DisplayUser, DisplayTitle, DisplayCount },
-  props: ['items', 'boardId', 'category'],
+  props: ['items', 'boardId', 'category', 'isWidget'],
   data () {
     return {
       tuiOptions: {
@@ -61,9 +61,6 @@ export default {
     }
   },
   methods: {
-    read (item) {
-      this.$router.push({ path: this.$route.path + '/' + item.id })
-    },
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)

@@ -70,9 +70,6 @@ export default {
     }
   },
   methods: {
-    read (item) {
-      this.$router.push({ path: this.$route.path + '/' + item.id })
-    },
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)
