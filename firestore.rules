@@ -55,5 +55,8 @@ service cloud.firestore {
     match /tempFiles/{fileId} {
       allow read: if approvedLevel(1);
     }
+    match /sitemapLogs/{logId} {
+      allow read: if true;
+    }
   }
 }
