@@ -8,18 +8,16 @@
     </v-alert>
   </v-container>
   <v-container fluid v-else>
-    <v-row v-if="sitemaps.length">
-      <v-col cols="12" sm="4">
+    <v-row>
+      <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 1 : null">
         <card-count :total="total" :values="sitemapValue.counts"/>
       </v-col>
-      <v-col cols="12" sm="4">
+      <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 2 : null">
         <card-read-count :total="total" :values="sitemapValue.readCounts"/>
       </v-col>
-      <v-col cols="12" sm="4">
+      <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 3 : null">
         <card-total :item="total"/>
       </v-col>
-    </v-row>
-    <v-row>
       <v-col cols="12" sm="6" v-if="first">
         <board-content :boardId="first.id" :isWidget="true" />
       </v-col>
@@ -52,11 +50,7 @@ export default {
       first: null,
       second: null,
       third: null,
-      sitemaps: [],
-      sitemapValue: {
-        counts: [],
-        readCounts: []
-      }
+      sitemaps: []
     }
   },
   created () {
@@ -81,6 +75,28 @@ export default {
         values.commentCount += item.commentCount
         values.likeCount += item.likeCount
       })
+      return values
+    },
+    sitemapValue () {
+      const values = {
+        counts: [],
+        readCounts: []
+      }
+      if (!this.sitemaps.length) return values
+      this.sitemaps.forEach(item => {
+        let countSum = 0
+        let readCountSum = 0
+        for (const [key, value] of Object.entries(item)) {
+          if (key === 'createdAt') continue
+          countSum += value.count
+          readCountSum += value.readCount
+          // console.log(`${key}: ${value.count}`)
+        }
+        values.counts.push(countSum)
+        values.readCounts.push(readCountSum)
+      })
+      if (this.total.count) values.counts.push(this.total.count)
+      if (this.total.readCount) values.readCounts.push(this.total.readCount)
       return values
     }
   },
@@ -132,30 +148,10 @@ export default {
         this.snapshotToItems(sn)
       }, console.error)
     },
-    getSitemapValue () {
-      const values = {
-        counts: [],
-        readCounts: []
-      }
-      if (!this.sitemaps.length) return values
-      this.sitemaps.forEach(item => {
-        let countSum = 0
-        let readCountSum = 0
-        for (const [key, value] of Object.entries(item)) {
-          if (key === 'createdAt') continue
-          countSum += value.count
-          readCountSum += value.readCount
-          // console.log(`${key}: ${value.count}`)
-        }
-        values.counts.push(countSum)
-        values.readCounts.push(readCountSum)
-      })
-      return values
-    },
     async getSitemapLogs () {
       const sn = await this.$firebase.firestore()
         .collection('sitemapLogs')
-        .orderBy('createdAt').limitToLast(5).get()
+        .orderBy('createdAt').limitToLast(4).get()
       if (sn.empty) return
       const items = sn.docs.map(doc => {
         const item = doc.data()
@@ -163,7 +159,6 @@ export default {
         return item
       })
       this.sitemaps = items
-      this.sitemapValue = this.getSitemapValue()
     }
   }
 }
