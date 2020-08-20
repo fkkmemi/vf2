@@ -39,7 +39,7 @@
       </v-card>
     </template>
     <v-list-item v-if="lastDoc && items.length < board.count">
-      <v-btn @click="more" v-intersect="onIntersect" text color="primary" block>더보기</v-btn>
+      <v-btn @click="more" v-intersect="onIntersect" text color="primary" block :loading="loading">더보기</v-btn>
     </v-list-item>
   </v-container>
   <v-container fluid v-else>
@@ -65,7 +65,8 @@ export default {
       ref: null,
       lastDoc: null,
       order: 'createdAt',
-      sort: 'desc'
+      sort: 'desc',
+      loading: false
     }
   },
   computed: {
@@ -136,8 +137,14 @@ export default {
     },
     async more () {
       if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
-      const sn = await this.ref.startAfter(this.lastDoc).get()
-      this.snapshotToItems(sn)
+      if (this.loading) return
+      this.loading = true
+      try {
+        const sn = await this.ref.startAfter(this.lastDoc).get()
+        this.snapshotToItems(sn)
+      } finally {
+        this.loading = false
+      }
     },
     onIntersect (entries, observer, isIntersecting) {
       if (isIntersecting) this.more()
