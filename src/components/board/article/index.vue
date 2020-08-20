@@ -178,6 +178,7 @@ export default {
         this.lastDoc = last(sn.docs)
         this.snapshotToItems(sn)
       }, console.error)
+      if (this.isWidget) return
       setMeta({
         title: this.board.title + ' ' + this.getCategory + ' 목록',
         description: this.board.description.substr(0, 80),

@@ -108,24 +108,6 @@ exports.onDeleteBoard = functions.region(region).firestore
     await batch.commit()
   })
 
-const removeOldTempFiles = async () => {
-  const moment = require('moment')
-  const sn = await db.collection('tempFiles')
-    .where('createdAt', '<', moment().subtract(1, 'hours').toDate())
-    .orderBy('createdAt')
-    .limit(5)
-    .get()
-  if (sn.empty) return
-  const batch = db.batch()
-  for (const doc of sn.docs) {
-    const file = doc.data()
-    await admin.storage().bucket().file(file.name).delete()
-      .catch(e => console.error('tempFile remove err: ' + e.message))
-    batch.delete(doc.ref)
-  }
-  await batch.commit()
-}
-
 // const download = async () => {
 //   const ps = []
 //   ps.push('boards')
@@ -214,8 +196,6 @@ exports.onCreateBoardArticle = functions.region(region).firestore
         console.error('tempFiles remove err: ' + e.message)
       }
     }
-
-    await removeOldTempFiles()
   })
 
 // const test = async () => {
@@ -248,7 +228,23 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
     const set = {}
     const beforeDoc = change.before.data()
     const doc = change.after.data()
+
+    const readCountDiff = doc.readCount - beforeDoc.readCount
+    if (readCountDiff !== 0) {
+      await db.collection('boards').doc(context.params.bid)
+        .update({ readCount: admin.firestore.FieldValue.increment(readCountDiff) })
+        .catch(e => console.error('boards update err: ' + e.message))
+      return
+    }
+    const likeCountDiff = doc.likeCount - beforeDoc.likeCount
+    if (likeCountDiff !== 0) {
+      await db.collection('boards').doc(context.params.bid)
+        .update({ likeCount: admin.firestore.FieldValue.increment(likeCountDiff) })
+        .catch(e => console.error('boards update err: ' + e.message))
+      return
+    }
     if (doc.objectID !== beforeDoc.objectID) return
+
     if (doc.category && beforeDoc.category !== doc.category) {
       // set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
       set[`categoryCount.${beforeDoc.category}`] = admin.firestore.FieldValue.increment(-1)
@@ -370,25 +366,53 @@ exports.onDeleteBoardArticle = functions.region(region).firestore
 
 exports.onCreateBoardComment = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}/comments/{cid}')
-  .onCreate((snap, context) => {
-    return db.collection('boards').doc(context.params.bid)
-      .collection('articles').doc(context.params.aid)
-      .update({ commentCount: admin.firestore.FieldValue.increment(1) })
+  .onCreate(async (snap, context) => {
+    // await db.collection('boards').doc(context.params.bid)
+    //   .collection('articles').doc(context.params.aid)
+    //   .update({ commentCount: admin.firestore.FieldValue.increment(1) })
+    // await db.collection('boards').doc(context.params.bid)
+    //   .update({ commentCount: admin.firestore.FieldValue.increment(1) })
+    //   .catch(e => console.error('boards update err: ' + e.message))
+    const batch = db.batch()
+    batch.update(
+      db.collection('boards').doc(context.params.bid)
+        .collection('articles').doc(context.params.aid),
+      { commentCount: admin.firestore.FieldValue.increment(1) }
+    )
+    batch.update(
+      db.collection('boards').doc(context.params.bid),
+      { commentCount: admin.firestore.FieldValue.increment(1) }
+    )
+    await batch.commit()
   })
 
 exports.onDeleteBoardComment = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}/comments/{cid}')
-  .onDelete((snap, context) => {
-    return db.collection('boards').doc(context.params.bid)
-      .collection('articles').doc(context.params.aid)
-      .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
+  .onDelete(async (snap, context) => {
+    // await db.collection('boards').doc(context.params.bid)
+    //   .collection('articles').doc(context.params.aid)
+    //   .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
+    // await db.collection('boards').doc(context.params.bid)
+    //   .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
+    //   .catch(e => console.error('boards update err: ' + e.message))
+    const batch = db.batch()
+    batch.update(
+      db.collection('boards').doc(context.params.bid)
+        .collection('articles').doc(context.params.aid),
+      { commentCount: admin.firestore.FieldValue.increment(-1) }
+    )
+    batch.update(
+      db.collection('boards').doc(context.params.bid),
+      { commentCount: admin.firestore.FieldValue.increment(-1) }
+    )
+    await batch.commit()
   })
 
 exports.saveTempFiles = functions.region(region).storage
   .object().onFinalize(async (object) => {
     const last = require('lodash').last
     const name = object.name
-    if (last(name.split('.')) === 'md') return
+    if (last(name.split('.')) === 'md' || last(name.split('.')) === 'xml') return
     const createdAt = new Date()
     const id = createdAt.getTime().toString()
     const set = {
@@ -543,6 +567,24 @@ exports.sitemapBoard = functions.https.onRequest(async (req, res) => {
   }
 })
 
+const removeOldTempFiles = async () => {
+  const moment = require('moment')
+  const sn = await db.collection('tempFiles')
+    .where('createdAt', '<', moment().subtract(1, 'hours').toDate())
+    .orderBy('createdAt')
+    .limit(5)
+    .get()
+  if (sn.empty) return
+  const batch = db.batch()
+  for (const doc of sn.docs) {
+    const file = doc.data()
+    await admin.storage().bucket().file(file.name).delete()
+      .catch(e => console.error('tempFile remove err: ' + e.message))
+    batch.delete(doc.ref)
+  }
+  await batch.commit()
+}
+
 const writeSitemap = async (id, items) => {
   const builder = require('xmlbuilder')
   const xml = builder
@@ -575,10 +617,10 @@ const setSitemap = async () => {
     .catch(e => console.error('boards err:' + e.message))
   if (boards.empty) return null
 
-  // const sitemapLogs = await db.collection('sitemapLogs').orderBy('createdAt', 'desc').limit(1).get()
-  //   .catch(e => console.error('sitemapLogs get err:' + e.message))
-  // let sitemap = null
-  // if (!sitemapLogs.empty) sitemap = sitemapLogs.docs[0].data()
+  const sitemapLogs = await db.collection('sitemapLogs').orderBy('createdAt', 'desc').limit(1).get()
+    .catch(e => console.error('sitemapLogs get err:' + e.message))
+  let sitemap = null
+  if (!sitemapLogs.empty) sitemap = sitemapLogs.docs[0].data()
 
   const createdAt = new Date()
   const set = { createdAt }
@@ -590,7 +632,7 @@ const setSitemap = async () => {
     set[doc.id].readCount = 0
     set[doc.id].commentCount = 0
     set[doc.id].likeCount = 0
-    // if (sitemap && sitemap[doc.id] && sitemap[doc.id].count === board.count) continue
+    if (sitemap && sitemap[doc.id] && sitemap[doc.id].count === board.count) continue
     const sn = await db.collection('boards').doc(doc.id).collection('articles').limit(10000).get()
     if (sn.empty) continue
     const items = []
@@ -627,6 +669,7 @@ exports.sitemapScheduled = functions.runWith({ timeoutSeconds: 300, memory: '512
   .onRun(async (context) => {
     // every 4:00 run
     console.log('sitemapScheduled ' + new Date().toLocaleString())
+    await removeOldTempFiles()
     await setSitemap()
     return null
   })

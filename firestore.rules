@@ -58,5 +58,8 @@ service cloud.firestore {
     match /sitemapLogs/{logId} {
       allow read: if true;
     }
+    match /meta/{id} {
+      allow read: if true;
+    }
   }
 }

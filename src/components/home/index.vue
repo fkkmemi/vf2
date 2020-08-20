@@ -8,15 +8,15 @@
     </v-alert>
   </v-container>
   <v-container fluid v-else>
-    <v-row>
+    <v-row v-if="sitemaps.length">
       <v-col cols="12" sm="4">
-        <card-count :items="sitemaps"/>
+        <card-count :total="total" :values="sitemapValue.counts"/>
       </v-col>
       <v-col cols="12" sm="4">
-        <card-read-count :items="sitemaps"/>
+        <card-read-count :total="total" :values="sitemapValue.readCounts"/>
       </v-col>
       <v-col cols="12" sm="4">
-        <card-total :items="sitemaps"/>
+        <card-total :item="total"/>
       </v-col>
     </v-row>
     <v-row>
@@ -52,13 +52,11 @@ export default {
       first: null,
       second: null,
       third: null,
-      count: {
-        article: 0,
-        read: 0,
-        comment: 0,
-        like: 0
-      },
-      sitemaps: []
+      sitemaps: [],
+      sitemapValue: {
+        counts: [],
+        readCounts: []
+      }
     }
   },
   created () {
@@ -69,22 +67,31 @@ export default {
   destroyed () {
     if (this.unsubscribe) this.unsubscribe()
   },
+  computed: {
+    total () {
+      const values = {
+        count: 0,
+        readCount: 0,
+        commentCount: 0,
+        likeCount: 0
+      }
+      this.items.forEach(item => {
+        values.count += item.count
+        values.readCount += item.readCount
+        values.commentCount += item.commentCount
+        values.likeCount += item.likeCount
+      })
+      return values
+    }
+  },
   methods: {
     setBoards () {
-      const filteredItem = this.items.filter(item => item.type === '일반')
+      const filteredItem = this.items.filter(item => item.main && item.type === '일반')
       if (filteredItem.length > 0) {
         this.first = filteredItem[0]
         if (filteredItem.length > 1) this.second = filteredItem[1]
       }
       this.third = this.items.find(item => item.type === '갤러리')
-    },
-    setCounts () {
-      this.items.forEach(item => {
-        this.count.article += item.count
-        this.count.read += item.readCount
-        this.count.comment += item.commentCount
-        this.count.like += item.likeCount
-      })
     },
     snapshotToItems (sn) {
       sn.docs.forEach(doc => {
@@ -99,6 +106,9 @@ export default {
           findItem.category = item.category
           findItem.title = item.title
           findItem.count = item.count
+          findItem.readCount = item.readCount
+          findItem.commentCount = item.commentCount
+          findItem.likeCount = item.likeCount
           findItem.description = item.description
           findItem.categories = item.categories
           findItem.tags = item.tags
@@ -106,7 +116,6 @@ export default {
           findItem.updatedAt = item.updatedAt.toDate()
         }
       })
-      this.setCounts()
       this.setBoards()
     },
     async subscribe () {
@@ -123,6 +132,26 @@ export default {
         this.snapshotToItems(sn)
       }, console.error)
     },
+    getSitemapValue () {
+      const values = {
+        counts: [],
+        readCounts: []
+      }
+      if (!this.sitemaps.length) return values
+      this.sitemaps.forEach(item => {
+        let countSum = 0
+        let readCountSum = 0
+        for (const [key, value] of Object.entries(item)) {
+          if (key === 'createdAt') continue
+          countSum += value.count
+          readCountSum += value.readCount
+          // console.log(`${key}: ${value.count}`)
+        }
+        values.counts.push(countSum)
+        values.readCounts.push(readCountSum)
+      })
+      return values
+    },
     async getSitemapLogs () {
       const sn = await this.$firebase.firestore()
         .collection('sitemapLogs')
@@ -134,6 +163,7 @@ export default {
         return item
       })
       this.sitemaps = items
+      this.sitemapValue = this.getSitemapValue()
     }
   }
 }
