@@ -24,8 +24,8 @@
       </template>
     </template>
     <v-icon color="error" left v-if="!item.important ? newCheck(item.updatedAt, 'days', 1) : newCheck(item.updatedAt, 'days', 7)">mdi-fire</v-icon>
-    <v-icon color="accent" left v-if="item.images && item.images.length">mdi-image</v-icon>
     <span v-text="item.title"></span>
+    <v-icon color="accent" right v-if="item.images && item.images.length && !$vuetify.breakpoint.xs">mdi-image</v-icon>
   </div>
 </template>
 <script>

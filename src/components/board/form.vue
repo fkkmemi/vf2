@@ -175,7 +175,7 @@ export default {
     },
     async save () {
       if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
-      if (!this.form.category || !this.form.title) throw Error('종류 제목은 필수 항목입니다')
+      if (!this.form.category || !this.form.title || !this.form.type) throw Error('종류, 유형, 제목은 필수 항목입니다')
 
       const r = await this.$swal.fire({
         title: '정말 추가/변경 하시겠습니까?',

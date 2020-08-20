@@ -2,6 +2,9 @@
   <v-card class="mx-4" height="100%">
     <v-list>
       <v-list-item>
+        <v-list-item-icon>
+          <v-icon>mdi-comment</v-icon>
+        </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-subtitle>
             댓글
@@ -12,6 +15,9 @@
         </v-list-item-action>
       </v-list-item>
       <v-list-item>
+        <v-list-item-icon>
+          <v-icon>mdi-thumb-up</v-icon>
+        </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-subtitle>
             좋아요
@@ -22,6 +28,9 @@
         </v-list-item-action>
       </v-list-item>
       <v-list-item>
+        <v-list-item-icon>
+          <v-icon>mdi-account-group</v-icon>
+        </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-subtitle>
             사용자

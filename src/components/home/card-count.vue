@@ -1,6 +1,7 @@
 <template>
   <v-card class="mx-4" height="100%">
     <v-subheader>
+      <v-icon left>mdi-format-list-bulleted</v-icon>
       게시물 현황
       <v-spacer/>
       {{total.count}}

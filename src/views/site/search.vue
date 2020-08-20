@@ -1,17 +1,17 @@
 <template>
-  <!-- <v-sheet color="transparent" width="200"> -->
+  <v-sheet color="transparent" :width="$vuetify.breakpoint.xs ? 100 : 200">
     <v-text-field
       v-model="text"
       solo-inverted
       flat
       hide-details
       label="검색"
-      prepend-inner-icon="mdi-magnify"
+      :prepend-inner-icon="$vuetify.breakpoint.xs ? null : 'mdi-magnify'"
       dense
       @keypress.enter="find"
       clearable
     ></v-text-field>
-  <!-- </v-sheet> -->
+  </v-sheet>
 </template>
 <script>
 export default {

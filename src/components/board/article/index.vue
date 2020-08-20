@@ -135,11 +135,13 @@ export default {
         .collection('articles')
 
       if (!this.category) {
-        this.ref
-          .where('important', '>', 0)
-          .orderBy('important', 'desc').get()
-          .then(sn => this.snapshotToItems(sn))
-          .catch(console.error)
+        if (!this.isWidget) {
+          this.ref
+            .where('important', '>', 0)
+            .orderBy('important', 'desc').get()
+            .then(sn => this.snapshotToItems(sn))
+            .catch(console.error)
+        }
         if (!this.createdAt) {
           this.query = this.ref
             .where('important', '==', 0)
@@ -151,12 +153,14 @@ export default {
             .orderBy(this.order, this.sort)
         }
       } else {
-        this.ref
-          .where('category', '==', this.category)
-          .where('important', '>', 0)
-          .orderBy('important', 'desc').get()
-          .then(sn => this.snapshotToItems(sn))
-          .catch(console.error)
+        if (!this.isWidget) {
+          this.ref
+            .where('category', '==', this.category)
+            .where('important', '>', 0)
+            .orderBy('important', 'desc').get()
+            .then(sn => this.snapshotToItems(sn))
+            .catch(console.error)
+        }
         if (!this.createdAt) {
           this.query = this.ref
             .where('category', '==', this.category)

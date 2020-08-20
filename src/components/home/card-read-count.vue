@@ -1,6 +1,7 @@
 <template>
   <v-card class="mx-4" height="100%">
     <v-subheader>
+      <v-icon left>mdi-eye</v-icon>
       조회수 현황
       <v-spacer/>
       {{total.readCount}}
