@@ -9,7 +9,10 @@ export default new Vuex.Store({
     fireUser: null,
     user: null,
     boardTypeList: localStorage.getItem('boardTypeList') === 'true',
-    searchText: ''
+    searchText: '',
+    cached: {
+
+    }
   },
   mutations: {
     setEdit (state, edit) {
@@ -27,6 +30,17 @@ export default new Vuex.Store({
     },
     setSearchText (state, text) {
       state.searchText = text
+    },
+    setCached (state, { boardId, lastDoc, items }) {
+      if (!state.cached[boardId]) state.cached[boardId] = {}
+      const cached = state.cached[boardId]
+      cached.lastDoc = lastDoc
+      cached.items = items
+    },
+    setCachedItem (state, { boardId, articleId }) {
+      if (!state.cached[boardId]) state.cached[boardId] = {}
+      const cached = state.cached[boardId]
+      cached.articleId = articleId
     }
   },
   actions: {

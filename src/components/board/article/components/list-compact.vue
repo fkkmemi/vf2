@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-for="(item, i) in items">
-      <v-list-item :three-line="!isWidget" :key="item.id" :to="category ? `/board/${boardId}/${item.id}?category=${category}`:`/board/${boardId}/${item.id}`" :ref="item.id">
+      <v-list-item :three-line="!isWidget" :key="item.id" @click="goTo(item)" :ref="item.id">
         <v-list-item-content>
           <v-list-item-subtitle class="d-flex align-center text--primary body-1">
             <v-btn
@@ -35,6 +35,7 @@
   </div>
 </template>
 <script>
+// import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import DisplayTitle from '@/components/display-title'
@@ -44,7 +45,7 @@ import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
   components: { DisplayTime, DisplayUser, DisplayTitle, DisplayCount },
-  props: ['items', 'boardId', 'category', 'isWidget', 'createdAt'],
+  props: ['items', 'boardId', 'category', 'isWidget'],
   data () {
     return {
       tuiOptions: {
@@ -61,13 +62,24 @@ export default {
     }
   },
   mounted () {
-    // this.goTo()
+    this.scrollTo()
   },
   methods: {
-    goTo () {
-      if (!this.createdAt) return
-      if (!this.$refs[this.createdAt]) return
-      const target = this.$refs[this.createdAt][0]
+    goTo (item) {
+      const to = {
+        path: `/board/${this.boardId}/${item.id}`
+      }
+      if (this.category) to.query = { category: this.category }
+      this.$store.commit('setCachedItem', { boardId: this.boardId, articleId: item.id })
+      this.$router.push(to)
+    },
+    scrollTo () {
+      if (this.isWidget) return
+      const cached = this.$store.state.cached[this.boardId]
+      if (!cached) return
+      if (!cached.articleId) return
+      if (!this.$refs[cached.articleId]) return
+      const target = this.$refs[cached.articleId][0]
       if (target) this.$vuetify.goTo(target)
     },
     liked (item) {

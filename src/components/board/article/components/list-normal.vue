@@ -2,7 +2,7 @@
   <div>
     <template v-for="(item, i) in items">
       <v-card :key="item.id" :class="$vuetify.breakpoint.xs ? '' : 'ma-4'" :flat="$vuetify.breakpoint.xs">
-        <v-card color="transparent" flat :to="category ? `/board/${boardId}/${item.id}?category=${category}`:`/board/${boardId}/${item.id}`">
+        <v-card color="transparent" flat @click="goTo(item)" :ref="item.id">
           <v-card-subtitle class="text--primary body-1" :class="item.important > 0 ? 'text-truncate': ''">
             <display-title :item="item"/>
             <v-spacer/>
@@ -89,7 +89,27 @@ export default {
       return this.$store.state.fireUser
     }
   },
+  mounted () {
+    this.scrollTo()
+  },
   methods: {
+    goTo (item) {
+      const to = {
+        path: `/board/${this.boardId}/${item.id}`
+      }
+      if (this.category) to.query = { category: this.category }
+      this.$store.commit('setCachedItem', { boardId: this.boardId, articleId: item.id })
+      this.$router.push(to)
+    },
+    scrollTo () {
+      if (this.isWidget) return
+      const cached = this.$store.state.cached[this.boardId]
+      if (!cached) return
+      if (!cached.articleId) return
+      if (!this.$refs[cached.articleId]) return
+      const target = this.$refs[cached.articleId][0]
+      if (target) this.$vuetify.goTo(target)
+    },
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)

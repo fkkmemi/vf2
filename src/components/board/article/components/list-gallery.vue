@@ -6,7 +6,7 @@
           <v-card
             color=""
             height="100%"
-            @click="$router.push(toPath(item))">
+            @click="goTo(item)" :ref="item.id">
             <v-system-bar color="secondary">
               <span class="font-italic caption hidden-xs-only"><display-time :time="item.createdAt"></display-time></span>
               <v-spacer/>
@@ -91,9 +91,27 @@ export default {
       return this.$store.state.fireUser
     }
   },
-  created () {
+  mounted () {
+    this.scrollTo()
   },
   methods: {
+    goTo (item) {
+      const to = {
+        path: `/board/${this.boardId}/${item.id}`
+      }
+      if (this.category) to.query = { category: this.category }
+      this.$store.commit('setCachedItem', { boardId: this.boardId, articleId: item.id })
+      this.$router.push(to)
+    },
+    scrollTo () {
+      if (this.isWidget) return
+      const cached = this.$store.state.cached[this.boardId]
+      if (!cached) return
+      if (!cached.articleId) return
+      if (!this.$refs[cached.articleId]) return
+      const target = this.$refs[cached.articleId][0]
+      if (target) this.$vuetify.goTo(target)
+    },
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)

@@ -255,7 +255,6 @@ export default {
         query: {}
       }
       if (this.category) to.query.category = this.category
-      if (!this.article.important) to.query.createdAt = this.articleId
       this.$router.push(to)
     },
     async like () {
