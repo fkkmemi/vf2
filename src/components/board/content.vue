@@ -26,6 +26,7 @@
           <span v-text="board.title" class="mr-2"></span>
         </template>
         <v-spacer/>
+        <v-btn icon :to="'/board/' + board.id" v-if="isWidget"><v-icon>mdi-arrow-right-circle-outline</v-icon></v-btn>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
         <template v-if="!isWidget">
           <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
@@ -200,6 +201,7 @@ export default {
         this.loaded = true
         if (!doc.exists) return this.write()
         const item = doc.data()
+        item.id = doc.id
         item.createdAt = item.createdAt.toDate()
         item.updatedAt = item.updatedAt.toDate()
         item.categories.unshift('전체')

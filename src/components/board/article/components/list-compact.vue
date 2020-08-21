@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-for="(item, i) in items">
-      <v-list-item :three-line="!isWidget" :key="item.id" :to="category ? `/board/${boardId}/${item.id}?category=${category}`:`/board/${boardId}/${item.id}`">
+      <v-list-item :three-line="!isWidget" :key="item.id" :to="category ? `/board/${boardId}/${item.id}?category=${category}`:`/board/${boardId}/${item.id}`" :ref="item.id">
         <v-list-item-content>
           <v-list-item-subtitle class="d-flex align-center text--primary body-1">
             <v-btn
@@ -44,7 +44,7 @@ import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
   components: { DisplayTime, DisplayUser, DisplayTitle, DisplayCount },
-  props: ['items', 'boardId', 'category', 'isWidget'],
+  props: ['items', 'boardId', 'category', 'isWidget', 'createdAt'],
   data () {
     return {
       tuiOptions: {
@@ -60,7 +60,16 @@ export default {
       return this.$store.state.fireUser
     }
   },
+  mounted () {
+    // this.goTo()
+  },
   methods: {
+    goTo () {
+      if (!this.createdAt) return
+      if (!this.$refs[this.createdAt]) return
+      const target = this.$refs[this.createdAt][0]
+      if (target) this.$vuetify.goTo(target)
+    },
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)

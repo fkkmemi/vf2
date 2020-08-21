@@ -18,6 +18,17 @@
       <template v-for="item in items">
         <item-user :key="item.uid" :item="item" />
       </template>
+      <v-list-item v-if="lastDoc">
+        <v-btn
+          @click="more"
+          v-intersect="onIntersect"
+          text
+          color="primary"
+          block
+          :loading="loading">
+          <v-icon>mdi-dots-horizontal</v-icon>더보기
+        </v-btn>
+      </v-list-item>
     </v-card>
   </v-container>
 </template>
@@ -73,7 +84,7 @@ export default {
           findItem.visitCount = item.visitCount
         }
       })
-      this.items.sort((before, after) => before.createdAt.getTime() - after.createdAt.getTime())
+      this.items.sort((before, after) => after.createdAt.getTime() - before.createdAt.getTime())
     },
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()

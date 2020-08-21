@@ -20,11 +20,11 @@
       </v-btn>
     </v-list-item>
     <template v-if="board.type === '일반'">
-      <list-compact v-if="$store.state.boardTypeList || isWidget" :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
+      <list-compact v-if="$store.state.boardTypeList || isWidget" :items="items" :boardId="boardId" :category="category" :isWidget="isWidget" :createdAt="createdAt"/>
       <list-normal v-else :items="items" :boardId="boardId" :category="category"/>
     </template>
     <list-gallery v-else :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
-    <v-list-item v-if="lastDoc && !isWidget">
+    <v-list-item v-if="lastDoc && !isWidget" ref="xxx">
       <v-btn
         @click="more"
         v-intersect="onIntersect"
