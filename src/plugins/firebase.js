@@ -4,11 +4,13 @@ import 'firebase/auth'
 import 'firebase/firebase-database'
 import 'firebase/firebase-firestore'
 import 'firebase/firebase-storage'
+import 'firebase/analytics'
 import firebaseConfig from '../../firebaseConfig'
 import store from '../store/'
 
 firebase.initializeApp(firebaseConfig)
 firebase.auth().languageCode = 'ko'
+firebase.analytics()
 
 let unsubscribe = null
 
