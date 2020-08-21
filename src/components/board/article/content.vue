@@ -99,15 +99,15 @@
       <v-card-actions class="py-0">
         <v-row no-gutters>
           <v-col cols="4">
-            <v-btn block text color="primary" @click="go(-1)"><v-icon left>mdi-menu-left</v-icon> 이전</v-btn>
+            <v-btn x-large block text color="primary" @click="go(-1)"><v-icon left>mdi-menu-left</v-icon> 이전</v-btn>
           </v-col>
           <v-col cols="4" class="d-flex">
             <v-divider vertical></v-divider>
-            <v-btn block text color="primary" @click="back"><v-icon left>mdi-format-list-bulleted-square</v-icon> 목록</v-btn>
+            <v-btn x-large block text color="primary" @click="back"><v-icon left>mdi-format-list-bulleted-square</v-icon> 목록</v-btn>
             <v-divider vertical></v-divider>
           </v-col>
           <v-col cols="4">
-            <v-btn block text color="primary" @click="go(1)"><v-icon left>mdi-menu-right</v-icon> 다음</v-btn>
+            <v-btn x-large block text color="primary" @click="go(1)"><v-icon left>mdi-menu-right</v-icon> 다음</v-btn>
           </v-col>
         </v-row>
       </v-card-actions>

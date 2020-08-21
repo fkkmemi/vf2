@@ -3,11 +3,9 @@
     <v-app-bar app color="primary" dark :clipped-left="$vuetify.breakpoint.lgAndUp">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <site-title :title="site.title"></site-title>
-      <!-- <v-btn @click="test">test</v-btn> -->
       <v-spacer/>
       <site-search/>
       <site-sign></site-sign>
-      <!-- <v-btn icon><v-icon>mdi-certificate</v-icon></v-btn> -->
     </v-app-bar>
     <v-navigation-drawer
       app
@@ -15,12 +13,28 @@
       disable-resize-watcher
       :width="$store.state.editable ? 380 : 256"
       v-model="drawer">
-      <!-- :width="$store.state.editable ? 380 : null" -->
       <site-menu :items="site.menu" @close="drawer=false"></site-menu>
     </v-navigation-drawer>
-    <v-main>
+    <v-main onscroll="onScroll">
       <banner-email-confirm v-if="user && !user.emailVerified" />
       <router-view/>
+      <v-sheet color="transparent" height="70" v-show="offsetTop > 500" />
+      <v-fab-transition>
+        <v-btn
+          v-show="offsetTop > 500"
+          color="pink"
+          dark
+          absolute
+          bottom
+          right
+          fab
+          fixed
+          style="bottom: 50px; transform-origin: center center;"
+          @click="$vuetify.goTo(0)"
+        >
+          <v-icon>mdi-chevron-up</v-icon>
+        </v-btn>
+      </v-fab-transition>
     </v-main>
     <site-footer :footer="site.footer"></site-footer>
   </v-app>
@@ -59,7 +73,8 @@ export default {
         ],
         title: '타이틀 로드중 ...',
         footer: '바닥 로드중 ...'
-      }
+      },
+      offsetTop: 0
     }
   },
   computed: {
@@ -69,6 +84,12 @@ export default {
   },
   created () {
     this.subscribe()
+  },
+  mounted () {
+    window.addEventListener('scroll', this.onScroll)
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
     subscribe () {
@@ -82,16 +103,10 @@ export default {
       }, (e) => {
         console.error(e.message)
       })
+    },
+    onScroll (e) {
+      this.offsetTop = window.scrollY
     }
-    // async test () {
-    //   await this.$firebase.database().ref()
-    //     .child('users').child('alTVPFgdQqNrxnQxGtAgAH8nXgU2').update({
-    //       updatedAt: new Date().getTime(),
-    //       settings: {
-    //         view: 'compact'
-    //       }
-    //     })
-    // }
   }
 }
 </script>
