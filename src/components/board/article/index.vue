@@ -44,7 +44,7 @@ import ListNormal from './components/list-normal'
 import ListGallery from './components/list-gallery'
 import setMeta from '@/util/setMeta'
 
-const LIMIT = 4
+const LIMIT = 5
 
 export default {
   components: { ListCompact, ListNormal, ListGallery },

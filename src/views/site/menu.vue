@@ -31,14 +31,15 @@
         :key="i"
         v-model="item.active"
         :prepend-icon="item.icon"
-        :no-action="!$store.state.editable"
+        :no-action="false"
         v-show="(item.level >= 5) || (user && user.level <= item.level)"
       >
+        <!-- :no-action="!$store.state.editable" -->
         <template v-slot:activator>
           <v-list-item-content>
             <v-list-item-title class="d-flex align-center">
+              <v-icon color="error" left v-if="newCheck(new Date(item.createdAt), 'days', 1)">mdi-fire</v-icon>
               <span>{{ item.title }}</span>
-              <v-icon color="error" right v-if="newCheck(new Date(item.createdAt), 'days', 1)">mdi-fire</v-icon>
             </v-list-item-title>
             <v-list-item-subtitle v-if="$store.state.editable">
               <v-btn icon @click="openDialogItem(i)" small><v-icon small>mdi-pencil</v-icon></v-btn>
@@ -57,9 +58,9 @@
           v-show="(item.level >= 5) || (user && user.level <= item.level)"
         >
           <v-list-item-content>
-            <v-list-item-title :class="$store.state.editable ? 'pl-4':''" class="d-flex align-center">
-              <span>{{ subItem.title }}</span>
-              <v-icon color="error" right v-if="newCheck(new Date(subItem.createdAt), 'days', 1)">mdi-fire</v-icon>
+            <v-list-item-title class="d-flex align-center pl-6">
+              <v-icon color="error" left v-if="newCheck(new Date(subItem.createdAt), 'days', 1)">mdi-fire</v-icon>
+              <span class="subtitle-2 font-weight-regular">{{ subItem.title }}</span>
             </v-list-item-title>
             <v-list-item-subtitle v-if="$store.state.editable">
               <v-btn icon @click="openDialogSubItem(i, j)" small><v-icon small>mdi-pencil</v-icon></v-btn>
@@ -100,7 +101,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="2">
-              <v-icon v-text="formItem.icon" large required></v-icon>
+              <v-icon v-text="formItem.icon" x-large required></v-icon>
             </v-col>
             <v-col cols="10">
               <v-text-field
@@ -182,7 +183,7 @@ export default {
       selectedItemIndex: 0,
       selectedSubItemIndex: 0,
       formItem: {
-        icon: 'mdi-crosshairs-question',
+        icon: 'mdi-help',
         title: '',
         createdAt: new Date().getTime(),
         level: 5
@@ -232,7 +233,7 @@ export default {
     openDialogItem (index) {
       this.selectedItemIndex = index
       if (index < 0) {
-        this.formItem.icon = 'mdi-crosshairs-question'
+        this.formItem.icon = 'mdi-help'
         this.formItem.title = ''
         this.formItem.level = 5
       } else {

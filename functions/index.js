@@ -613,7 +613,7 @@ const writeSitemap = async (id, items) => {
   // sn.docs.forEach(doc => {
   items.forEach(item => {
     const sm = xml.ele('url')
-    sm.ele('loc', url + '/board/' + id + '/' + id)
+    sm.ele('loc', url + '/board/' + id + '/' + item.id)
     sm.ele('lastmod', item.updatedAt.toDate().toISOString())
   })
   return xml.end({
@@ -650,6 +650,7 @@ const setSitemap = async () => {
     const items = []
     sn.docs.forEach(d => {
       const item = d.data()
+      item.id = d.id
       set[doc.id].readCount += item.readCount
       set[doc.id].commentCount += item.commentCount
       set[doc.id].likeCount += item.likeCount
