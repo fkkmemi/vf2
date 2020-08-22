@@ -79,8 +79,10 @@ export default {
       if (!cached) return
       if (!cached.articleId) return
       if (!this.$refs[cached.articleId]) return
-      const target = this.$refs[cached.articleId][0]
-      if (target) this.$vuetify.goTo(target)
+      setTimeout(() => {
+        const target = this.$refs[cached.articleId][0]
+        if (target) this.$vuetify.goTo(target, { duration: 0 })
+      }, 500)
     },
     liked (item) {
       if (!this.fireUser) return false

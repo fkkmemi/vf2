@@ -7,7 +7,7 @@
       게시물이 없습니다 <v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을 작성하세요~
     </v-alert>
   </v-container>
-  <v-container fluid v-else class="pa-0">
+  <v-container fluid v-else :class="$vuetify.breakpoint.xs || $store.state.boardTypeList ? 'pa-0' : ''">
     <template v-if="board.type === '일반'">
       <list-compact v-if="$store.state.boardTypeList || isWidget" :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
       <list-normal v-else :items="items" :boardId="boardId" :category="category"/>
@@ -198,7 +198,7 @@ export default {
           .where('important', '==', 0)
           .orderBy(this.order, this.sort)
       }
-      this.loaded = false
+      this.loaded = !!this.items.length
       this.unsubscribe = this.query.limit(this.typeLimit).onSnapshot(sn => {
         this.loaded = true
         if (sn.empty) return
