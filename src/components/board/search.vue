@@ -2,16 +2,24 @@
   <v-container v-if="!loaded" fluid>
     <v-skeleton-loader type="article" v-for="i in 4" :key="i"></v-skeleton-loader>
   </v-container>
-  <v-container fluid v-else-if="loaded && result && !result.hits.length">
+  <!-- <v-container fluid v-else-if="loaded && result && !result.hits.length">
     <v-alert type="warning" border="left" class="mb-0">
       검색된 내용이 없습니다
     </v-alert>
-  </v-container>
+  </v-container> -->
   <v-container v-else fluid class="">
-    <v-alert border="left" color="info" outlined>
+    <v-text-field
+      v-model="search"
+      label="검색"
+      solo
+      prepend-inner-icon="mdi-magnify"
+      clearable
+      @keypress.enter="find"
+    ></v-text-field>
+    <v-alert border="left" color="info" outlined v-if="result">
       <v-card-title class="body-1">
         <v-icon>mdi-magnify</v-icon>
-        <span class="font-weight-bold mr-1">{{text}}</span>
+        <span class="font-weight-bold mr-1">{{result.query}}</span>
         (으)로 검색된 게시물 은 총
         <span class="font-weight-bold ml-1">{{result.nbHits}}</span>
         건 입니다
@@ -50,25 +58,24 @@ export default {
       result: null,
       loading: false,
       items: [],
-      page: 0
+      page: 0,
+      search: this.text
     }
   },
   watch: {
-    text () {
+    text (n) {
+      this.search = n
       this.init()
       this.fetch()
     }
   },
   created () {
-    this.init()
-    this.fetch()
+    this.find()
   },
   destroyed () {
-    if (this.text) this.$store.commit('setSearchText', '')
   },
   methods: {
     init () {
-      if (this.text) this.$store.commit('setSearchText', this.text)
       setMeta({
         title: '검색 ' + this.text,
         description: '검색 ' + this.text,
@@ -78,42 +85,36 @@ export default {
       this.result = null
       this.items = []
     },
+    find () {
+      this.init()
+      this.fetch()
+    },
     async fetch () {
       if (this.loading) return
-      if (this.result && (this.result.nbHits === this.items.length)) return
-      try {
-        if (!this.page) this.loaded = false
-        this.loading = true
-        const r = await this.$index.search(this.text, {
-          page: this.page++,
-          hitsPerPage: 5
-        })
-        // const items = r.hits.map(hit => {
-        //   const item = hit
-        //   item.content = hit.content.substr(0, 300)
-        //   item.createdAt = new Date(hit.createdAt)
-        //   item.updatedAt = new Date(hit.updatedAt)
-        //   return item
-        // })
-        // this.items = this.items.concat(items)
-        r.hits.forEach(hit => {
-          const exists = this.items.some(item => item.objectID === hit.objectID)
-          if (!exists) {
-            const item = hit
-            item.content = hit.content.substr(0, 300)
-            item.createdAt = new Date(hit.createdAt)
-            item.updatedAt = new Date(hit.updatedAt)
-            this.items.push(item)
-          }
-        })
-        this.result = r
-      } finally {
-        this.loaded = true
-        this.loading = false
+      if (this.search) {
+        try {
+          if (!this.page) this.loaded = false
+          this.loading = true
+          const r = await this.$index.search(this.search, {
+            page: this.page,
+            hitsPerPage: 5
+          })
+          r.hits.forEach(hit => {
+            const exists = this.items.some(item => item.objectID === hit.objectID)
+            if (!exists) this.items.push(hit)
+          })
+          this.result = r
+        } finally {
+          this.loaded = true
+          this.loading = false
+        }
       }
     },
     onIntersect (entries, observer, isIntersecting) {
-      if (isIntersecting) this.fetch()
+      if (isIntersecting) {
+        this.page++
+        this.fetch()
+      }
     }
   }
 }

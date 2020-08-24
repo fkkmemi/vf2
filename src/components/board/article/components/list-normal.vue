@@ -2,38 +2,35 @@
   <v-row :no-gutters="$vuetify.breakpoint.xs">
     <template v-for="(item, i) in items">
       <v-col cols="12" sm="6" md="4" lg="3" :key="item.id">
-        <v-hover v-slot:default="{ hover }">
+        <v-hover v-slot:default="{ hover }" open-delay="300">
           <v-card
             :class="cardClass(hover)"
             :flat="$vuetify.breakpoint.xs"
             :tile="$vuetify.breakpoint.xs"
-            :elevation="hover ? 16 : 2">
-            <v-card color="transparent" flat @click="goTo(item)" :ref="item.id">
-              <v-card-subtitle class="text--primary body-1" :class="item.important > 0 ? 'text-truncate': ''">
-                <display-title :item="item"/>
-                <v-spacer/>
-                <display-count v-if="item.important > 0" :item="item" :column="false"></display-count>
-              </v-card-subtitle>
-
-              <v-card-text>
-                <viewer v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
-                <v-container v-else>
-                  <v-row justify="center" align="center">
-                    <v-progress-circular indeterminate></v-progress-circular>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-            </v-card>
+            :elevation="hover ? 16 : 2"
+            color="transparent" @click="goTo(item)" :ref="item.id">
+            <v-card-subtitle class="text--primary body-1">
+              <display-title :item="item"/>
+              <v-spacer/>
+            </v-card-subtitle>
+            <v-card-text>
+              <viewer v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
+              <v-container v-else>
+                <v-row justify="center" align="center">
+                  <v-progress-circular indeterminate></v-progress-circular>
+                </v-row>
+              </v-container>
+            </v-card-text>
             <v-card-actions class="d-flex justify-center">
               <v-btn text color="primary">
                 <v-icon left>mdi-dots-horizontal</v-icon>자세히 보기
               </v-btn>
-              <v-btn
+              <!-- <v-btn
                 v-if="fireUser && fireUser.uid === item.uid"
                 :to="`/board/${boardId}/${item.id}?action=write`"
                 text color="primary">
                 <v-icon left>mdi-pencil</v-icon>수정하기
-              </v-btn>
+              </v-btn> -->
             </v-card-actions>
             <v-card-actions>
               <span class="font-italic caption ml-2"><display-time :time="item.createdAt"></display-time></span>
@@ -52,7 +49,7 @@
                   small
                   outlined
                   class="mr-4 mb-2"
-                  :to="`/board/${boardId}?category=${item.category}`"
+                  @click.native.stop="category === item.category ? null : goCategory(item)"
                 >
                   {{item.category}}
                   <v-icon right>mdi-menu-right</v-icon>
@@ -60,7 +57,6 @@
                 <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>
               </v-row>
             </v-card-text>
-
           </v-card>
         </v-hover>
       </v-col>
@@ -127,6 +123,9 @@ export default {
     cardClass (hover) {
       if (this.$vuetify.breakpoint.xs) return 'ma-0'
       return hover ? 'ma-0 pa-1' : 'ma-1'
+    },
+    goCategory (item) {
+      this.$router.push(`/board/${this.boardId}?category=${item.category}`)
     }
   }
 }

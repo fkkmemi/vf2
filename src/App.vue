@@ -2,9 +2,12 @@
   <v-app>
     <v-app-bar app color="primary" dark :clipped-left="$vuetify.breakpoint.lgAndUp">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <site-title :title="site.title"></site-title>
+      <site-title v-if="!searchable" :title="site.title"></site-title>
       <v-spacer/>
-      <site-search/>
+      <site-search v-show="searchable" class="mx-2"/>
+      <v-btn icon @click="searchable=!searchable">
+        <v-icon>{{searchable ? 'mdi-magnify-close' : 'mdi-magnify'}}</v-icon>
+      </v-btn>
       <site-sign></site-sign>
     </v-app-bar>
     <v-navigation-drawer
@@ -74,7 +77,8 @@ export default {
         title: '타이틀 로드중 ...',
         footer: '바닥 로드중 ...'
       },
-      offsetTop: 0
+      offsetTop: 0,
+      searchable: false
     }
   },
   computed: {
