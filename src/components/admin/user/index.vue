@@ -43,7 +43,6 @@ export default {
   data () {
     return {
       items: [],
-      unsubscribe: null,
       lastDoc: null,
       loading: false,
       newCheck,
@@ -57,10 +56,9 @@ export default {
     }
   },
   created () {
-    this.subscribe()
+    this.init()
   },
   destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
     snapshotToItems (sn) {
@@ -86,25 +84,23 @@ export default {
       })
       this.items.sort((before, after) => after.createdAt.getTime() - before.createdAt.getTime())
     },
-    subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
+    async init () {
       this.ref = this.$firebase.firestore()
-        .collection('users').orderBy('createdAt', 'desc')
-      this.unsubscribe = this.ref.limit(LIMIT).onSnapshot(sn => {
-        this.loaded = true
-        if (sn.empty) {
-          this.items = []
-          return
-        }
+        .collection('users').orderBy('createdAt', 'desc').limit(LIMIT)
+      try {
+        const sn = await this.ref.get()
         this.snapshotToItems(sn)
-      })
+        this.loaded = true
+      } finally {
+        this.loading = false
+      }
     },
     async more () {
       if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
       if (this.loading) return
       this.loading = true
       try {
-        const sn = await this.ref.startAfter(this.lastDoc).limit(LIMIT).get()
+        const sn = await this.ref.startAfter(this.lastDoc).get()
         this.snapshotToItems(sn)
       } finally {
         this.loading = false
