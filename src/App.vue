@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="primary" dark :clipped-left="$vuetify.breakpoint.lgAndUp">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <site-title v-if="!searchable" :title="site.title"></site-title>
+      <site-title v-if="(!searchable && $vuetify.breakpoint.xs) || !$vuetify.breakpoint.xs" :title="site.title"></site-title>
       <v-spacer/>
       <site-search v-show="searchable" class="mx-2"/>
       <v-btn icon @click="searchable=!searchable">

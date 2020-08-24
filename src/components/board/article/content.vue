@@ -71,7 +71,6 @@
         <v-btn rounded @click="like" :color="liked ? 'success' : ''">
           <v-icon left>mdi-thumb-up-outline</v-icon>
           좋아요
-          <!-- <span class="body-2">{{article.likeCount}}</span> -->
         </v-btn>
       </v-card-actions>
       <v-card-text>
@@ -94,20 +93,35 @@
         <v-spacer/>
         <v-btn @click="articleWrite" text color="primary"><v-icon left>mdi-pencil</v-icon>수정</v-btn>
         <v-btn @click="remove" text color="error"><v-icon left>mdi-delete</v-icon>삭제</v-btn>
+        <v-btn @click="back" text><v-icon left>mdi-close</v-icon>닫기</v-btn>
       </v-card-actions>
       <v-divider/>
-      <v-card-actions class="py-0">
+      <v-card-actions class="py-0" v-intersect="onIntersect">
         <v-row no-gutters>
-          <v-col cols="4">
-            <v-btn x-large block text color="primary" @click="go(-1)"><v-icon left>mdi-menu-left</v-icon> 이전</v-btn>
+          <v-col cols="12" sm="1">
           </v-col>
-          <v-col cols="4" class="d-flex">
-            <v-divider vertical></v-divider>
-            <v-btn x-large block text color="primary" @click="back"><v-icon left>mdi-format-list-bulleted-square</v-icon> 목록</v-btn>
+          <v-col cols="12" sm="4">
+            <v-list-item v-if="prev.to" :to="prev.to">
+              <v-list-item-icon>
+                <v-icon x-large>mdi-menu-left</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="subtitle-2">
+                {{prev.text}}
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+          <v-col cols="12" sm="2" class="d-flex justify-center hidden-xs-only">
             <v-divider vertical></v-divider>
           </v-col>
-          <v-col cols="4">
-            <v-btn x-large block text color="primary" @click="go(1)"><v-icon left>mdi-menu-right</v-icon> 다음</v-btn>
+          <v-col cols="12" sm="4">
+            <v-list-item v-if="next.to" :to="next.to">
+              <v-list-item-content class="subtitle-2">
+                <span class="text-end">{{next.text}}</span>
+              </v-list-item-content>
+              <v-list-item-icon><v-icon x-large>mdi-menu-right</v-icon></v-list-item-icon>
+            </v-list-item>
+          </v-col>
+          <v-col cols="12" sm="1">
           </v-col>
         </v-row>
       </v-card-actions>
@@ -155,7 +169,17 @@ export default {
       unsubscribe: null,
       article: null,
       doc: null,
-      loaded: false
+      loaded: false,
+      pageNavLoaded: false,
+      prev: {
+        text: '',
+        to: ''
+      },
+      next: {
+        text: '',
+        to: ''
+      },
+      loading: false
     }
   },
   computed: {
@@ -189,6 +213,7 @@ export default {
   },
   methods: {
     subscribe () {
+      this.pageNavLoaded = false
       window.scrollTo(0, 0)
       if (this.unsubscribe) this.unsubscribe()
       this.ref = this.$firebase.firestore().collection('boards').doc(this.boardId).collection('articles').doc(this.articleId)
@@ -271,8 +296,24 @@ export default {
         })
       }
     },
-    async go (arrow) {
-      if (!this.doc) return
+    goCategory () {
+      const to = {
+        path: '/board/' + this.boardId,
+        query: { category: this.article.category }
+      }
+      this.$router.push(to)
+    },
+    onViewerLoad (v) {
+      addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
+    },
+    onIntersect (entries, observer, isIntersecting) {
+      if (this.pageNavLoaded) return
+      if (!this.content) return
+      if (!isIntersecting) return
+      this.pageNavLoaded = true
+      this.createPages()
+    },
+    async createPages () {
       let ref
       if (!this.category) {
         ref = this.$firebase.firestore()
@@ -286,26 +327,37 @@ export default {
           .where('category', '==', this.category)
           .orderBy('createdAt', 'desc')
       }
-      let sn
-      if (arrow < 0) sn = await ref.endBefore(this.doc).limitToLast(1).get()
-      else sn = await ref.startAfter(this.doc).limit(1).get()
+      try {
+        this.loading = true
+        const prevSn = await ref.endBefore(this.doc).limitToLast(1).get()
+        if (prevSn.empty) {
+          this.prev = { to: '', text: '' }
+        } else {
+          const prevDoc = prevSn.docs[0]
+          const prevTo = { path: '/board/' + this.boardId + '/' + prevDoc.id }
+          if (this.category) prevTo.query = { category: this.category }
+          this.prev.to = prevTo
+          this.prev.text = prevDoc.data().title
+        }
 
-      if (sn.empty) throw Error('더이상 페이지가 없습니다')
-      const doc = sn.docs[0]
-
-      const to = { path: '/board/' + this.boardId + '/' + doc.id }
-      if (this.category) to.query = { category: this.category }
-      this.$router.push(to)
-    },
-    goCategory () {
-      const to = {
-        path: '/board/' + this.boardId,
-        query: { category: this.article.category }
+        const nextSn = await ref.startAfter(this.doc).limit(1).get()
+        if (nextSn.empty) {
+          this.next = { to: '', text: '' }
+        } else {
+          const nextDoc = nextSn.docs[0]
+          const nextTo = { path: '/board/' + this.boardId + '/' + nextDoc.id }
+          if (this.category) nextTo.query = { category: this.category }
+          this.next.to = nextTo
+          this.next.text = nextDoc.data().title
+        }
+      } finally {
+        console.log('pagenav')
+        this.loading = false
       }
-      this.$router.push(to)
-    },
-    onViewerLoad (v) {
-      addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
+
+      // const to = { path: '/board/' + this.boardId + '/' + doc.id }
+      // if (this.category) to.query = { category: this.category }
+      // this.$router.push(to)
     }
   }
 }
