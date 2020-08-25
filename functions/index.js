@@ -421,6 +421,7 @@ exports.onDeleteBoardComment = functions.region(region).firestore
     const comment = snap.data()
     if (!comment.image) return
     if (!comment.image.id) return
+    if (!comment.image.size) return
     const ps = []
     ps.push('images')
     ps.push('boards')

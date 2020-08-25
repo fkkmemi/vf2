@@ -6,7 +6,7 @@
         <v-list-item-content>
           <v-list-item-subtitle v-if="!item.edit" class="black--text white-space text-left">
             <v-row>
-              <v-col cols="12" :sm="item.image && item.image.id ? 6 : null" order="1" order-sm="0">
+              <v-col cols="12" :sm="item.image && item.image.url ? 6 : null" order="1" order-sm="0">
                 <v-icon color="primary" v-for="i in replyDepth(item)" :key="i">mdi-subdirectory-arrow-right</v-icon>
                 <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
                 <span v-text="item.comment"/>
@@ -121,22 +121,37 @@
               clearable />
           </v-col>
           <v-col cols="12" sm="4">
-            <v-file-input
-              outlined
-              hide-details
-              label="이미지 추가"
-              prepend-icon=""
-              prepend-inner-icon="mdi-file-image"
-              class="mb-4"
-              accept="image/*"
-              @change="imageUpload"/>
-            <v-text-field
-              v-model="imageLink"
-              outlined
-              hide-details
-              label="이미지 링크 추가"
-              class=""
-              prepend-inner-icon="mdi-image"/>
+            <v-tabs v-model="tab">
+              <v-tab>
+                <v-icon left>mdi-laptop</v-icon> 내 컴퓨터
+              </v-tab>
+              <v-tab>
+                <v-icon left>mdi-link</v-icon> 링크
+              </v-tab>
+            </v-tabs>
+            <v-tabs-items v-model="tab" class="mt-4">
+              <v-tab-item>
+                <v-file-input
+                  v-model="file"
+                  outlined
+                  hide-details
+                  label="이미지 추가"
+                  prepend-icon=""
+                  prepend-inner-icon="mdi-file-image"
+                  class="mb-4"
+                  accept="image/*"
+                  @change="imageUpload"/>
+              </v-tab-item>
+              <v-tab-item>
+                <v-text-field
+                  v-model="imageLink"
+                  outlined
+                  hide-details
+                  label="이미지 링크 추가"
+                  class=""
+                  prepend-inner-icon="mdi-image"/>
+              </v-tab-item>
+            </v-tabs-items>
           </v-col>
         </v-row>
       </v-card-text>
@@ -171,7 +186,9 @@ export default {
         size: 0,
         id: '',
         url: ''
-      }
+      },
+      file: null,
+      tab: null
     }
   },
   computed: {
@@ -206,6 +223,11 @@ export default {
           item.edit = false
           item.replyEdit = false
           item.replyComment = ''
+          item.replyImage = {
+            size: 0,
+            id: '',
+            url: ''
+          }
           this.items.push(item)
         } else {
           findItem.comment = item.comment
@@ -262,6 +284,12 @@ export default {
         likeCount: 0,
         likeUids: [],
         no: rs.length * 10000
+      }
+      if (this.imageLink) {
+        doc.image = {
+          id: '', size: 0, url: this.imageLink
+        }
+        this.imageLink = ''
       }
       if (this.image.id) doc.image = this.image
       const id = doc.createdAt.getTime().toString()
@@ -398,6 +426,7 @@ export default {
         .put(file)
       image.url = await sn.ref.getDownloadURL()
       this.image = image
+      this.file = null
     }
   }
 }
