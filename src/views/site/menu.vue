@@ -43,6 +43,7 @@
           v-for="(subItem, j) in item.subItems"
           :key="j"
           :to="$store.state.editable ? null : subItem.to"
+          exact
         >
           <v-list-item-content>
             <v-list-item-title :class="$store.state.editable ? 'pl-4':''">
