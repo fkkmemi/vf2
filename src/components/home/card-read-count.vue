@@ -4,7 +4,18 @@
       <v-icon left>mdi-eye</v-icon>
       조회수 현황
       <v-spacer/>
-      {{total.readCount}}
+      <v-tooltip bottom>
+        <template v-slot:activator="{on}">
+          <span v-on="on">{{total.readCount}}</span>
+        </template>
+        <ul>
+          <li v-for="(item, i) in items" :key="item.id">
+            {{item.createdAt.toLocaleDateString()}}:
+            {{values[i]}}
+          </li>
+          <li>현재: {{values[values.length - 1]}}</li>
+        </ul>
+      </v-tooltip>
     </v-subheader>
     <v-card-text>
       <v-sparkline
@@ -30,6 +41,6 @@
 <script>
 
 export default {
-  props: ['total', 'values']
+  props: ['total', 'values', 'items']
 }
 </script>

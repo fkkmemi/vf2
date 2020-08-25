@@ -10,10 +10,10 @@
   <v-container fluid v-else>
     <v-row>
       <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 1 : null">
-        <card-count :total="total" :values="sitemapValue.counts"/>
+        <card-count :total="total" :values="sitemapValue.counts" :items="sitemaps"/>
       </v-col>
       <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 2 : null">
-        <card-read-count :total="total" :values="sitemapValue.readCounts"/>
+        <card-read-count :total="total" :values="sitemapValue.readCounts" :items="sitemaps"/>
       </v-col>
       <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 3 : null">
         <card-total :item="total"/>

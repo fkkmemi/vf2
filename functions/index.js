@@ -417,17 +417,18 @@ exports.onDeleteBoardComment = functions.region(region).firestore
     await db.collection('boards').doc(context.params.bid)
       .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
       .catch(e => console.error('boards commentCount decrement err: ' + e.message))
-    // const batch = db.batch()
-    // batch.update(
-    //   db.collection('boards').doc(context.params.bid)
-    //     .collection('articles').doc(context.params.aid),
-    //   { commentCount: admin.firestore.FieldValue.increment(-1) }
-    // )
-    // batch.update(
-    //   db.collection('boards').doc(context.params.bid),
-    //   { commentCount: admin.firestore.FieldValue.increment(-1) }
-    // )
-    // await batch.commit()
+
+    const comment = snap.data()
+    if (!comment.image) return
+    if (!comment.image.id) return
+    const ps = []
+    ps.push('images')
+    ps.push('boards')
+    ps.push(context.params.bid)
+    ps.push(context.params.aid)
+    ps.push(comment.image.id)
+    await admin.storage().bucket().file(ps.join('/')).delete()
+      .catch(e => console.error('comment image remove err: ' + e.message))
   })
 
 exports.saveTempFiles = functions.region(region).storage

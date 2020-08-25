@@ -4,7 +4,18 @@
       <v-icon left>mdi-format-list-bulleted</v-icon>
       게시물 현황
       <v-spacer/>
-      {{total.count}}
+      <v-tooltip bottom>
+        <template v-slot:activator="{on}">
+          <span v-on="on">{{total.count}}</span>
+        </template>
+        <ul>
+          <li v-for="(item, i) in items" :key="item.id">
+            {{item.createdAt.toLocaleDateString()}}:
+            {{values[i]}}
+          </li>
+          <li>현재: {{values[values.length - 1]}}</li>
+        </ul>
+      </v-tooltip>
     </v-subheader>
     <v-card-text>
       <v-sparkline
@@ -30,6 +41,6 @@
 <script>
 
 export default {
-  props: ['total', 'values']
+  props: ['total', 'values', 'items']
 }
 </script>

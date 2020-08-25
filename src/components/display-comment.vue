@@ -9,7 +9,7 @@
               <v-col cols="12" :sm="item.image && item.image.id ? 6 : null" order="1" order-sm="0">
                 <v-icon color="primary" v-for="i in replyDepth(item)" :key="i">mdi-subdirectory-arrow-right</v-icon>
                 <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
-                <span v-html="item.comment"/>
+                <span v-text="item.comment"/>
               </v-col>
               <v-col cols="12" sm="6" order="0" order-sm="1" v-if="item.image">
                 <v-img :src="item.image.url" contain max-width="400"></v-img>
@@ -120,7 +120,6 @@
               rows="5"
               clearable />
           </v-col>
-
           <v-col cols="12" sm="4">
             <v-file-input
               outlined
@@ -137,10 +136,14 @@
               hide-details
               label="이미지 링크 추가"
               class=""
-              append-icon="mdi-image"/>
+              prepend-inner-icon="mdi-image"/>
           </v-col>
         </v-row>
       </v-card-text>
+      <v-card-actions class="pt-0">
+        <v-spacer/>
+        <v-btn color="primary" text @click="save"><v-icon left>mdi-content-save</v-icon> 저장</v-btn>
+      </v-card-actions>
     </template>
   </v-card>
 </template>
