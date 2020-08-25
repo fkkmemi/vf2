@@ -224,7 +224,7 @@ export default {
       this.unsubscribe = this.ref.onSnapshot(doc => {
         this.loaded = true
         if (!doc.exists) {
-          this.back()
+          this.removeCache()
           return
         }
         this.doc = doc
@@ -263,6 +263,19 @@ export default {
       }
       this.$router.push(to)
     },
+    removeCache () {
+      const cached = this.$store.state.cached[this.boardId]
+      if (!cached) return
+      if (!cached.items) return
+      const i = cached.items.findIndex(item => item.id === this.articleId)
+      if (i < 0) return
+      cached.items.splice(i, 1)
+      this.$store.commit('setCached', {
+        boardId: this.boardId,
+        lastDoc: this.lastDoc,
+        items: this.items
+      })
+    },
     async remove () {
       const r = await this.$swal.fire({
         title: '정말 삭제하시겠습니까?',
@@ -273,6 +286,8 @@ export default {
       })
       if (!r.value) return
       await this.ref.delete()
+      this.removeCache()
+      this.back()
     },
     back () {
       const to = {

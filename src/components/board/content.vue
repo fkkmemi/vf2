@@ -174,7 +174,11 @@ export default {
   },
   watch: {
     boardId () {
+      this.cacheClear()
       this.subscribe()
+    },
+    category () {
+      this.cacheClear()
     }
   },
   computed: {
@@ -193,6 +197,13 @@ export default {
     if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
+    cacheClear () {
+      this.$store.commit('setCached', {
+        boardId: this.boardId,
+        lastDoc: null,
+        items: []
+      })
+    },
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
       const ref = this.$firebase.firestore().collection('boards').doc(this.boardId)

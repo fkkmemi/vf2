@@ -77,16 +77,7 @@ export default {
       return false
     }
   },
-  watch: {
-    boardId () {
-      this.subscribe()
-    },
-    category () {
-      this.subscribe()
-    }
-  },
   created () {
-    // console.log(this.$store.state.cached)
     this.subscribe()
   },
   destroyed () {
@@ -164,7 +155,7 @@ export default {
       })
       this.items.sort(itemsSort)
     },
-    subscribe (arrow) {
+    subscribe () {
       const v = this.cachedData()
       this.lastDoc = v.lastDoc
       this.items = v.items

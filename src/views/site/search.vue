@@ -39,7 +39,7 @@
         </v-list-item>
       </template>
       <template v-slot:item="{ on, item }">
-        <v-list-item three-line v-on="on" :to="`/board/${item.boardId}/${item.articleId}`">
+        <v-list-item three-line v-on="on" @click="goTo(item)">
           <v-list-item-content>
             <v-list-item-title class="d-flex justify-space-between align-center" v-if="$vuetify.breakpoint.xs">
               <v-chip color="primary" label small class="">
@@ -139,11 +139,11 @@ export default {
       if (this.$route.path !== '/search') to.path = '/search'
       if (this.$route.query.text !== this.search) to.query = { text: this.search }
       if (!Object.keys(to).length) return
-      // this.search = ''
-      // this.text = ''
-      this.$router.replace(to)
+      this.search = null
+      this.$router.push(to)
     },
     goTo (item) {
+      this.search = null
       const to = `/board/${item.boardId}/${item.articleId}`
       this.$router.push(to)
     }
