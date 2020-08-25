@@ -73,19 +73,62 @@
             </v-btn>
           </v-list-item-title>
           <v-list-item-subtitle v-if="item.replyEdit">
-            <v-textarea
-              v-model="item.replyComment"
-              @click:append="saveReply(item)"
-              @keypress.ctrl.enter="saveReply(item)"
-              outlined
-              label="대댓글 작정"
-              placeholder="Ctrl + Enter로 작성 가능"
-              append-icon="mdi-comment-multiple"
-              hide-details
-              auto-grow
-              rows="1"
-              clearable
-              class="mt-2"></v-textarea>
+            <v-card-text>
+              <v-row>
+                <v-col cols="12" sm="8">
+                  <v-textarea
+                    v-model="item.replyComment"
+                    outlined
+                    label="대댓글 작성"
+                    placeholder="Ctrl + Enter로 작성 가능"
+                    append-icon="mdi-comment-multiple"
+                    @click:append="saveReply(item)"
+                    @keypress.ctrl.enter="saveReply(item)"
+                    hide-details
+                    auto-grow
+                    rows="5"
+                    clearable
+                    class="mt-2"/>
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-tabs v-model="item.replyImage.tab">
+                    <v-tab>
+                      <v-icon left>mdi-laptop</v-icon> 내 컴퓨터
+                    </v-tab>
+                    <v-tab>
+                      <v-icon left>mdi-link</v-icon> 링크
+                    </v-tab>
+                  </v-tabs>
+                  <v-tabs-items v-model="item.replyImage.tab" class="mt-4">
+                    <v-tab-item>
+                      <v-file-input
+                        v-model="item.replyImage.file"
+                        outlined
+                        hide-details
+                        label="이미지 추가"
+                        prepend-icon=""
+                        prepend-inner-icon="mdi-file-image"
+                        class="mb-4"
+                        accept="image/*"
+                        @change="imageReplyUpload(item.replyImage)"/>
+                    </v-tab-item>
+                    <v-tab-item>
+                      <v-text-field
+                        v-model="item.replyImage.imageLink"
+                        outlined
+                        hide-details
+                        label="이미지 링크 추가"
+                        class=""
+                        prepend-inner-icon="mdi-image"/>
+                    </v-tab-item>
+                  </v-tabs-items>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-actions class="pt-0">
+              <v-spacer/>
+              <v-btn color="primary" text @click="saveReply(item)"><v-icon left>mdi-content-save</v-icon> 저장</v-btn>
+            </v-card-actions>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -226,7 +269,10 @@ export default {
           item.replyImage = {
             size: 0,
             id: '',
-            url: ''
+            url: '',
+            file: null,
+            imageLink: '',
+            tab: null
           }
           this.items.push(item)
         } else {
@@ -336,12 +382,30 @@ export default {
         likeUids: [],
         no: no
       }
+      if (item.replyImage.imageLink) {
+        doc.image = {
+          id: '', size: 0, url: item.replyImage.imageLink
+        }
+      }
+      if (item.replyImage.id) {
+        doc.image = {
+          id: item.replyImage.id, size: item.replyImage.size, url: item.replyImage.url
+        }
+      }
       const id = doc.createdAt.getTime().toString()
       try {
         await this.docRef.collection('comments').doc(id).set(doc)
       } finally {
         item.replyEdit = false
         item.replyComment = ''
+        item.replyImage = {
+          size: 0,
+          id: '',
+          url: '',
+          file: null,
+          imageLink: '',
+          tab: null
+        }
       }
 
       const findItem = this.items.find(el => id === el.id)
@@ -350,6 +414,14 @@ export default {
       doc.edit = false
       doc.replyEdit = false
       doc.replyComment = ''
+      doc.replyImage = {
+        size: 0,
+        id: '',
+        url: '',
+        file: null,
+        imageLink: '',
+        tab: null
+      }
       this.items.push(doc)
       this.items.sort((before, after) => before.no - after.no)
     },
@@ -426,7 +498,23 @@ export default {
         .put(file)
       image.url = await sn.ref.getDownloadURL()
       this.image = image
-      this.file = null
+    },
+    async imageReplyUpload (item) {
+      if (!this.user) throw Error('로그인이 필요합니다')
+      const image = {
+        size: item.file.size,
+        id: new Date().getTime() + '-' + this.user.uid + '-' + item.file.name,
+        url: ''
+      }
+      const sn = await this.$firebase.storage().ref()
+        .child('images').child('boards')
+        .child(this.boardId).child(this.articleId).child(image.id)
+        .put(item.file)
+      image.url = await sn.ref.getDownloadURL()
+
+      item.size = image.size
+      item.id = image.id
+      item.url = image.url
     }
   }
 }
