@@ -126,7 +126,7 @@
         </v-row>
       </v-card-actions>
       <v-divider/>
-      <display-comment :article="article" :docRef="ref"></display-comment>
+      <display-comment :boardId="boardId" :articleId="articleId" :article="article" :docRef="ref"></display-comment>
     </v-card>
   </v-container>
 </template>
@@ -351,13 +351,8 @@ export default {
           this.next.text = nextDoc.data().title
         }
       } finally {
-        console.log('pagenav')
         this.loading = false
       }
-
-      // const to = { path: '/board/' + this.boardId + '/' + doc.id }
-      // if (this.category) to.query = { category: this.category }
-      // this.$router.push(to)
     }
   }
 }

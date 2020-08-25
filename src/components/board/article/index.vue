@@ -64,8 +64,8 @@ export default {
       return this.category
     },
     typeLimit () {
-      if (!this.board) return 5
-      return this.board.type === '일반' ? 5 : 4
+      if (!this.board) return 4
+      return this.board.type === '일반' ? 4 : 4
     },
     isMoreEnable () {
       if (!this.board) return false

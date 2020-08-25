@@ -394,7 +394,17 @@ exports.onCreateBoardComment = functions.region(region).firestore
       db.collection('boards').doc(context.params.bid),
       { commentCount: admin.firestore.FieldValue.increment(1) }
     )
-    await batch.commit()
+    await batch.commit().catch(e => console.error('board commentCount increment err: ' + e.message))
+
+    const comment = snap.data()
+    if (!comment.image) return
+    if (!comment.image.id) return
+    const sn = await db.collection('tempFiles')
+      .where('id', '==', comment.image.id).get()
+      .catch(e => console.error('tempFiles get err: ' + e.message))
+    if (sn.empty) return
+    await sn.docs[0].ref.delete()
+      .catch(e => console.error('tempFiles remove err: ' + e.message))
   })
 
 exports.onDeleteBoardComment = functions.region(region).firestore
@@ -403,10 +413,10 @@ exports.onDeleteBoardComment = functions.region(region).firestore
     await db.collection('boards').doc(context.params.bid)
       .collection('articles').doc(context.params.aid)
       .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
-      .catch(e => console.log('articles commentCount update err: ' + e.message))
+      .catch(e => console.log('articles commentCount decrement err: ' + e.message))
     await db.collection('boards').doc(context.params.bid)
       .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
-      .catch(e => console.error('boards update err: ' + e.message))
+      .catch(e => console.error('boards commentCount decrement err: ' + e.message))
     // const batch = db.batch()
     // batch.update(
     //   db.collection('boards').doc(context.params.bid)

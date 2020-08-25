@@ -1,30 +1,20 @@
 <template>
   <v-card flat>
-    <!-- <template v-if="items.length > 4">
-      <v-card-title>
-        <v-textarea
-          v-model="comment"
-          outlined
-          label="댓글 작성"
-          placeholder="Ctrl + Enter로 작성 가능"
-          append-icon="mdi-comment-plus"
-          @click:append="save"
-          @keypress.ctrl.enter="save"
-          hide-details
-          auto-grow
-          rows="1"
-          clearable />
-      </v-card-title>
-      <v-divider/>
-    </template> -->
     <template v-for="(item, i) in items">
       <v-divider :key="i" v-if="i > 0 && !replyDepth(item)"></v-divider>
       <v-list-item :key="item.id">
         <v-list-item-content>
-          <v-list-item-subtitle v-if="!item.edit" class="black--text white-space">
-            <v-icon color="primary" v-for="i in replyDepth(item)" :key="i">mdi-subdirectory-arrow-right</v-icon>
-            <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon> {{item.comment}}
-            <!-- <span>{{item.no}}</span> 디버깅용 -->
+          <v-list-item-subtitle v-if="!item.edit" class="black--text white-space text-left">
+            <v-row>
+              <v-col cols="12" :sm="item.image && item.image.id ? 6 : null" order="1" order-sm="0">
+                <v-icon color="primary" v-for="i in replyDepth(item)" :key="i">mdi-subdirectory-arrow-right</v-icon>
+                <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
+                <span v-html="item.comment"/>
+              </v-col>
+              <v-col cols="12" sm="6" order="0" order-sm="1" v-if="item.image">
+                <v-img :src="item.image.url" contain max-width="400"></v-img>
+              </v-col>
+            </v-row>
           </v-list-item-subtitle>
           <v-list-item-subtitle v-else>
             <v-textarea
@@ -114,20 +104,43 @@
     </v-list-item>
     <template v-else>
       <v-divider v-if="items.length"/>
-      <v-card-title>
-        <v-textarea
-          v-model="comment"
-          outlined
-          label="댓글 작성"
-          placeholder="Ctrl + Enter로 작성 가능"
-          append-icon="mdi-comment-plus"
-          @click:append="save"
-          @keypress.ctrl.enter="save"
-          hide-details
-          auto-grow
-          rows="1"
-          clearable />
-      </v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" sm="8">
+            <v-textarea
+              v-model="comment"
+              outlined
+              label="댓글 작성"
+              placeholder="Ctrl + Enter로 작성 가능"
+              append-icon="mdi-comment-plus"
+              @click:append="save"
+              @keypress.ctrl.enter="save"
+              hide-details
+              auto-grow
+              rows="5"
+              clearable />
+          </v-col>
+
+          <v-col cols="12" sm="4">
+            <v-file-input
+              outlined
+              hide-details
+              label="이미지 추가"
+              prepend-icon=""
+              prepend-inner-icon="mdi-file-image"
+              class="mb-4"
+              accept="image/*"
+              @change="imageUpload"/>
+            <v-text-field
+              v-model="imageLink"
+              outlined
+              hide-details
+              label="이미지 링크 추가"
+              class=""
+              append-icon="mdi-image"/>
+          </v-col>
+        </v-row>
+      </v-card-text>
     </template>
   </v-card>
 </template>
@@ -136,11 +149,12 @@ import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import newCheck from '@/util/newCheck'
+
 const LIMIT = 5
 
 export default {
   components: { DisplayTime, DisplayUser },
-  props: ['article', 'docRef'],
+  props: ['boardId', 'articleId', 'article', 'docRef'],
   data () {
     return {
       comment: '',
@@ -148,7 +162,13 @@ export default {
       unsubscribe: null,
       lastDoc: null,
       loading: false,
-      newCheck
+      newCheck,
+      imageLink: '',
+      image: {
+        size: 0,
+        id: '',
+        url: ''
+      }
     }
   },
   computed: {
@@ -240,9 +260,11 @@ export default {
         likeUids: [],
         no: rs.length * 10000
       }
+      if (this.image.id) doc.image = this.image
       const id = doc.createdAt.getTime().toString()
       await this.docRef.collection('comments').doc(id).set(doc)
       this.comment = ''
+      this.image.id = ''
     },
     async saveReply (item) {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
@@ -359,6 +381,20 @@ export default {
       } finally {
         item.edit = false
       }
+    },
+    async imageUpload (file) {
+      if (!this.user) throw Error('로그인이 필요합니다')
+      const image = {
+        size: file.size,
+        id: new Date().getTime() + '-' + this.user.uid + '-' + file.name,
+        url: ''
+      }
+      const sn = await this.$firebase.storage().ref()
+        .child('images').child('boards')
+        .child(this.boardId).child(this.articleId).child(image.id)
+        .put(file)
+      image.url = await sn.ref.getDownloadURL()
+      this.image = image
     }
   }
 }

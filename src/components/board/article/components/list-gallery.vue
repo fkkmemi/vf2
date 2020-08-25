@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row dense>
+    <v-row :dense="$vuetify.breakpoint.xs">
       <template v-for="item in items">
         <v-col cols="6" sm="4" md="3" lg="2" :key="item.id">
           <v-card
