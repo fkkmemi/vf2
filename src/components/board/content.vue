@@ -10,7 +10,7 @@
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-card outlined :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
-        <v-sheet width="120" class="mr-4">
+        <v-sheet :width="120" class="mr-4">
           <v-select
             :value="getCategory"
             :items="categories"
@@ -23,11 +23,11 @@
         </v-sheet>
         <template v-if="!$vuetify.breakpoint.xs">
           <v-icon color="error" left v-if="newCheck(board.updatedAt, 'days', 1)">mdi-fire</v-icon>
-          <span v-text="board.title" class="mr-2"></span>
+          <span v-text="board.title" class="mr-2 text-truncate"></span>
         </template>
         <v-spacer/>
         <v-btn icon :to="'/board/' + board.id" v-if="isWidget"><v-icon>mdi-arrow-right-circle-outline</v-icon></v-btn>
-        <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
+        <v-btn icon @click="dialog=true" v-else><v-icon>mdi-information-outline</v-icon></v-btn>
         <template v-if="!isWidget">
           <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
             <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
@@ -201,7 +201,8 @@ export default {
       this.$store.commit('setCached', {
         boardId: this.boardId,
         lastDoc: null,
-        items: []
+        items: [],
+        articleId: null
       })
     },
     subscribe () {

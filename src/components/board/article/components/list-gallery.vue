@@ -4,14 +4,15 @@
       <template v-for="item in items">
         <v-col cols="6" sm="4" md="3" lg="2" :key="item.id">
           <v-card
-            color=""
+            :color="item.read ? 'secondary' : null"
             height="100%"
             @click="goTo(item)" :ref="item.id">
-            <v-system-bar color="secondary">
-              <span class="font-italic caption hidden-xs-only"><display-time :time="item.createdAt"></display-time></span>
+            <v-system-bar color="transparent">
+              <span class="font-italic caption hidden-xs-only text-truncate"><display-time :time="item.createdAt"></display-time></span>
               <v-spacer/>
               <display-count :item="item" :column="false" size="small"></display-count>
             </v-system-bar>
+            <v-divider/>
             <v-img
               :src="srcFromItem(item)"
               :aspect-ratio="1"
@@ -41,6 +42,7 @@
                   <v-icon v-else-if="item.important === 2" small left color="warning">mdi-alert-circle</v-icon>
                   <v-icon v-if="newCheck(item.updatedAt, 'days', 1)" small color="error" left>mdi-fire</v-icon>
                   <span>{{item.title}}</span>
+                  <!-- <display-title :item="item"/> -->
                 </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>

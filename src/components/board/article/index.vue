@@ -126,6 +126,8 @@ export default {
     },
     snapshotToItems (sn) {
       sn.docs.forEach(doc => {
+        const key = `${this.boardId}-${doc.id}-read`
+        const read = JSON.parse(localStorage.getItem(key))
         const findItem = this.items.find(item => doc.id === item.id)
         const item = doc.data()
         if (!findItem) {
@@ -133,6 +135,7 @@ export default {
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           item.overlay = false
+          if (read) item.read = read
           this.items.push(item)
         } else {
           if (findItem.summary !== item.summary) {
@@ -151,6 +154,7 @@ export default {
           findItem.tags = item.tags
           findItem.updatedAt = item.updatedAt.toDate()
           findItem.important = item.important
+          if (read) findItem.read = read
         }
       })
       this.items.sort(itemsSort)

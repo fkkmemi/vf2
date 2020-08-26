@@ -10,10 +10,10 @@
         </template>
         <ul>
           <li v-for="(item, i) in items" :key="item.id">
-            {{item.createdAt.toLocaleDateString()}}:
+            {{item.createdAt.toLocaleDateString()}}
             {{values[i]}}
           </li>
-          <li>현재: {{values[values.length - 1]}}</li>
+          <li>현재 {{values[values.length - 1]}}</li>
         </ul>
       </v-tooltip>
     </v-subheader>

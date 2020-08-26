@@ -35,6 +35,13 @@ export default new Vuex.Store({
       if (!state.cached[boardId]) state.cached[boardId] = {}
       const cached = state.cached[boardId]
       cached.articleId = articleId
+      const key = `${boardId}-${articleId}-read`
+      const readVal = JSON.parse(localStorage.getItem(key))
+      const read = readVal ? readVal + 1 : 1
+      localStorage.setItem(key, read)
+      if (!cached.items) return
+      const findItem = cached.items.find(item => item.id === articleId)
+      if (findItem) findItem.read = read
     }
   },
   actions: {
