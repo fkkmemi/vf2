@@ -62,80 +62,92 @@
             <v-divider/>
 
             <template v-if="modeIn">
-              <v-subheader>
-                이메일 로그인
-                <v-spacer/>
-              </v-subheader>
-              <v-card-text>
-                <v-text-field
-                  v-model="email"
-                  outlined
-                  label="이메일"
-                  hide-details
-                  type="email"
-                  autocomplete="email"
-                  required
-                  class="mb-4"/>
-                <v-text-field
-                  v-model="password"
-                  type="password"
-                  outlined
-                  label="비밀번호"
-                  hide-details
-                  required
-                  @keypress.native.enter="signInWithEmail"/>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn block color="primary" @click="signInWithEmail">
-                  <v-icon left>mdi-email</v-icon>
-                  로그인
-                </v-btn>
-              </v-card-actions>
-              <v-card-title class="caption">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn text color="primary" v-bind="attrs" v-on="on" @click="sendPasswordResetEmail">비밀번호를 잊으셨나요?</v-btn>
-                </template>
-                <span>클릭시 작성된 이메일로 비밀번호 초기화 메일이 전송됩니다</span>
-              </v-tooltip>
-            </v-card-title>
+              <v-form>
+                <v-subheader>
+                  이메일 로그인
+                  <v-spacer/>
+                </v-subheader>
+                <v-card-text>
+                  <v-text-field
+                    v-model="email"
+                    outlined
+                    label="이메일"
+                    hide-details
+                    type="email"
+                    required
+                    autocomplete="email"
+                    name="email"
+                    autofocus
+                    class="mb-4"/>
+                  <v-text-field
+                    v-model="password"
+                    type="password"
+                    outlined
+                    label="비밀번호"
+                    hide-details
+                    required
+                    autocomplete="current-password"
+                    name="password"
+                    @keypress.native.enter="signInWithEmail"/>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn block color="primary" @click="signInWithEmail">
+                    <v-icon left>mdi-email</v-icon>
+                    로그인
+                  </v-btn>
+                </v-card-actions>
+                <v-card-title class="caption">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn text color="primary" v-bind="attrs" v-on="on" @click="sendPasswordResetEmail">비밀번호를 잊으셨나요?</v-btn>
+                    </template>
+                    <span>클릭시 작성된 이메일로 비밀번호 초기화 메일이 전송됩니다</span>
+                  </v-tooltip>
+                </v-card-title>
+              </v-form>
             </template>
 
             <template v-else>
-              <v-subheader>이메일로 가입</v-subheader>
-              <v-card-text>
-                <v-text-field
-                  v-model="email"
-                  outlined
-                  label="이메일"
-                  hide-details
-                  type="email"
-                  autocomplete="email"
-                  required
-                  class="mb-4"/>
-                <v-text-field
-                  v-model="displayName"
-                  outlined
-                  label="닉네임"
-                  hide-details
-                  type="text"
-                  required
-                  class="mb-4"/>
-                <v-text-field
-                  v-model="password"
-                  type="password"
-                  outlined
-                  label="비밀번호"
-                  hide-details
-                  required
-                  @keypress.native.enter="signUpWithEmail"/>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn block color="info" @click="signUpWithEmail">
-                  <v-icon left>mdi-email</v-icon>
-                  회원가입
-                </v-btn>
-              </v-card-actions>
+              <v-form>
+                <v-subheader>이메일로 가입</v-subheader>
+                <v-card-text>
+                  <v-text-field
+                    v-model="email"
+                    outlined
+                    label="이메일"
+                    hide-details
+                    type="email"
+                    autocomplete="email"
+                    required
+                    name="email"
+                    autofocus
+                    class="mb-4"/>
+                  <v-text-field
+                    v-model="displayName"
+                    outlined
+                    label="닉네임"
+                    hide-details
+                    type="text"
+                    required
+                    class="mb-4"/>
+                  <v-text-field
+                    v-model="password"
+                    type="password"
+                    outlined
+                    label="비밀번호"
+                    hide-details
+                    required
+                    name="password"
+                    autocomplete="new-password"
+                    @keypress.native.enter="signUpWithEmail"/>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn block color="info" @click="signUpWithEmail">
+                    <v-icon left>mdi-email</v-icon>
+                    회원가입
+                  </v-btn>
+                </v-card-actions>
+              </v-form>
             </template>
           </v-card>
         </v-col>

@@ -25,11 +25,12 @@ export default new Vuex.Store({
       state.boardTypeList = !state.boardTypeList
       localStorage.setItem('boardTypeList', state.boardTypeList)
     },
-    setCached (state, { boardId, lastDoc, items }) {
+    setCached (state, { boardId, lastDoc, items, articleId }) {
       if (!state.cached[boardId]) state.cached[boardId] = {}
       const cached = state.cached[boardId]
       cached.lastDoc = lastDoc
       cached.items = items
+      if (articleId !== undefined) cached.articleId = articleId
     },
     setCachedItem (state, { boardId, articleId }) {
       if (!state.cached[boardId]) state.cached[boardId] = {}

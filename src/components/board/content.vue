@@ -27,7 +27,7 @@
         </template>
         <v-spacer/>
         <v-btn icon :to="'/board/' + board.id" v-if="isWidget"><v-icon>mdi-arrow-right-circle-outline</v-icon></v-btn>
-        <v-btn icon @click="dialog=true" v-else><v-icon>mdi-information-outline</v-icon></v-btn>
+        <v-btn icon @click="dialog=true" v-if="!isWidget || $vuetify.breakpoint.mdAndUp"><v-icon>mdi-information-outline</v-icon></v-btn>
         <template v-if="!isWidget">
           <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
             <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
