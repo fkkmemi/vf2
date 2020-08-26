@@ -8,7 +8,7 @@
     </v-alert>
   </v-container>
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card outlined :tile="$vuetify.breakpoint.xs">
+    <v-card :outlined="!isWidget" :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
         <v-sheet :width="120" class="mr-4">
           <v-select
@@ -38,12 +38,14 @@
         </template>
       </v-toolbar>
       <v-divider/>
-      <board-article
-        :boardId="boardId"
-        :board="board"
-        :category="category"
-        :createdAt="createdAt"
-        :isWidget="isWidget"></board-article>
+      <v-card flat :color="$vuetify.theme.dark ? 'black' : null">
+        <board-article
+          :boardId="boardId"
+          :board="board"
+          :category="category"
+          :createdAt="createdAt"
+          :isWidget="isWidget"/>
+      </v-card>
       <v-dialog v-model="dialog" max-width="400">
         <v-card>
           <v-toolbar color="transparent" dense flat>

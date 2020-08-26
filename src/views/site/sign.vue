@@ -55,17 +55,15 @@
             <v-list-item-subtitle v-text="user.email"></v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <template>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-icon>mdi-badge-account-alert-outline</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title >권한</v-list-item-title>
-              <v-list-item-subtitle v-text="levelStr"></v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </template>
+        <v-list-item>
+          <v-list-item-avatar>
+            <v-icon>mdi-badge-account-alert-outline</v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title >권한</v-list-item-title>
+            <v-list-item-subtitle v-text="levelStr"></v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <v-divider/>
       <v-card-actions>

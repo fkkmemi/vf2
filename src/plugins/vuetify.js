@@ -12,23 +12,26 @@ Vue.use(Vuetify, {
   }
 })
 const theme = {
+  dark: !!JSON.parse(localStorage.getItem('site-theme-dark')),
   themes: {
     light: {
       primary: '#344059',
-      secondary: '#BFBFBF', // #FFCDD2
+      secondary: '#BFBFBF',
       accent: '#2C4027',
       info: '#4E7DA6',
       success: '#26A699',
       warning: '#F29727',
       error: '#F24C3D'
-
-      // success: '#2C4027'
+    },
+    dark: {
+      primary: '#3FA8BF',
+      secondary: '#BFBFBF',
+      accent: '#3E8C76',
+      info: '#D9B959',
+      success: '#D9A86C',
+      warning: '#BF712C',
+      error: '#F24C3D'
     }
-    // dark: {
-    //   primary: colors.brown.darken1, // #E53935
-    //   secondary: colors.deepPurple.lighten4, // #FFCDD2
-    //   accent: colors.indigo.base // #3F51B5
-    // }
   }
 }
 const VuetifyObj = new Vuetify({

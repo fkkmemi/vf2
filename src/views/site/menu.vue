@@ -2,7 +2,7 @@
   <div>
     <v-list-item>
       <v-list-item-avatar>
-        <v-img contain :src="site.image"></v-img>
+        <v-img contain :src="$vuetify.theme.dark ? '/logo-dark.png' : '/logo.png'"></v-img>
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title class="title">
@@ -89,6 +89,13 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    <v-footer color="transparent" absolute>
+      <v-spacer/>
+      <v-btn @click="toggleDark" icon>
+        <v-icon>mdi-brightness-6</v-icon>
+      </v-btn>
+    </v-footer>
+
     <v-dialog v-model="dialogItem" max-width="400">
       <v-card>
         <v-card-title>
@@ -303,6 +310,11 @@ export default {
       if (!r.value) return
       items.splice(i, 1)
       this.save()
+    },
+    toggleDark () {
+      const dark = JSON.parse(localStorage.getItem('site-theme-dark'))
+      this.$vuetify.theme.dark = !dark
+      localStorage.setItem('site-theme-dark', !dark)
     }
   }
 }

@@ -114,8 +114,16 @@ export default {
   }
 }
 </script>
-<style>
-.white-space {
-  white-space: pre-wrap;
-}
+<style lang="scss">
+  .tui-editor-contents {
+    h1, h2, h3, h4, h5, h6, p, ul, li, pre {
+      color: var(--v-primary-base) !important
+    }
+    code, span {
+      color: rgb(50, 50, 50) !important
+    }
+  }
+  .white-space {
+    white-space: pre-wrap
+  }
 </style>

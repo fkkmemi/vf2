@@ -8,7 +8,7 @@
             :flat="$vuetify.breakpoint.xs"
             :tile="$vuetify.breakpoint.xs"
             :elevation="hover ? 16 : 2"
-            color="transparent" @click="goTo(item)" :ref="item.id">
+            color="" @click="goTo(item)" :ref="item.id">
             <v-card-subtitle class="text--primary body-1">
               <display-title :item="item"/>
               <v-spacer/>
