@@ -24,7 +24,7 @@ const subscribe = async (fu) => {
     if (doc.exists) {
       const user = doc.data()
       user.uid = fu.uid
-      if (user.provider === 'email') {
+      if (user.providerId === 'password') {
         const set = {}
         if (!user.displayName) {
           let displayName = fu.displayName || '손님'

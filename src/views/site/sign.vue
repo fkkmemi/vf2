@@ -47,7 +47,18 @@
         <v-list-item>
           <v-list-item-avatar>
             <v-badge overlap dot :value="!user.emailVerified" color="error">
-              <v-icon>mdi-email</v-icon>
+              <v-icon v-if="user.providerId === 'password'" color="primary">
+                mdi-email
+              </v-icon>
+              <v-icon v-if="user.providerId === 'google.com'" color="#dd4b39">
+                mdi-google
+              </v-icon>
+              <v-icon v-if="user.providerId === 'github.com'" color="#242a2e">
+                mdi-github
+              </v-icon>
+              <v-icon v-if="user.providerId === 'facebook.com'" color="#242a2e">
+                mdi-facebook
+              </v-icon>
             </v-badge>
           </v-list-item-avatar>
           <v-list-item-content>

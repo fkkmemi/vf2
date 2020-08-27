@@ -38,11 +38,16 @@
 
 </template>
 <script>
+import setMeta from '@/util/setMeta'
+
 export default {
   computed: {
     user () {
       return this.$store.state.user
     }
+  },
+  created () {
+    setMeta({ title: '일반 설정', description: '일반 설정', image: '/logo.png' })
   },
   methods: {
     async clearLocalStorage () {

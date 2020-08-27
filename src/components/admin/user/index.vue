@@ -46,6 +46,7 @@
 import { last } from 'lodash'
 import ItemUser from './item'
 import newCheck from '@/util/newCheck'
+import setMeta from '@/util/setMeta'
 const LIMIT = 5
 
 export default {
@@ -66,6 +67,7 @@ export default {
     }
   },
   created () {
+    setMeta({ title: '사용자 관리', description: '사용자 관리', image: '/logo.png' })
     if (this.user && this.user.level < 2) this.init()
   },
   destroyed () {

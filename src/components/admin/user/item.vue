@@ -23,6 +23,9 @@
           <v-icon v-if="item.providerId === 'github.com'" small left color="#242a2e">
             mdi-github
           </v-icon>
+          <v-icon v-if="item.providerId === 'facebook.com'" small left color="#242a2e">
+            mdi-facebook
+          </v-icon>
           {{item.email}}
         </v-list-item-subtitle>
         <v-list-item-subtitle class="caption">

@@ -73,7 +73,7 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
   }
   if (!displayName) u.displayName = email.split('@')[0]
   if (providerData && providerData.length) u.providerId = providerData[0].providerId
-  if (u.providerId !== 'email' && u.providerId !== 'google.com') {
+  if (u.providerId !== 'password' && u.providerId !== 'google.com') {
     u.emailVerified = true
     await admin.auth().updateUser(uid, { emailVerified: u.emailVerified }).catch(e => console.error('user update err: ' + e.message))
   }

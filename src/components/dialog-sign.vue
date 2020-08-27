@@ -215,8 +215,6 @@ export default {
       this.loading = true
       try {
         await this.$firebase.auth().signInWithPopup(provider)
-        // const sn = await this.$firebase.auth().signInWithPopup(provider)
-        // this.$store.commit('setFireUser', sn.user)
         this.$emit('close')
       } finally {
         this.loading = false
@@ -227,15 +225,20 @@ export default {
       this.loading = true
       try {
         await this.$firebase.auth().signInWithPopup(provider)
-        // const sn = await this.$firebase.auth().signInWithPopup(provider)
-        // this.$store.commit('setFireUser', sn.user)
         this.$emit('close')
       } finally {
         this.loading = false
       }
     },
-    signInWithFacebook () {
-      throw Error('나중에 만들께요')
+    async signInWithFacebook () {
+      const provider = new this.$firebase.auth.FacebookAuthProvider()
+      this.loading = true
+      try {
+        await this.$firebase.auth().signInWithPopup(provider)
+        this.$emit('close')
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
