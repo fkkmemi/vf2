@@ -77,6 +77,14 @@ export default {
       return false
     }
   },
+  watch: {
+    boardId () {
+      this.subscribe()
+    },
+    category () {
+      this.subscribe()
+    }
+  },
   created () {
     this.subscribe()
   },

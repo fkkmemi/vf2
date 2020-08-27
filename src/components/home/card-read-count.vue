@@ -39,7 +39,7 @@
             stroke-linecap="round"
             :smooth="10"
             auto-draw
-            :line-width="8"
+            :line-width="4"
           >
             <!-- <template v-slot:label="item">
               {{ item.value }}

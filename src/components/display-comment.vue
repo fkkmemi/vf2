@@ -4,7 +4,7 @@
       <v-divider :key="i" v-if="i > 0 && !replyDepth(item)"></v-divider>
       <v-list-item :key="item.id">
         <v-list-item-content>
-          <v-list-item-subtitle v-if="!item.edit" class="black--text white-space text-left">
+          <v-list-item-subtitle v-if="!item.edit" class="white-space text-left text--primary">
             <v-row>
               <v-col cols="12" :sm="item.image && item.image.url ? 6 : null" order="1" order-sm="0">
                 <v-icon color="primary" v-for="i in replyDepth(item)" :key="i">mdi-subdirectory-arrow-right</v-icon>

@@ -116,7 +116,7 @@ export default {
 </script>
 <style lang="scss">
   .tui-editor-contents {
-    h1, h2, h3, h4, h5, h6, p, ul, li, pre {
+    h1, h2, h3, h4, h5, h6, p, ul, li, pre, table {
       color: var(--v-primary-base) !important
     }
     code, span {

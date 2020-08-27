@@ -38,14 +38,14 @@
         </template>
       </v-toolbar>
       <v-divider/>
-      <v-card flat :color="$vuetify.theme.dark ? 'black' : null">
+      <v-sheet :color="$vuetify.theme.dark ? 'black' : 'transparent'">
         <board-article
           :boardId="boardId"
           :board="board"
           :category="category"
           :createdAt="createdAt"
           :isWidget="isWidget"/>
-      </v-card>
+      </v-sheet>
       <v-dialog v-model="dialog" max-width="400">
         <v-card>
           <v-toolbar color="transparent" dense flat>

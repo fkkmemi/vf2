@@ -17,144 +17,146 @@
         <v-toolbar-title>게시판 목록</v-toolbar-title>
         <v-spacer/>
       </v-toolbar>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-if="user && user.level === 0">
-            <v-card height="100%">
-              <v-subheader>
-                새로운 게시판 추가
-              </v-subheader>
-              <v-divider/>
-              <v-card-text>
-                <v-text-field
-                  v-model="boardId"
-                  label="게시판 아이디"
-                  placeholder="주소에 사용 될 문자입니다"
-                  outlined
-                  hide-details />
-              </v-card-text>
-              <v-card-actions v-if="boardId">
-                <v-btn
-                  :to="`/board/${boardId}`"
-                  x-large
-                  color="primary"
-                  text
-                  block>
-                  <v-icon left>mdi-plus</v-icon>
-                  추가
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item) in items" :key="item.id">
-            <v-card height="100%">
-              <v-subheader>
-                <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
-                {{item.id}}
-                <v-spacer/>
-                <template v-if="user && user.level === 0">
-                  <v-btn
-                    icon
-                    :to="`/board/${item.id}?&action=write`">
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    @click="remove(item)">
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </template>
-              </v-subheader>
-              <v-divider/>
-              <v-card-text>
-                <v-alert border="left" type="info" outlined class="white-space">{{item.description}}</v-alert>
-              </v-card-text>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    제목
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{item.title}}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    작성자
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    <display-user :user="item.user"></display-user>
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    작성일
-                  </v-list-item-title>
-                  <v-list-item-subtitle class="font-italic">
-                    <display-time :time="item.createdAt"></display-time>
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    수정일
-                  </v-list-item-title>
-                  <v-list-item-subtitle class="font-italic">
-                    <display-time :time="item.updatedAt"></display-time>
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-              <v-divider/>
-              <v-list-item
-                :to="`/board/${item.id}`">
-                <v-list-item-content>
-                  전체 ({{item.count}})
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-btn icon>
-                    <v-icon>mdi-menu-right</v-icon>
-                  </v-btn>
-                </v-list-item-action>
-              </v-list-item>
-              <v-divider/>
-              <template v-for="(category, i) in item.categories">
-                <v-list-item
-                  :key="category"
-                  :to="`/board/${item.id}?category=${category}`">
-                  <v-list-item-content>
-                    {{category}} ({{item.categoryCount[category]}})
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn icon>
-                      <v-icon>mdi-menu-right</v-icon>
+        <v-sheet :color="$vuetify.theme.dark ? 'black' : 'transparent'">
+          <v-card-text>
+            <v-row>
+              <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-if="user && user.level === 0">
+                <v-card height="100%">
+                  <v-subheader>
+                    새로운 게시판 추가
+                  </v-subheader>
+                  <v-divider/>
+                  <v-card-text>
+                    <v-text-field
+                      v-model="boardId"
+                      label="게시판 아이디"
+                      placeholder="주소에 사용 될 문자입니다"
+                      outlined
+                      hide-details />
+                  </v-card-text>
+                  <v-card-actions v-if="boardId">
+                    <v-btn
+                      :to="`/board/${boardId}`"
+                      x-large
+                      color="primary"
+                      text
+                      block>
+                      <v-icon left>mdi-plus</v-icon>
+                      추가
                     </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-                <v-divider :key="i" />
-              </template>
-            </v-card>
-          </v-col>
-          <v-col cols="12" sm="6" md="4" lg="3" xl="2"
-            v-if="lastDoc">
-            <v-container fluid fill-height>
-              <v-btn
-                @click="more"
-                v-intersect="onIntersect"
-                text
-                color="primary"
-                block
-                :loading="loading">
-                <v-icon>mdi-dots-horizontal</v-icon>더보기
-              </v-btn>
-            </v-container>
-          </v-col>
-        </v-row>
-      </v-card-text>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+              <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item) in items" :key="item.id">
+                <v-card height="100%">
+                  <v-subheader>
+                    <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
+                    {{item.id}}
+                    <v-spacer/>
+                    <template v-if="user && user.level === 0">
+                      <v-btn
+                        icon
+                        :to="`/board/${item.id}?&action=write`">
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                      <v-btn
+                        icon
+                        @click="remove(item)">
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-subheader>
+                  <v-divider/>
+                  <v-card-text>
+                    <v-alert border="left" type="info" outlined class="white-space">{{item.description}}</v-alert>
+                  </v-card-text>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        제목
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{item.title}}
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        작성자
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        <display-user :user="item.user"></display-user>
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        작성일
+                      </v-list-item-title>
+                      <v-list-item-subtitle class="font-italic">
+                        <display-time :time="item.createdAt"></display-time>
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        수정일
+                      </v-list-item-title>
+                      <v-list-item-subtitle class="font-italic">
+                        <display-time :time="item.updatedAt"></display-time>
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider/>
+                  <v-list-item
+                    :to="`/board/${item.id}`">
+                    <v-list-item-content>
+                      전체 ({{item.count}})
+                    </v-list-item-content>
+                    <v-list-item-action>
+                      <v-btn icon>
+                        <v-icon>mdi-menu-right</v-icon>
+                      </v-btn>
+                    </v-list-item-action>
+                  </v-list-item>
+                  <v-divider/>
+                  <template v-for="(category, i) in item.categories">
+                    <v-list-item
+                      :key="category"
+                      :to="`/board/${item.id}?category=${category}`">
+                      <v-list-item-content>
+                        {{category}} ({{item.categoryCount[category]}})
+                      </v-list-item-content>
+                      <v-list-item-action>
+                        <v-btn icon>
+                          <v-icon>mdi-menu-right</v-icon>
+                        </v-btn>
+                      </v-list-item-action>
+                    </v-list-item>
+                    <v-divider :key="i" />
+                  </template>
+                </v-card>
+              </v-col>
+              <v-col cols="12" sm="6" md="4" lg="3" xl="2"
+                v-if="lastDoc">
+                <v-container fluid fill-height>
+                  <v-btn
+                    @click="more"
+                    v-intersect="onIntersect"
+                    text
+                    color="primary"
+                    block
+                    :loading="loading">
+                    <v-icon>mdi-dots-horizontal</v-icon>더보기
+                  </v-btn>
+                </v-container>
+              </v-col>
+            </v-row>
+          </v-card-text>
+      </v-sheet>
     </v-card>
   </v-container>
 </template>

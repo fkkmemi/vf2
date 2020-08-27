@@ -16,7 +16,7 @@ const theme = {
   themes: {
     light: {
       primary: '#344059',
-      secondary: '#BFBFBF',
+      secondary: '#BDBDBD',
       accent: '#2C4027',
       info: '#4E7DA6',
       success: '#26A699',
@@ -24,13 +24,20 @@ const theme = {
       error: '#F24C3D'
     },
     dark: {
-      primary: '#3FA8BF',
-      secondary: '#BFBFBF',
-      accent: '#3E8C76',
-      info: '#D9B959',
-      success: '#D9A86C',
-      warning: '#BF712C',
-      error: '#F24C3D'
+      // primary: '#3FA8BF',
+      // secondary: '#424242',
+      // accent: '#D9B959',
+      // info: '#3E8C76',
+      // success: '#D9A86C',
+      // warning: '#BF712C',
+      // error: '#F24C3D'
+      primary: '#D94625',
+      secondary: '#424242',
+      accent: '#2C4027',
+      info: '#4E7DA6',
+      success: '#26A699',
+      warning: '#F29727',
+      error: '#BF0426'
     }
   }
 }

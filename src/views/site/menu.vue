@@ -89,6 +89,15 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    <!-- <v-list-item>
+      <v-list-item-content></v-list-item-content>
+      <v-list-item-action>
+        <v-btn @click="toggleDark" icon>
+          <v-icon>mdi-brightness-6</v-icon>
+        </v-btn>
+
+      </v-list-item-action>
+    </v-list-item> -->
     <v-footer color="transparent" absolute>
       <v-spacer/>
       <v-btn @click="toggleDark" icon>

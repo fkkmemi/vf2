@@ -4,11 +4,10 @@
       <template v-for="item in items">
         <v-col cols="6" sm="4" md="3" lg="2" :key="item.id">
           <v-card
-            :color="item.read ? 'secondary' : null"
             height="100%"
             @click="goTo(item)" :ref="item.id">
             <v-system-bar color="transparent">
-              <span class="font-italic caption hidden-xs-only text-truncate"><display-time :time="item.createdAt"></display-time></span>
+              <span class="font-italic caption hidden-xs-only text-truncate text--primary"><display-time :time="item.createdAt"></display-time></span>
               <v-spacer/>
               <display-count :item="item" :column="false" size="small"></display-count>
             </v-system-bar>
@@ -35,20 +34,22 @@
                 </v-btn>
               </v-card-actions>
             </v-img>
-            <v-list-item class="text-truncate align-center hidden-xs-only">
-              <v-list-item-content>
-                <v-list-item-subtitle>
-                  <v-icon v-if="item.important === 1" small left color="success">mdi-bell-ring</v-icon>
-                  <v-icon v-else-if="item.important === 2" small left color="warning">mdi-alert-circle</v-icon>
-                  <v-icon v-if="newCheck(item.updatedAt, 'days', 1)" small color="error" left>mdi-fire</v-icon>
-                  <span>{{item.title}}</span>
-                  <!-- <display-title :item="item"/> -->
-                </v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <display-user :user="item.user" size="small"></display-user>
-              </v-list-item-action>
-            </v-list-item>
+            <!-- <v-sheet :color="item.read ? 'secondary' : null"> -->
+              <v-list-item class="text-truncate align-center hidden-xs-only">
+                <v-list-item-content>
+                  <v-list-item-subtitle class="text--primary">
+                    <!-- <v-icon v-if="item.important === 1" small left color="success">mdi-bell-ring</v-icon>
+                    <v-icon v-else-if="item.important === 2" small left color="warning">mdi-alert-circle</v-icon>
+                    <v-icon v-if="newCheck(item.updatedAt, 'days', 1)" small color="error" left>mdi-fire</v-icon>
+                    <span>{{item.title}}</span> -->
+                    <display-title :item="item"/>
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <display-user :user="item.user" size="small"></display-user>
+                </v-list-item-action>
+              </v-list-item>
+            <!-- </v-sheet> -->
             <v-overlay
               absolute
               :opacity="0.7"
@@ -70,6 +71,7 @@
   </v-container>
 </template>
 <script>
+import DisplayTitle from '@/components/display-title'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import DisplayCount from '@/components/display-count'
@@ -80,7 +82,7 @@ import getImageUrlFromMd from '@/util/getImageUrlFromMd'
 // const LIMIT = 5
 
 export default {
-  components: { DisplayTime, DisplayUser, DisplayCount },
+  components: { DisplayTitle, DisplayTime, DisplayUser, DisplayCount },
   props: ['items', 'boardId', 'category', 'isWidget'],
   data () {
     return {

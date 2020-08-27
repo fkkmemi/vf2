@@ -13,7 +13,7 @@
               <display-title :item="item"/>
               <v-spacer/>
             </v-card-subtitle>
-            <v-card-text>
+            <v-card-text class="text--primary">
               <viewer v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
               <v-container v-else>
                 <v-row justify="center" align="center">
