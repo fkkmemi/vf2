@@ -16,29 +16,49 @@
         <v-col cols="12" sm="6" :order="$vuetify.breakpoint.xs ? 1 : null">
           <template v-if="modeIn">
             <v-alert color="info" dark border="left" outlined height="100%">
-              <ul>
-                <li>{{site.title}}({{site.description}}) 에 오신걸 환영합니다~</li>
-                <br>
-                <li>그리팅 메세지 리얼타임으로 변경 예정..</li>
-              </ul>
+              <p>{{site.title}}({{site.domain}}) 에 오신걸 환영합니다~</p>
+              <p>{{site.description}}</p>
             </v-alert>
           </template>
           <template v-else>
-            <v-alert color="primary" border="left" outlined height="100%">
-              <ul>
-                <li>소셜 로그인 시 회원가입이 필요 없습니다</li>
-                <li>소셜 가입시 이메일(email), 표시이름(displayName: 실명 아님), 사진(photoURL: 소셜 제공)이 저장됩니다.</li>
-                <li>이메일 가입시 이메일(email)과 표시이름(displayName: 실명 아님)이 저장됩니다.</li>
-                <li>이메일 가입시 메일 확인 후 정상 동작합니다</li>
-                <li>패스워드는 구글 정책(firebase auth)에 의해 암호화되어 저장되며 이 사이트에서는 수집하지 않습니다</li>
-                <li>회원 탈퇴 후 7일 후에 모든 데이터가 삭제됩니다.(재가입 방지)</li>
-                <li>일부 기능은 관리자의 승인 후 사용할 수 있습니다</li>
-              </ul>
-            </v-alert>
+            <v-card outlined>
+              <v-tabs v-model="signUpTab" grow>
+                <v-tab>설명</v-tab>
+                <v-tab>이용약관</v-tab>
+                <v-tab>개인정보취급방침</v-tab>
+              </v-tabs>
+              <v-tabs-items v-model="signUpTab">
+                <v-tab-item>
+                  <v-card-text>
+                    <ul class="mt-4 text--primary">
+                      <li>소셜 로그인 시 회원가입이 필요 없습니다</li>
+                      <li>소셜 가입시 이메일(email), 표시이름(displayName: 실명 아님), 사진(photoURL: 소셜 제공)이 저장됩니다.</li>
+                      <li>이메일 가입시 이메일(email)과 표시이름(displayName: 실명 아님)이 저장됩니다.</li>
+                      <li>이메일 가입시 메일 확인 후 정상 동작합니다</li>
+                      <li>패스워드는 구글 정책(firebase auth)에 의해 암호화되어 저장되며 이 사이트에서는 수집하지 않습니다</li>
+                      <li>회원 탈퇴 후 7일 후에 모든 데이터가 삭제됩니다.(재가입 방지)</li>
+                      <li>일부 기능은 관리자의 승인 후 사용할 수 있습니다</li>
+                    </ul>
+                  </v-card-text>
+                </v-tab-item>
+                <v-tab-item>
+                  <terms-content/>
+                </v-tab-item>
+                <v-tab-item>
+                  <privacy-content/>
+                </v-tab-item>
+              </v-tabs-items>
+              <v-card-actions v-if="signUpTab > 0">
+                <v-spacer/>
+                <v-btn @click="scrollToTop" color="primary" fab small>
+                  <v-icon>mdi-arrow-up</v-icon>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
           </template>
         </v-col>
         <v-col cols="12" sm="6">
-          <v-card outlined :loading="loading" :disabled="loading">
+          <v-card outlined :loading="loading" :disabled="loading" id="sign-card">
             <!-- social -->
             <template>
               <v-subheader>
@@ -105,10 +125,15 @@
                 <v-card-title class="caption">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn text color="primary" v-bind="attrs" v-on="on" @click="sendPasswordResetEmail">비밀번호를 잊으셨나요?</v-btn>
+                      <v-btn text color="primary" v-bind="attrs" v-on="on" @click="sendPasswordResetEmail">
+                        비밀번호를 잊으셨나요?
+                      </v-btn>
                     </template>
                     <span>클릭시 작성된 이메일로 비밀번호 초기화 메일이 전송됩니다</span>
                   </v-tooltip>
+                  <v-btn text color="primary" @click="modeIn=!modeIn">
+                    아직 회원이 아니신가요?
+                  </v-btn>
                 </v-card-title>
               </v-form>
             </template>
@@ -162,21 +187,29 @@
   </v-card>
 </template>
 <script>
+import TermsContent from '@/components/terms/content.vue'
+import PrivacyContent from '@/components/privacy/content.vue'
+import site from '../../siteConfig'
 export default {
+  components: { TermsContent, PrivacyContent },
   data () {
     return {
-      site: {
-        title: process.env.VUE_APP_SITE_TITLE,
-        description: process.env.VUE_APP_SITE_DESCRIPTION
-      },
+      site,
       loading: false,
       modeIn: true,
       email: '',
       password: '',
-      displayName: ''
+      displayName: '',
+      signInTab: null,
+      signUpTab: null
     }
   },
   methods: {
+    scrollToTop () {
+      document
+        .getElementById('sign-card')
+        .scrollIntoView({ behavior: 'smooth' })
+    },
     async signInWithEmail () {
       if (!this.email || !this.password) throw Error('이메일, 비밀번호를 입력하세요')
       this.loading = true

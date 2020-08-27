@@ -114,3 +114,20 @@ $ vue-asset-generate -a logo.png -o img
 
 - favicon.ico, manifest.json -> public/
 - img/ -> public img/icons
+
+# 사이트 정보
+**siteConfig.js**
+```javascript
+export default {
+  title: '제목',
+  description: '설명',
+  logo: '/logo.png',
+  domain: 'your-domain.com',
+  url: 'https://your-domain.com',
+  owner: 'your name', // 개인정보 처리방침에 들어감
+  email: 'your-mail@domain.com', // 개인정보 처리방침에 들어감
+  createdAt: new Date('2020-08-27') // 개인정보 처리방침에 들어감
+}
+```
+
+사이트 정보는 필요한 페이지에 쓰입니다.

@@ -5,6 +5,7 @@
     v-model="dialog"
     max-width="800"
     :fullscreen="$vuetify.breakpoint.xs"
+
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
