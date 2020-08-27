@@ -1,5 +1,15 @@
 <template>
-  <v-container fluid v-if="!loaded">
+  <v-container fluid v-if="!user">
+    <v-alert type="warning" border="left" class="mb-0">
+      로그인이 필요합니다
+    </v-alert>
+  </v-container>
+  <v-container fluid v-else-if="user && user.level > 1">
+    <v-alert type="warning" border="left" class="mb-0">
+      권한이 없습니다
+    </v-alert>
+  </v-container>
+  <v-container fluid v-else-if="!loaded">
     <v-skeleton-loader type="article" v-for="i in 3" :key="i"></v-skeleton-loader>
   </v-container>
   <v-container fluid v-else-if="loaded && !items.length">
@@ -56,7 +66,7 @@ export default {
     }
   },
   created () {
-    this.init()
+    if (this.user && this.user.level < 2) this.init()
   },
   destroyed () {
   },

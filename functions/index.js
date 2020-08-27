@@ -71,10 +71,16 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
     visitCount: 0,
     emailVerified
   }
+  if (!displayName) u.displayName = email.split('@')[0]
   if (providerData && providerData.length) u.providerId = providerData[0].providerId
+  if (u.providerId !== 'email' && u.providerId !== 'google.com') {
+    u.emailVerified = true
+    await admin.auth().updateUser(uid, { emailVerified: u.emailVerified }).catch(e => console.error('user update err: ' + e.message))
+  }
   await db.collection('users').doc(uid).set(u).catch(e => console.error('user db create err: ' + e.message))
   u.createdAt = time.getTime()
   await rdb.ref('users').child(uid).set(u).catch(e => console.error('user rdb create err: ' + e.message))
+
   try {
     await db.collection('meta').doc('users').update({ count: admin.firestore.FieldValue.increment(1) })
   } catch (e) {

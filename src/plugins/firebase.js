@@ -24,28 +24,36 @@ const subscribe = async (fu) => {
     if (doc.exists) {
       const user = doc.data()
       user.uid = fu.uid
-
-      const set = {}
-      if (!user.displayName) {
-        let displayName = fu.displayName || '손님'
-        const userDisplayName = localStorage.getItem('userDisplayName')
-        if (userDisplayName) {
-          displayName = userDisplayName
-          localStorage.removeItem('userDisplayName')
+      if (user.provider === 'email') {
+        const set = {}
+        if (!user.displayName) {
+          let displayName = fu.displayName || '손님'
+          const userDisplayName = localStorage.getItem('userDisplayName')
+          if (userDisplayName) {
+            displayName = userDisplayName
+            localStorage.removeItem('userDisplayName')
+          }
+          user.displayName = displayName
+          set.displayName = displayName
         }
-        user.displayName = displayName
-        set.displayName = displayName
+        if (user.emailVerified !== fu.emailVerified) {
+          set.emailVerified = fu.emailVerified
+        }
+        if (Object.keys(set).length) ref.update(set)
+      } else {
+        if (!fu.emailVerified) {
+          console.log('getIdToken true')
+          firebase.auth().currentUser.getIdToken(true)
+        }
       }
-      if (user.emailVerified !== fu.emailVerified) {
-        set.emailVerified = fu.emailVerified
-      }
-      if (Object.keys(set).length) ref.update(set)
       store.commit('setUser', user)
+      // console.log('user subscribe: ' + user)
     }
   }, console.error)
 }
 
 firebase.auth().onAuthStateChanged((fu) => {
+  // console.log('user evnet: ' + JSON.stringify(fu, null, 2))
   store.commit('setFireUser', fu)
   if (!fu) {
     store.commit('setUser', null)

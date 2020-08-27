@@ -52,6 +52,12 @@
                 </v-btn>
               </v-card-actions>
               <v-card-actions>
+                <v-btn block color="#242a2e" dark @click="signInWithGithub">
+                  <v-icon left>mdi-github</v-icon>
+                  <span>깃허브 로그인</span>
+                </v-btn>
+              </v-card-actions>
+              <v-card-actions>
                 <v-btn block color="#3b5999" dark @click="signInWithFacebook">
                   <v-icon left>mdi-facebook</v-icon>
                   <span>페이스북 로그인</span>
@@ -206,6 +212,18 @@ export default {
     },
     async signInWithGoogle () {
       const provider = new this.$firebase.auth.GoogleAuthProvider()
+      this.loading = true
+      try {
+        await this.$firebase.auth().signInWithPopup(provider)
+        // const sn = await this.$firebase.auth().signInWithPopup(provider)
+        // this.$store.commit('setFireUser', sn.user)
+        this.$emit('close')
+      } finally {
+        this.loading = false
+      }
+    },
+    async signInWithGithub () {
+      const provider = new this.$firebase.auth.GithubAuthProvider()
       this.loading = true
       try {
         await this.$firebase.auth().signInWithPopup(provider)

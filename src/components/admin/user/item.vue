@@ -14,11 +14,14 @@
           <span class="caption">({{ levels[item.level].text }})</span>
         </v-list-item-title>
         <v-list-item-subtitle>
+          <v-icon v-if="item.providerId === 'password'" small left color="primary">
+            mdi-email
+          </v-icon>
           <v-icon v-if="item.providerId === 'google.com'" small left color="#dd4b39">
             mdi-google
           </v-icon>
-          <v-icon v-if="item.providerId === 'password'" small left color="primary">
-            mdi-email
+          <v-icon v-if="item.providerId === 'github.com'" small left color="#242a2e">
+            mdi-github
           </v-icon>
           {{item.email}}
         </v-list-item-subtitle>
