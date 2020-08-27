@@ -36,7 +36,7 @@
         <display-title :item="article"/>
       </v-card-subtitle>
       <v-card-text class="text--primary">
-        <viewer v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
+        <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
         <v-container v-else>
           <v-row justify="center" align="center">
             <v-progress-circular indeterminate></v-progress-circular>

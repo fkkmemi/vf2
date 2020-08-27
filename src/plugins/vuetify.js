@@ -21,7 +21,8 @@ const theme = {
       info: '#4E7DA6',
       success: '#26A699',
       warning: '#F29727',
-      error: '#F24C3D'
+      // error: '#F24C3D',
+      error: '#BF0426'
     },
     dark: {
       // primary: '#3FA8BF',

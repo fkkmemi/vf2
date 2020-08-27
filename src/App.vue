@@ -17,6 +17,9 @@
       :width="$store.state.editable ? 380 : 256"
       v-model="drawer">
       <site-menu :items="site.menu" @close="drawer=false"></site-menu>
+      <template v-slot:append>
+        <site-menu-bottom/>
+      </template>
     </v-navigation-drawer>
     <v-main onscroll="onScroll">
       <banner-email-confirm v-if="user && !user.emailVerified" />
@@ -47,12 +50,13 @@
 import SiteTitle from '@/views/site/title'
 import SiteFooter from '@/views/site/footer'
 import SiteMenu from '@/views/site/menu'
+import SiteMenuBottom from '@/views/site/menu-bottom'
 import SiteSign from '@/views/site/sign'
 import SiteSearch from '@/views/site/search'
 import BannerEmailConfirm from '@/components/banner-email-confirm'
 
 export default {
-  components: { SiteTitle, SiteFooter, SiteMenu, SiteSign, SiteSearch, BannerEmailConfirm },
+  components: { SiteTitle, SiteFooter, SiteMenu, SiteMenuBottom, SiteSign, SiteSearch, BannerEmailConfirm },
   name: 'App',
   data () {
     return {
@@ -115,7 +119,15 @@ export default {
 }
 </script>
 <style lang="scss">
-  .tui-editor-contents {
+  // .tui-editor-contents {
+  //   h1, h2, h3, h4, h5, h6, p, ul, li, pre, table {
+  //     color: var(--v-primary-base) !important
+  //   }
+  //   code, span {
+  //     color: rgb(50, 50, 50) !important
+  //   }
+  // }
+  .tui-dark {
     h1, h2, h3, h4, h5, h6, p, ul, li, pre, table {
       color: var(--v-primary-base) !important
     }
