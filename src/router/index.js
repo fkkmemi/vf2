@@ -36,6 +36,16 @@ const routes = [
     component: () => import('@/views/settings')
   },
   {
+    path: '/privacy',
+    name: 'privacy',
+    component: () => import('@/views/privacy')
+  },
+  {
+    path: '/terms',
+    name: 'terms',
+    component: () => import('@/views/terms')
+  },
+  {
     path: '*',
     name: 'error',
     component: () => import('../views/error')
