@@ -3,6 +3,7 @@ import Vuetify, { VSnackbar, VBtn, VIcon } from 'vuetify/lib'
 
 import en from 'vuetify/es5/locale/en'
 import ko from 'vuetify/es5/locale/ko'
+import constants from '@/util/constants'
 
 Vue.use(Vuetify, {
   components: {
@@ -11,36 +12,11 @@ Vue.use(Vuetify, {
     VIcon
   }
 })
+
+const themes = JSON.parse(localStorage.getItem('site-themes')) || constants.themes
 const theme = {
   dark: !!JSON.parse(localStorage.getItem('site-theme-dark')),
-  themes: {
-    light: {
-      primary: '#0277BD', // '#1a77f2', // '#344059',
-      secondary: '#BDBDBD',
-      accent: '#2C4027',
-      info: '#4E7DA6',
-      success: '#26A699',
-      warning: '#F29727',
-      // error: '#F24C3D',
-      error: '#BF0426'
-    },
-    dark: {
-      // primary: '#3FA8BF',
-      // secondary: '#424242',
-      // accent: '#D9B959',
-      // info: '#3E8C76',
-      // success: '#D9A86C',
-      // warning: '#BF712C',
-      // error: '#F24C3D'
-      primary: '#0277BD', // '#D94625',
-      secondary: '#424242',
-      accent: '#2C4027',
-      info: '#4E7DA6',
-      success: '#26A699',
-      warning: '#F29727',
-      error: '#BF0426'
-    }
-  }
+  themes: themes
 }
 const VuetifyObj = new Vuetify({
   lang: {

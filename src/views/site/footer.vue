@@ -1,8 +1,12 @@
 <template>
-  <v-footer app :color="$vuetify.theme.dark ? null : 'white'" absolute :footer="footer">
-
+  <v-footer app :color="$vuetify.theme.dark ? null : 'white'" absolute :footer="footer" class="pa-0">
+    <v-card tile flat color="" width="100%">
+      <v-divider v-if="!$vuetify.theme.dark"/>
+      <v-subheader :class="$vuetify.breakpoint.xs ? 'px-1' : null">
+        <v-btn text to="/privacy" class="caption">개인정보처리방침</v-btn> |
+        <v-btn text to="/terms" class="caption">이용약관</v-btn>
         <v-spacer></v-spacer>
-        <div>{{ footer }}</div>
+        <span class="caption">{{ footer }}</span>
         <v-btn v-if="$store.state.editable" icon @click="openDialog" small><v-icon small>mdi-pencil</v-icon></v-btn>
         <v-dialog v-model="dialog" max-width="400">
           <v-card>
@@ -17,6 +21,8 @@
             </v-card-text>
           </v-card>
         </v-dialog>
+      </v-subheader>
+    </v-card>
   </v-footer>
 </template>
 <script>

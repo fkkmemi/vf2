@@ -2,14 +2,8 @@
   <settings />
 </template>
 <script>
-import Settings from '@/components/settings/index.vue'
+import Settings from '@/components/settings'
 export default {
-  components: { Settings },
-  created () {
-    console.log(this.$vuetify.theme)
-  },
-  methods: {
-
-  }
+  components: { Settings }
 }
 </script>
