@@ -29,4 +29,6 @@ firebaseConfig.js
 siteConfig.js
 public/logo.png
 public/logo-dark.png
+public/logo-circle.png
+public/logo-circle-dark.png
 public/favicon.ico

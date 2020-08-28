@@ -1,6 +1,11 @@
 <template>
-  <v-toolbar-title>
-    {{ title }}
+  <v-toolbar-title class="d-flex align-center">
+    <v-avatar left size="28">
+      <v-img src="/logo.png" left></v-img>
+    </v-avatar>
+    <span class="font-weight-light primary--text ml-2">
+      {{ title }}
+    </span>
     <v-btn v-if="$store.state.editable" icon @click="openDialog" small><v-icon small>mdi-pencil</v-icon></v-btn>
     <v-dialog v-model="dialog" max-width="400">
       <v-card>

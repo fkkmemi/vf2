@@ -15,7 +15,7 @@ const theme = {
   dark: !!JSON.parse(localStorage.getItem('site-theme-dark')),
   themes: {
     light: {
-      primary: '#344059',
+      primary: '#0277BD', // '#1a77f2', // '#344059',
       secondary: '#BDBDBD',
       accent: '#2C4027',
       info: '#4E7DA6',
@@ -32,7 +32,7 @@ const theme = {
       // success: '#D9A86C',
       // warning: '#BF712C',
       // error: '#F24C3D'
-      primary: '#D94625',
+      primary: '#0277BD', // '#D94625',
       secondary: '#424242',
       accent: '#2C4027',
       info: '#4E7DA6',

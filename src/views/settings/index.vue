@@ -4,6 +4,12 @@
 <script>
 import Settings from '@/components/settings/index.vue'
 export default {
-  components: { Settings }
+  components: { Settings },
+  created () {
+    console.log(this.$vuetify.theme)
+  },
+  methods: {
+
+  }
 }
 </script>

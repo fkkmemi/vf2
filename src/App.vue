@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark :clipped-left="$vuetify.breakpoint.lgAndUp">
+    <v-app-bar app :color="$vuetify.theme.dark ? null : 'white'" flat :clipped-left="$vuetify.breakpoint.lgAndUp">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <site-title v-if="(!searchable && $vuetify.breakpoint.xs) || !$vuetify.breakpoint.xs" :title="site.title"></site-title>
       <v-spacer/>
@@ -78,7 +78,7 @@ export default {
             level: 5
           }
         ],
-        title: '타이틀 로드중 ...',
+        title: '제목 로드중 ...',
         footer: '바닥 로드중 ...'
       },
       offsetTop: 0,

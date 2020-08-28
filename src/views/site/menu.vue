@@ -2,13 +2,13 @@
   <div>
     <v-list-item>
       <v-list-item-avatar>
-        <v-img contain :src="$vuetify.theme.dark ? '/logo-dark.png' : '/logo.png'"></v-img>
+        <v-img contain :src="$vuetify.theme.dark ? '/logo-circle-dark.png' : '/logo-circle.png'"></v-img>
       </v-list-item-avatar>
       <v-list-item-content>
-        <v-list-item-title class="title">
+        <v-list-item-title class="font-weight-light primary--text">
           {{site.title}}
         </v-list-item-title>
-        <v-list-item-subtitle>
+        <v-list-item-subtitle class="caption">
           {{version}}
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -56,6 +56,7 @@
           :to="$store.state.editable ? null : subItem.to"
           exact
           v-show="(item.level >= 5) || (user && user.level <= item.level)"
+          dense
         >
           <v-list-item-content>
             <v-list-item-title class="d-flex align-center pl-6">
