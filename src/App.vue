@@ -135,6 +135,9 @@ export default {
       color: rgb(50, 50, 50) !important
     }
   }
+  // .te-preview {
+  //   background-color: white
+  // }
   .white-space {
     white-space: pre-wrap
   }

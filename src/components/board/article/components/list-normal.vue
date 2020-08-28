@@ -13,54 +13,58 @@
               <display-title :item="item"/>
               <v-spacer/>
             </v-card-subtitle>
-            <v-card-text class="text--primary">
-              <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
-              <v-container v-else>
-                <v-row justify="center" align="center">
-                  <v-progress-circular indeterminate></v-progress-circular>
-                </v-row>
-              </v-container>
-            </v-card-text>
-            <v-card-actions class="d-flex justify-center">
-              <v-btn text color="primary">
-                <v-icon left>mdi-dots-horizontal</v-icon>자세히 보기
-              </v-btn>
-              <!-- <v-btn
-                v-if="fireUser && fireUser.uid === item.uid"
-                :to="`/board/${boardId}/${item.id}?action=write`"
-                text color="primary">
-                <v-icon left>mdi-pencil</v-icon>수정하기
-              </v-btn> -->
-            </v-card-actions>
-            <v-card-actions>
-              <span class="font-italic caption ml-2"><display-time :time="item.createdAt"></display-time></span>
-              <v-spacer/>
-            </v-card-actions>
-            <v-card-actions>
-              <display-user :user="item.user"></display-user>
-              <v-spacer/>
-              <display-count :item="item" :column="false"></display-count>
-            </v-card-actions>
-            <v-card-text>
-              <v-row justify="start" align="center" class="px-4">
-                <v-btn
-                  color="primary"
-                  depressed
-                  small
-                  outlined
-                  class="mr-4 mb-2"
-                  @click.native.stop="category === item.category ? null : goCategory(item)"
-                >
-                  {{item.category}}
-                  <v-icon right>mdi-menu-right</v-icon>
+            <template v-if="!(item.important > 0 && $vuetify.breakpoint.xs)">
+              <v-card-text class="text--primary">
+                <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
+                <v-container v-else>
+                  <v-row justify="center" align="center">
+                    <v-progress-circular indeterminate></v-progress-circular>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions class="d-flex justify-center">
+                <v-btn text color="primary">
+                  <v-icon left>mdi-dots-horizontal</v-icon>자세히 보기
                 </v-btn>
-                <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>
-              </v-row>
-            </v-card-text>
+                <!-- <v-btn
+                  v-if="fireUser && fireUser.uid === item.uid"
+                  :to="`/board/${boardId}/${item.id}?action=write`"
+                  text color="primary">
+                  <v-icon left>mdi-pencil</v-icon>수정하기
+                </v-btn> -->
+              </v-card-actions>
+              <v-card-actions>
+                <span class="font-italic caption ml-2"><display-time :time="item.createdAt"></display-time></span>
+                <v-spacer/>
+              </v-card-actions>
+              <v-card-actions>
+                <display-user :user="item.user"></display-user>
+                <v-spacer/>
+                <display-count :item="item" :column="false"></display-count>
+              </v-card-actions>
+              <v-card-text>
+                <v-row justify="start" align="center" class="px-4">
+                  <v-btn
+                    color="primary"
+                    depressed
+                    small
+                    outlined
+                    class="mr-4 mb-2"
+                    @click.native.stop="category === item.category ? null : goCategory(item)"
+                  >
+                    {{item.category}}
+                    <v-icon right>mdi-menu-right</v-icon>
+                  </v-btn>
+                  <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>
+                </v-row>
+              </v-card-text>
+            </template>
           </v-card>
+
         </v-hover>
+        <v-divider v-if="i < items.length - 1 && $vuetify.breakpoint.xs" :key="i" inset/>
+
       </v-col>
-      <v-divider v-if="i < items.length - 1 && $vuetify.breakpoint.xs" :key="i" inset/>
     </template>
   </v-row>
 </template>

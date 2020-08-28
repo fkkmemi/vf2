@@ -208,7 +208,7 @@ export default {
     scrollToTop () {
       document
         .getElementById('sign-card')
-        .scrollIntoView({ behavior: 'smooth' })
+        .scrollIntoView({ block: 'start', behavior: 'smooth' })
     },
     async signInWithEmail () {
       if (!this.email || !this.password) throw Error('이메일, 비밀번호를 입력하세요')

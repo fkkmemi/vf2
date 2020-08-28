@@ -32,6 +32,7 @@ import ListCompact from './components/list-compact'
 import ListNormal from './components/list-normal'
 import ListGallery from './components/list-gallery'
 import setMeta from '@/util/setMeta'
+import getThumbnailContent from '@/util/getThumbnailContent'
 
 const itemsSort = (before, after) => {
   if (after.important > before.important) return 1
@@ -142,6 +143,7 @@ export default {
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
+          item.summary = getThumbnailContent(item)
           item.overlay = false
           if (read) item.read = read
           this.items.push(item)
@@ -149,7 +151,7 @@ export default {
           if (findItem.summary !== item.summary) {
             findItem.summary = ''
             setTimeout(() => {
-              findItem.summary = item.summary
+              findItem.summary = getThumbnailContent(item)
             }, 1000)
           }
           findItem.title = item.title

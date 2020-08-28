@@ -41,24 +41,26 @@
             <v-text-field v-model="form.title" outlined label="제목" hide-details></v-text-field>
           </v-col>
           <v-col cols="12">
-            <editor
-              v-if="!exists"
-              :initialValue="form.content"
-              ref="editor" initialEditType="wysiwyg" height="400px"
-              :options="options"
-              ></editor>
-            <template v-else>
+            <v-sheet color="white">
               <editor
-                v-if="form.content"
+                v-if="!exists"
                 :initialValue="form.content"
                 ref="editor" initialEditType="wysiwyg" height="400px"
-                :options="options"></editor>
-              <v-container v-else>
-                <v-row justify="center" align="center">
-                  <v-progress-circular indeterminate></v-progress-circular>
-                </v-row>
-              </v-container>
-            </template>
+                :options="options"
+                ></editor>
+              <template v-else>
+                <editor
+                  v-if="form.content"
+                  :initialValue="form.content"
+                  ref="editor" initialEditType="wysiwyg" height="400px"
+                  :options="options"></editor>
+                <v-container v-else>
+                  <v-row justify="center" align="center">
+                    <v-progress-circular indeterminate></v-progress-circular>
+                  </v-row>
+                </v-container>
+              </template>
+            </v-sheet>
           </v-col>
         </v-row>
       </v-card-text>
@@ -77,6 +79,7 @@
 import axios from 'axios'
 import getSummary from '@/util/getSummary'
 import imageCompress from '@/util/imageCompress'
+import findImagesFromDoc from '@/util/findImagesFromDoc'
 
 export default {
   props: ['boardId', 'articleId', 'action', 'board', 'category'],
@@ -155,7 +158,7 @@ export default {
           title: this.form.title,
           category: this.form.category,
           tags: this.form.tags,
-          images: this.findImagesFromDoc(md, this.form.images), // this.form.images,
+          images: findImagesFromDoc(md, this.form.images), // this.form.images,
           updatedAt: new Date(),
           summary: getSummary(md, 300, 'data:image'),
           important: this.form.important
@@ -189,12 +192,13 @@ export default {
         this.loading = false
       }
     },
-    findImagesFromDoc (md, images) {
-      const filteredImages = images.filter(image => {
-        return md.indexOf(image.url) >= 0
-      })
-      return filteredImages
-    },
+    // findImagesFromDoc (md, images) {
+    //   const content = decodeURIComponent(md)
+    //   const filteredImages = images.filter(image => {
+    //     return content.indexOf(decodeURIComponent(image.url)) >= 0
+    //   })
+    //   return filteredImages
+    // },
     async imageUpload (file) {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
       const thumbnail = await imageCompress(file)
@@ -225,11 +229,15 @@ export default {
       return image
     },
     addImageBlobHook (blob, callback) {
+      this.loading = true
       this.imageUpload(blob)
         .then(image => {
           callback(image.url, 'img')
         })
-        .catch(console.error)
+        .catch(e => this.$toasted.global.error(e.message))
+        .finally(() => {
+          this.loading = false
+        })
     },
     back () {
       const next = { path: '/board/' + this.boardId }

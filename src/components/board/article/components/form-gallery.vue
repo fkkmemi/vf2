@@ -163,13 +163,14 @@ export default {
       this.loading = true
       if (this.form.images.length && (this.form.content !== this.form.images[0].url)) { this.form.images = [] }
       const md = setMdFromImageUrl(this.form.content)
+      if (!md) throw Error('내용은 필수 항목입니다')
       try {
         const createdAt = new Date(Number(this.articleId))
         const doc = {
           title: this.form.title,
           category: this.form.category,
           tags: this.form.tags,
-          images: this.form.images, // this.form.images,
+          images: this.form.images,
           updatedAt: new Date(),
           summary: md,
           important: this.form.important
@@ -203,41 +204,39 @@ export default {
         this.loading = false
       }
     },
-    findImagesFromDoc (md, images) {
-      const filteredImages = images.filter(image => {
-        return md.indexOf(image.url) >= 0
-      })
-      return filteredImages
-    },
     async imageUpload (file) {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
-      const thumbnail = await imageCompress(file)
-      const image = {
-        size: file.size,
-        id: '',
-        url: '',
-        thumbSize: thumbnail.size,
-        thumbId: '',
-        thumbUrl: ''
+      this.loading = true
+      try {
+        const thumbnail = await imageCompress(file)
+        const image = {
+          size: file.size,
+          id: '',
+          url: '',
+          thumbSize: thumbnail.size,
+          thumbId: '',
+          thumbUrl: ''
+        }
+
+        image.id = new Date().getTime() + '-' + this.fireUser.uid + '-' + file.name
+        const sn = await this.$firebase.storage().ref()
+          .child('images').child('boards')
+          .child(this.boardId).child(this.articleId).child(image.id)
+          .put(file)
+        image.url = await sn.ref.getDownloadURL()
+
+        image.thumbId = new Date().getTime() + '-' + this.fireUser.uid + '-thumb-' + file.name
+        const snt = await this.$firebase.storage().ref()
+          .child('images').child('boards')
+          .child(this.boardId).child(this.articleId).child(image.thumbId)
+          .put(thumbnail)
+        image.thumbUrl = await snt.ref.getDownloadURL()
+
+        this.form.images[0] = image
+        this.form.content = image.url
+      } finally {
+        this.loading = false
       }
-
-      image.id = new Date().getTime() + '-' + this.fireUser.uid + '-' + file.name
-      const sn = await this.$firebase.storage().ref()
-        .child('images').child('boards')
-        .child(this.boardId).child(this.articleId).child(image.id)
-        .put(file)
-      image.url = await sn.ref.getDownloadURL()
-
-      image.thumbId = new Date().getTime() + '-' + this.fireUser.uid + '-thumb-' + file.name
-      const snt = await this.$firebase.storage().ref()
-        .child('images').child('boards')
-        .child(this.boardId).child(this.articleId).child(image.thumbId)
-        .put(thumbnail)
-      image.thumbUrl = await snt.ref.getDownloadURL()
-
-      this.form.images[0] = image
-      this.form.content = image.url
-      return image
     },
     back () {
       const next = { path: '/board/' + this.boardId }
