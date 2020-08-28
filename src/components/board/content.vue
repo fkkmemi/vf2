@@ -46,13 +46,13 @@
           :createdAt="createdAt"
           :isWidget="isWidget"/>
       </v-sheet>
-      <v-dialog v-model="dialog" max-width="400">
+      <v-dialog v-model="dialog" max-width="500">
         <v-card>
           <v-toolbar color="transparent" dense flat>
             <v-toolbar-title>게시판 정보</v-toolbar-title>
             <v-spacer/>
-            <v-btn icon @click="write" :disabled="user && user.level > 0"><v-icon>mdi-pencil</v-icon></v-btn>
-            <v-btn icon @click="dialog=false"><v-icon>mdi-close</v-icon></v-btn>
+            <v-btn icon @click="write" :disabled="user && user.level > 0"><v-icon small>mdi-pencil</v-icon></v-btn>
+            <v-btn icon @click="dialog=false"><v-icon small>mdi-close</v-icon></v-btn>
           </v-toolbar>
           <v-divider/>
           <v-list-item>

@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-toolbar dense color="primary" dark flat>
+    <v-toolbar dense color="primary" flat dark>
       <v-toolbar-title>
         {{ modeIn ? '로그인' : '회원가입'}}
       </v-toolbar-title>
@@ -9,7 +9,7 @@
         <v-icon left v-text="modeIn ? 'mdi-account-plus' : 'mdi-account'"></v-icon>
         <span v-text="modeIn ? '회원가입' : '로그인'"></span>
       </v-btn>
-      <v-btn icon @click="$emit('close')"><v-icon>mdi-close</v-icon></v-btn>
+      <v-btn icon @click="$emit('close')"><v-icon small>mdi-close</v-icon></v-btn>
     </v-toolbar>
     <v-card-text>
       <v-row>

@@ -5,20 +5,15 @@
         <v-img contain :src="$vuetify.theme.dark ? '/logo-circle-dark.png' : '/logo-circle.png'"></v-img>
       </v-list-item-avatar>
       <v-list-item-content>
-        <v-list-item-title class="font-weight-light primary--text">
+        <v-list-item-title class="font-weight-medium primary--text">
           {{site.title}}
         </v-list-item-title>
         <v-list-item-subtitle class="caption">
           {{version}}
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-action v-if="user && user.level === 0">
-        <v-btn @click="$store.commit('setEdit', !$store.state.editable)" icon small>
-          <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'" small></v-icon>
-        </v-btn>
-      </v-list-item-action>
       <v-list-item-action>
-        <v-btn @click="$emit('close')" icon small>
+        <v-btn @click="$emit('close')" icon>
           <v-icon small>mdi-close</v-icon>
         </v-btn>
       </v-list-item-action>
@@ -39,15 +34,23 @@
           <v-list-item-content>
             <v-list-item-title class="d-flex align-center">
               <v-icon color="error" left v-if="newCheck(new Date(item.createdAt), 'days', 1)">mdi-fire</v-icon>
-              <span>{{ item.title }}</span>
+              <span class="subtitle-1 font-weight-regular text-truncate mr-2">{{ item.title }}</span>
+              <template v-if="$store.state.editable">
+                <v-btn icon @click.stop="openDialogItem(i)" small><v-icon small>mdi-pencil</v-icon></v-btn>
+                <v-btn icon @click.stop="moveItem(items, i, -1)" v-if="i > 0" small> <v-icon small>mdi-chevron-double-up</v-icon></v-btn>
+                <v-btn icon @click.stop="moveItem(items, i, 1)" v-if="i < items.length - 1" small><v-icon small>mdi-chevron-double-down</v-icon></v-btn>
+                <v-btn icon @click.stop="removeItem(items, i)" small><v-icon small>mdi-delete</v-icon></v-btn>
+              </template>
             </v-list-item-title>
-            <v-list-item-subtitle v-if="$store.state.editable">
-              <v-btn icon @click="openDialogItem(i)" small><v-icon small>mdi-pencil</v-icon></v-btn>
-              <v-btn icon @click="moveItem(items, i, -1)" v-if="i > 0" small> <v-icon small>mdi-chevron-double-up</v-icon></v-btn>
-              <v-btn icon @click="moveItem(items, i, 1)" v-if="i < items.length - 1" small><v-icon small>mdi-chevron-double-down</v-icon></v-btn>
-              <v-btn icon @click="removeItem(items, i)" small><v-icon small>mdi-delete</v-icon></v-btn>
-            </v-list-item-subtitle>
           </v-list-item-content>
+          <!-- <v-list-item-content>
+            <template v-if="$store.state.editable">
+              <v-btn icon @click.stop="openDialogItem(i)" small><v-icon small>mdi-pencil</v-icon></v-btn>
+              <v-btn icon @click.stop="moveItem(items, i, -1)" v-if="i > 0" small> <v-icon small>mdi-chevron-double-up</v-icon></v-btn>
+              <v-btn icon @click.stop="moveItem(items, i, 1)" v-if="i < items.length - 1" small><v-icon small>mdi-chevron-double-down</v-icon></v-btn>
+              <v-btn icon @click.stop="removeItem(items, i)" small><v-icon small>mdi-delete</v-icon></v-btn>
+            </template>
+          </v-list-item-content> -->
         </template>
 
         <v-list-item
@@ -61,14 +64,16 @@
           <v-list-item-content>
             <v-list-item-title class="d-flex align-center pl-6">
               <v-icon color="error" left v-if="newCheck(new Date(subItem.createdAt), 'days', 1)">mdi-fire</v-icon>
-              <span class="subtitle-2 font-weight-regular">{{ subItem.title }}</span>
+              <span class="subtitle-2 font-weight-regular text-truncate">{{ subItem.title }}</span>
             </v-list-item-title>
-            <v-list-item-subtitle v-if="$store.state.editable">
-              <v-btn icon @click="openDialogSubItem(i, j)" small><v-icon small>mdi-pencil</v-icon></v-btn>
-              <v-btn icon @click="moveItem(item.subItems, j, -1)" v-if="j > 0" small><v-icon small>mdi-chevron-double-up</v-icon></v-btn>
-              <v-btn icon @click="moveItem(item.subItems, j, 1)" v-if="j < item.subItems.length - 1" small><v-icon small>mdi-chevron-double-down</v-icon></v-btn>
-              <v-btn icon @click="removeItem(item.subItems, j)" small><v-icon small>mdi-delete</v-icon></v-btn>
-            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-content v-if="$store.state.editable">
+            <v-list-item-title>
+              <v-btn icon @click.stop="openDialogSubItem(i, j)" small><v-icon small>mdi-pencil</v-icon></v-btn>
+              <v-btn icon @click.stop="moveItem(item.subItems, j, -1)" v-if="j > 0" small><v-icon small>mdi-chevron-double-up</v-icon></v-btn>
+              <v-btn icon @click.stop="moveItem(item.subItems, j, 1)" v-if="j < item.subItems.length - 1" small><v-icon small>mdi-chevron-double-down</v-icon></v-btn>
+              <v-btn icon @click.stop="removeItem(item.subItems, j)" small><v-icon small>mdi-delete</v-icon></v-btn>
+            </v-list-item-title>
           </v-list-item-content>
           <v-list-item-action v-if="$store.state.editable">
             <v-btn icon :to="subItem.to" exact><v-icon>mdi-arrow-right-bold-circle-outline</v-icon></v-btn>
@@ -96,8 +101,8 @@
         <v-card-title>
           메인 아이템 수정
           <v-spacer/>
-          <v-btn @click="saveItem" icon color=""><v-icon>mdi-content-save</v-icon></v-btn>
-          <v-btn @click="dialogItem=false" icon><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn @click="saveItem" icon color=""><v-icon small>mdi-content-save</v-icon></v-btn>
+          <v-btn @click="dialogItem=false" icon><v-icon small>mdi-close</v-icon></v-btn>
         </v-card-title>
         <v-divider/>
         <v-card-text>
@@ -135,8 +140,8 @@
         <v-card-title>
           서브 아이템 수정
           <v-spacer/>
-          <v-btn @click="saveSubItem" icon color=""><v-icon>mdi-content-save</v-icon></v-btn>
-          <v-btn @click="dialogSubItem=false" icon><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn @click="saveSubItem" icon color=""><v-icon small>mdi-content-save</v-icon></v-btn>
+          <v-btn @click="dialogSubItem=false" icon><v-icon small>mdi-close</v-icon></v-btn>
         </v-card-title>
         <v-divider/>
         <v-card-text>
@@ -163,6 +168,7 @@
 </template>
 <script>
 import { version } from '../../../package.json'
+import site from '../../../siteConfig'
 import DisplayTime from '@/components/display-time'
 import newCheck from '@/util/newCheck'
 import constants from '@/util/constants'
@@ -172,11 +178,7 @@ export default {
   props: ['items'],
   data () {
     return {
-      site: {
-        title: process.env.VUE_APP_SITE_TITLE,
-        description: process.env.VUE_APP_SITE_DESCRIPTION,
-        image: process.env.VUE_APP_SITE_IMAGE
-      },
+      site,
       version,
       newCheck,
       loading: false,
@@ -218,6 +220,10 @@ export default {
   mounted () {
   },
   methods: {
+    authCheck () {
+      if (!this.user) throw Error('로그인이 필요합니다')
+      if (this.user.level > 1) throw Error('관리 권한이 필요합니다')
+    },
     async save () {
       try {
         this.loading = true
@@ -233,6 +239,8 @@ export default {
       }
     },
     openDialogItem (index) {
+      this.authCheck()
+
       this.selectedItemIndex = index
       if (index < 0) {
         this.formItem.icon = 'mdi-help'
@@ -257,6 +265,8 @@ export default {
       this.save()
     },
     openDialogSubItem (index, subIndex) {
+      this.authCheck()
+
       this.selectedItemIndex = index
       this.selectedSubItemIndex = subIndex
       if (subIndex < 0) {
@@ -289,12 +299,16 @@ export default {
       this.save()
     },
     moveItem (items, i, arrow) {
+      this.authCheck()
+
       // const item = items.splice(i, 1)[0]
       // items.splice(i + arrow, 0, item)
       items.splice(i + arrow, 0, ...items.splice(i, 1))
       this.save()
     },
     async removeItem (items, i) {
+      this.authCheck()
+
       const r = await this.$swal.fire({
         title: '정말 삭제하시겠습니까?',
         text: '삭제 후 되돌릴 수 없습니다.',

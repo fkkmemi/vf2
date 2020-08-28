@@ -643,7 +643,7 @@ const writeSitemap = async (id, items) => {
 }
 
 const setSitemap = async () => {
-  const boards = await db.collection('boards').get()
+  const boards = await db.collection('boards').limit(100).get()
     .catch(e => console.error('boards err:' + e.message))
   if (boards.empty) return null
 
@@ -659,12 +659,16 @@ const setSitemap = async () => {
     const board = doc.data()
     set[doc.id] = {}
     set[doc.id].count = board.count
-    set[doc.id].readCount = 0
-    set[doc.id].commentCount = 0
-    set[doc.id].likeCount = 0
+    set[doc.id].readCount = board.readCount
+    set[doc.id].commentCount = board.commentCount
+    set[doc.id].likeCount = board.likeCount
     if (sitemap && sitemap[doc.id] && sitemap[doc.id].count === board.count) continue
     const sn = await db.collection('boards').doc(doc.id).collection('articles').limit(10000).get()
     if (sn.empty) continue
+
+    set[doc.id].readCount = 0
+    set[doc.id].commentCount = 0
+    set[doc.id].likeCount = 0
     const items = []
     sn.docs.forEach(d => {
       const item = d.data()

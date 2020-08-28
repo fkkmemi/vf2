@@ -46,6 +46,7 @@ const subscribe = async (fu) => {
           firebase.auth().currentUser.getIdToken(true)
         }
       }
+      // user.emailVerified = false
       store.commit('setUser', user)
       // console.log('user subscribe: ' + user)
     }
