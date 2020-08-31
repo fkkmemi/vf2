@@ -86,7 +86,7 @@
 import axios from 'axios'
 import getSummary from '@/util/getSummary'
 import imageCompress from '@/util/imageCompress'
-import findImagesFromDoc from '@/util/findImagesFromDoc'
+// import findImagesFromDoc from '@/util/findImagesFromDoc'
 import constants from '@/util/constants'
 
 export default {
@@ -172,7 +172,7 @@ export default {
           title: this.form.title,
           category: this.form.category,
           tags: this.form.tags,
-          images: findImagesFromDoc(md, this.form.images), // this.form.images,
+          images: this.form.images, // todo: bug  findImagesFromDoc(md, this.form.images), // this.form.images,
           updatedAt: new Date(),
           summary: getSummary(md, 300, 'data:image'),
           important: this.form.important,

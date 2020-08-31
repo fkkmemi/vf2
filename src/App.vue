@@ -130,7 +130,7 @@ export default {
   //   }
   // }
   .tui-dark {
-    h1, h2, h3, h4, h5, h6, p, ul, li, pre, table {
+    h1, h2, h3, h4, h5, h6, p, ul, li, pre, table, ol {
       color: var(--v-primary-base) !important
     }
     code, span {

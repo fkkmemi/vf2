@@ -92,7 +92,9 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
   } catch (e) {
     await db.collection('meta').doc('users').set({ count: 1 }).catch(e => console.error('meta update err: ' + e.message))
   }
-  if (u.level === 0) await initialize()
+  if (u.level > 0) return
+  await initialize()
+  await setSitemap()
 })
 
 exports.deleteUser = functions.region(region).auth.user().onDelete(async (user) => {
@@ -322,6 +324,10 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
       }
     }
 
+    doc.boardId = context.params.bid
+    await db.collection('articles').doc(context.params.aid).update(doc)
+      .catch(e => console.error('articles update err: ' + e.message))
+
     if (!doc.objectID) return
     const algoliaDoc = {
       objectID: doc.objectID,
@@ -446,6 +452,15 @@ exports.onCreateBoardComment = functions.region(region).firestore
     if (sn.empty) return
     await sn.docs[0].ref.delete()
       .catch(e => console.error('tempFiles remove err: ' + e.message))
+  })
+exports.onUpdateBoardComment = functions.region(region).firestore
+  .document('boards/{bid}/articles/{aid}/comments/{cid}')
+  .onUpdate(async (change, context) => {
+    const comment = change.after.data()
+    comment.boardId = context.params.bid
+    comment.articleId = context.params.aid
+    await db.collection('comments').doc(context.params.cid).update(comment)
+      .catch(e => console.error('comment update err: ' + e.message))
   })
 
 exports.onDeleteBoardComment = functions.region(region).firestore
@@ -678,9 +693,11 @@ const writeSitemap = async (id, items) => {
   const url = 'https://' + functions.config().admin.domain
   // sn.docs.forEach(doc => {
   items.forEach(item => {
-    const sm = xml.ele('url')
-    sm.ele('loc', url + '/board/' + id + '/' + item.id)
-    sm.ele('lastmod', item.updatedAt.toDate().toISOString())
+    if (item.level > 5) {
+      const sm = xml.ele('url')
+      sm.ele('loc', url + '/board/' + id + '/' + item.id)
+      sm.ele('lastmod', item.updatedAt.toDate().toISOString())
+    }
   })
   return xml.end({
     pretty: true,
@@ -710,6 +727,7 @@ const setSitemap = async () => {
     set[doc.id].readCount = board.readCount
     set[doc.id].commentCount = board.commentCount
     set[doc.id].likeCount = board.likeCount
+    if (board.level < 6) continue
     if (sitemap && sitemap[doc.id] && sitemap[doc.id].count === board.count) continue
     const sn = await db.collection('boards').doc(doc.id).collection('articles').limit(10000).get()
     if (sn.empty) continue
