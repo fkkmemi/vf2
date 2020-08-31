@@ -10,7 +10,7 @@
       <v-divider/>
       <v-card-text>
         <v-row>
-          <v-col cols="12" sm="2">
+          <v-col cols="12" sm="3">
             <v-select
               v-model="form.important"
               :items="[
@@ -21,14 +21,21 @@
               label="유형"
               outlined hide-details />
           </v-col>
-          <v-col cols="12" sm="4">
+          <v-col cols="12" sm="3">
+            <v-select
+              v-model="form.level"
+              :items="levels"
+              label="권한"
+              outlined hide-details />
+          </v-col>
+          <v-col cols="12" sm="3">
             <v-select
               v-model="form.category"
               :items="board.categories"
               label="종류"
               outlined hide-details />
           </v-col>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" sm="3">
             <v-combobox
               v-model="form.tags"
               :items="board.tags"
@@ -80,6 +87,7 @@ import axios from 'axios'
 import getSummary from '@/util/getSummary'
 import imageCompress from '@/util/imageCompress'
 import findImagesFromDoc from '@/util/findImagesFromDoc'
+import constants from '@/util/constants'
 
 export default {
   props: ['boardId', 'articleId', 'action', 'board', 'category'],
@@ -91,7 +99,8 @@ export default {
         title: '',
         content: '',
         images: [],
-        important: 0
+        important: 0,
+        level: 6
       },
       exists: false,
       loading: false,
@@ -112,6 +121,10 @@ export default {
     },
     fireUser () {
       return this.$store.state.fireUser
+    },
+    levels () {
+      if (!this.user) return []
+      return constants.levels.filter(level => level.value >= this.user.level)
     }
   },
   // watch: {
@@ -142,6 +155,7 @@ export default {
       this.form.images = item.images
       if (!item.images) this.form.images = []
       this.form.important = item.important
+      this.form.level = item.level === undefined ? 6 : item.level
       const { data } = await axios.get(item.url)
       this.form.content = typeof data === 'string' ? data : data.toString()
     },
@@ -161,7 +175,8 @@ export default {
           images: findImagesFromDoc(md, this.form.images), // this.form.images,
           updatedAt: new Date(),
           summary: getSummary(md, 300, 'data:image'),
-          important: this.form.important
+          important: this.form.important,
+          level: this.form.level
         }
         if (!this.exists) {
           const fn = this.articleId + '-' + this.fireUser.uid + '.md'

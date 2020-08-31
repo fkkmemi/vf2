@@ -5,7 +5,8 @@ export default {
     { text: '게시판관리자', value: 2 },
     { text: '게시판운영자', value: 3 },
     { text: '사용자', value: 4 },
-    { text: '손님', value: 5 }
+    { text: '손님', value: 5 },
+    { text: '권한없음', value: 6 }
   ],
   themes: {
     light: {

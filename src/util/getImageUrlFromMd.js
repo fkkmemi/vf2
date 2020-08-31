@@ -4,7 +4,7 @@ export default (md) => {
     const us = d.split('](')
     if (us.length !== 2) continue
     if (us[0].indexOf('!') < 0) continue
-    const i = us[1].indexOf(')')
+    const i = us[1].lastIndexOf(')')
     return us[1].substr(0, i)
   }
 }

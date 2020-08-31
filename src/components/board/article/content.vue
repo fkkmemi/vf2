@@ -24,7 +24,7 @@
           </v-btn>
         </v-toolbar-title>
         <v-spacer/>
-        <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
+        <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level < 2)">
           <v-spacer/>
           <v-btn @click="articleWrite" icon color="primary"><v-icon>mdi-pencil</v-icon></v-btn>
           <v-btn @click="remove" icon color="error"><v-icon>mdi-delete</v-icon></v-btn>
@@ -35,13 +35,18 @@
       <v-card-subtitle class="text--primary body-1">
         <display-title :item="article"/>
       </v-card-subtitle>
-      <v-card-text class="text--primary">
+      <v-card-text class="text--primary" v-if="article.level > 5 || (user && user.level <= article.level)">
         <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
         <v-container v-else>
           <v-row justify="center" align="center">
             <v-progress-circular indeterminate></v-progress-circular>
           </v-row>
         </v-container>
+      </v-card-text>
+      <v-card-text v-else>
+        <v-alert type="warning" border="left" class="mb-0">
+          게시물 읽기 권한이 없습니다
+        </v-alert>
       </v-card-text>
       <v-card-actions>
         <v-spacer/>

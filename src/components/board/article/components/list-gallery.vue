@@ -13,10 +13,12 @@
             </v-system-bar>
             <v-divider/>
             <v-img
+              v-if="item.level > 5 || (user && user.level <= item.level)"
               :src="srcFromItem(item)"
               :aspect-ratio="1"
               class="align-end"
               :gradient="item.read ? 'rgba(189,189,189,.77), rgba(25,32,72,.77)' : null"
+
             >
               <template v-slot:placeholder>
                 <v-row
@@ -35,6 +37,15 @@
                 </v-btn>
               </v-card-actions>
             </v-img>
+            <v-card-text v-else>
+              <v-card flat color="transparent">
+                <v-responsive :aspect-ratio="1">
+                  <v-alert type="warning" border="left" class="mb-0">
+                    게시물 읽기 권한이 없습니다
+                  </v-alert>
+                </v-responsive>
+              </v-card>
+            </v-card-text>
             <!-- <v-sheet :color="item.read ? 'secondary' : null"> -->
               <v-list-item class="text-truncate align-center hidden-xs-only">
                 <v-list-item-content>
@@ -107,6 +118,9 @@ export default {
   computed: {
     fireUser () {
       return this.$store.state.fireUser
+    },
+    user () {
+      return this.$store.state.user
     }
   },
   mounted () {

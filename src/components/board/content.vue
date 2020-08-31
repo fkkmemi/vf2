@@ -7,6 +7,11 @@
       게시판이 없습니다
     </v-alert>
   </v-container>
+  <v-container v-else-if="board.level < 6 && (user && user.level > board.level)" fluid>
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판 읽기 권한이 없습니다
+    </v-alert>
+  </v-container>
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-card :outlined="!isWidget" :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>

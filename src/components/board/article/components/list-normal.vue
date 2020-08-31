@@ -14,25 +14,32 @@
               <v-spacer/>
             </v-card-subtitle>
             <template v-if="!(item.important > 0 && $vuetify.breakpoint.xs)">
-              <v-card-text class="text--primary">
-                <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
-                <v-container v-else>
-                  <v-row justify="center" align="center">
-                    <v-progress-circular indeterminate></v-progress-circular>
-                  </v-row>
-                </v-container>
+              <template v-if="item.level > 5 || (user && user.level <= item.level)">
+                <v-card-text class="text--primary">
+                  <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
+                  <v-container v-else>
+                    <v-row justify="center" align="center">
+                      <v-progress-circular indeterminate></v-progress-circular>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+                <v-card-actions class="d-flex justify-center">
+                  <v-btn text color="primary">
+                    <v-icon left>mdi-dots-horizontal</v-icon>자세히 보기
+                  </v-btn>
+                  <!-- <v-btn
+                    v-if="fireUser && fireUser.uid === item.uid"
+                    :to="`/board/${boardId}/${item.id}?action=write`"
+                    text color="primary">
+                    <v-icon left>mdi-pencil</v-icon>수정하기
+                  </v-btn> -->
+                </v-card-actions>
+              </template>
+              <v-card-text v-else>
+                <v-alert type="warning" border="left" class="mb-0">
+                  게시물 읽기 권한이 없습니다
+                </v-alert>
               </v-card-text>
-              <v-card-actions class="d-flex justify-center">
-                <v-btn text color="primary">
-                  <v-icon left>mdi-dots-horizontal</v-icon>자세히 보기
-                </v-btn>
-                <!-- <v-btn
-                  v-if="fireUser && fireUser.uid === item.uid"
-                  :to="`/board/${boardId}/${item.id}?action=write`"
-                  text color="primary">
-                  <v-icon left>mdi-pencil</v-icon>수정하기
-                </v-btn> -->
-              </v-card-actions>
               <v-card-actions>
                 <span class="font-italic caption ml-2"><display-time :time="item.createdAt"></display-time></span>
                 <v-spacer/>
@@ -103,6 +110,9 @@ export default {
   computed: {
     fireUser () {
       return this.$store.state.fireUser
+    },
+    user () {
+      return this.$store.state.user
     }
   },
   mounted () {

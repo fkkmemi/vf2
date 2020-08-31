@@ -756,3 +756,43 @@ exports.sitemapScheduled = functions.runWith({ timeoutSeconds: 300, memory: '512
     await setSitemap().catch(e => console.error('setSitemap err: ' + e.message))
     return null
   })
+
+// const initData = async () => {
+//   // 2020.8.31
+//   const boardSn = await db.collection('boards').limit(100).get()
+//     .catch(e => console.error('boards err:' + e.message))
+//   if (boardSn.empty) return null
+//   const batch = db.batch()
+//   for (const boardDoc of boardSn.docs) {
+//     // const board = boardDoc.data()
+//     console.log('board update')
+//     batch.update(boardDoc.ref, { level: 6 })
+//     const articleSn = await db.collection('boards').doc(boardDoc.id)
+//       .collection('articles').limit(1000).get()
+//     if (articleSn.empty) continue
+//     for (const articleDoc of articleSn.docs) {
+//       batch.update(articleDoc.ref, { level: 6 })
+//       const article = articleDoc.data()
+//       console.log('article update ' + article.title)
+//       article.boardId = boardDoc.id
+//       article.level = 6
+//       batch.set(db.collection('articles').doc(articleDoc.id), article)
+
+//       const commentSn = await db.collection('boards').doc(boardDoc.id)
+//         .collection('articles').doc(articleDoc.id)
+//         .collection('comments').limit(1000).get()
+//       if (commentSn.empty) continue
+//       for (const commentDoc of commentSn.docs) {
+//         const comment = commentDoc.data()
+//         console.log('comment update ' + comment.comment)
+//         comment.boardId = boardDoc.id
+//         comment.articleId = articleDoc.id
+//         batch.set(db.collection('comments').doc(commentDoc.id), comment)
+//       }
+//     }
+//   }
+
+//   await batch.commit()
+//   console.log('done')
+// }
+// initData().catch(e => console.error(e.message))

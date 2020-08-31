@@ -10,7 +10,7 @@
       <v-divider/>
       <v-card-text>
         <v-row>
-          <v-col cols="12" sm="2">
+          <v-col cols="12" sm="3">
             <v-select
               v-model="form.important"
               :items="[
@@ -21,14 +21,21 @@
               label="유형"
               outlined hide-details />
           </v-col>
-          <v-col cols="12" sm="4">
+          <v-col cols="12" sm="3">
+            <v-select
+              v-model="form.level"
+              :items="levels"
+              label="읽기권한"
+              outlined hide-details />
+          </v-col>
+          <v-col cols="12" sm="3">
             <v-select
               v-model="form.category"
               :items="board.categories"
               label="종류"
               outlined hide-details />
           </v-col>
-          <v-col cols="12" sm="6">
+          <v-col cols="12" sm="3">
             <v-combobox
               v-model="form.tags"
               :items="board.tags"
@@ -101,7 +108,8 @@ export default {
         title: '',
         content: '',
         images: [],
-        important: 0
+        important: 0,
+        level: 6
       },
       exists: false,
       loading: false,
@@ -151,6 +159,7 @@ export default {
       this.form.images = item.images
       if (!item.images) this.form.images = []
       this.form.important = item.important
+      this.form.level = item.level === undefined ? 6 : item.level
       const { data } = await axios.get(item.url)
       const md = typeof data === 'string' ? data : data.toString()
       this.form.content = getImageUrlFromMd(md)
@@ -173,7 +182,8 @@ export default {
           images: this.form.images,
           updatedAt: new Date(),
           summary: md,
-          important: this.form.important
+          important: this.form.important,
+          level: this.form.level
         }
         if (!this.exists) {
           const fn = this.articleId + '-' + this.fireUser.uid + '.md'

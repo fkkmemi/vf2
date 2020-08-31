@@ -19,13 +19,20 @@
         <v-divider/>
         <v-card-text>
           <v-row>
-            <v-col cols="12" sm="4">
+            <v-col cols="12" sm="3">
               <v-text-field v-model="form.category" outlined label="게시판 종류"></v-text-field>
             </v-col>
-            <v-col cols="12" sm="4">
+            <v-col cols="12" sm="3">
+              <v-select
+                v-model="form.level"
+                :items="levels"
+                label="권한"
+                outlined hide-details />
+            </v-col>
+            <v-col cols="12" sm="3">
               <v-select v-model="form.type" :items="types" outlined label="게시판 유형" :disabled="exists"></v-select>
             </v-col>
-            <v-col cols="12" sm="4">
+            <v-col cols="12" sm="3">
               <v-switch v-model="form.main" outlined label="메인에 표시"></v-switch>
             </v-col>
             <v-col cols="12">
@@ -109,6 +116,7 @@
 </template>
 <script>
 import setMeta from '@/util/setMeta'
+import constants from '@/util/constants'
 
 export default {
   props: ['boardId', 'action'],
@@ -138,6 +146,10 @@ export default {
   computed: {
     user () {
       return this.$store.state.user
+    },
+    levels () {
+      if (!this.user) return []
+      return constants.levels.filter(level => level.value >= this.user.level)
     }
   },
   watch: {
@@ -168,6 +180,7 @@ export default {
       this.form.categories = item.categories
       this.form.tags = item.tags
       this.form.type = item.type
+      this.form.level = item.level === undefined ? 6 : item.level
       this.form.categoryCount = item.categoryCount || {}
       this.beforeCategories = item.categories.slice(0)
       if (item.main === undefined) this.form.main = false
@@ -195,7 +208,8 @@ export default {
         type: this.form.type,
         updatedAt: createdAt,
         categoryCount: this.form.categoryCount,
-        main: this.form.main
+        main: this.form.main,
+        level: this.form.level
       }
       this.loading = true
       try {
