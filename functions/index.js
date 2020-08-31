@@ -69,7 +69,9 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
     level: email === functions.config().admin.email ? 0 : 5,
     visitedAt: time,
     visitCount: 0,
-    emailVerified
+    emailVerified,
+    articleCount: 0,
+    commentCount: 0
   }
   if (!displayName) u.displayName = email.split('@')[0]
   if (providerData && providerData.length) u.providerId = providerData[0].providerId
@@ -118,7 +120,7 @@ exports.onDeleteBoard = functions.region(region).firestore
       sn.docs.forEach(doc => batch.delete(doc.ref))
       await batch.commit()
     } catch (e) {
-      console.error('articles remove err: ' + e.message)
+      console.error('board articles remove err: ' + e.message)
     }
   })
 
@@ -187,9 +189,18 @@ exports.onCreateBoardArticle = functions.region(region).firestore
     // if (doc.category) set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
     if (doc.tags.length) set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
     try {
-      await db.collection('boards').doc(context.params.bid).update(set)
+      // await db.collection('boards').doc(context.params.bid).update(set)
+      const batch = db.batch()
+      batch.update(db.collection('boards').doc(context.params.bid), set)
+      doc.boardId = context.params.bid
+      batch.set(db.collection('articles').doc(context.params.aid), doc)
+      batch.update(
+        db.collection('users').doc(doc.uid),
+        { articleCount: admin.firestore.FieldValue.increment(1) }
+      )
+      await batch.commit()
     } catch (e) {
-      console.error('board info update err: ' + e.message)
+      console.error('article create err: ' + e.message)
     }
 
     if (doc.images.length) {
@@ -343,6 +354,17 @@ exports.onDeleteBoardArticle = functions.region(region).firestore
     await db.collection('boards').doc(context.params.bid)
       .update(set)
       .catch(e => console.error('boards update err: ' + e.message))
+    try {
+      const batch = db.batch()
+      batch.delete(db.collection('articles').doc(context.params.aid))
+      batch.update(
+        db.collection('users').doc(doc.uid),
+        { articleCount: admin.firestore.FieldValue.increment(-1) }
+      )
+      await batch.commit()
+    } catch (e) {
+      console.error('articles delete err: ' + e.message)
+    }
 
     try {
       // remove comment
@@ -390,6 +412,7 @@ exports.onCreateBoardComment = functions.region(region).firestore
     // await db.collection('boards').doc(context.params.bid)
     //   .update({ commentCount: admin.firestore.FieldValue.increment(1) })
     //   .catch(e => console.error('boards update err: ' + e.message))
+    const comment = snap.data()
     const batch = db.batch()
     batch.update(
       db.collection('boards').doc(context.params.bid)
@@ -400,9 +423,15 @@ exports.onCreateBoardComment = functions.region(region).firestore
       db.collection('boards').doc(context.params.bid),
       { commentCount: admin.firestore.FieldValue.increment(1) }
     )
-    await batch.commit().catch(e => console.error('board commentCount increment err: ' + e.message))
+    comment.boardId = context.params.bid
+    comment.articleId = context.params.aid
+    batch.set(db.collection('comments').doc(context.params.cid), comment)
+    batch.update(
+      db.collection('users').doc(comment.uid),
+      { commentCount: admin.firestore.FieldValue.increment(1) }
+    )
+    await batch.commit().catch(e => console.error('commentCount increment err: ' + e.message))
 
-    const comment = snap.data()
     if (!comment.image) return
     if (!comment.image.id) return
     const sn = await db.collection('tempFiles')
@@ -416,6 +445,8 @@ exports.onCreateBoardComment = functions.region(region).firestore
 exports.onDeleteBoardComment = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}/comments/{cid}')
   .onDelete(async (snap, context) => {
+    const comment = snap.data()
+
     await db.collection('boards').doc(context.params.bid)
       .collection('articles').doc(context.params.aid)
       .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
@@ -424,7 +455,18 @@ exports.onDeleteBoardComment = functions.region(region).firestore
       .update({ commentCount: admin.firestore.FieldValue.increment(-1) })
       .catch(e => console.error('boards commentCount decrement err: ' + e.message))
 
-    const comment = snap.data()
+    try {
+      const batch = db.batch()
+      batch.delete(db.collection('comments').doc(context.params.cid))
+      batch.update(
+        db.collection('users').doc(comment.uid),
+        { commentCount: admin.firestore.FieldValue.increment(-1) }
+      )
+      await batch.commit()
+    } catch (e) {
+      console.error('userComments delete err: ' + e.message)
+    }
+
     if (!comment.image) return
     if (!comment.image.id) return
     if (!comment.image.size) return
