@@ -8,6 +8,7 @@
       </v-toolbar>
       <v-divider/>
       <item-local/>
+      <item-edit/>
       <item-theme/>
       <item-color/>
     </v-card>
@@ -17,11 +18,12 @@
 <script>
 import ItemLocal from './item-local'
 import ItemTheme from './item-theme'
+import ItemEdit from './item-edit'
 import ItemColor from './item-color'
 import setMeta from '@/util/setMeta'
 
 export default {
-  components: { ItemLocal, ItemTheme, ItemColor },
+  components: { ItemLocal, ItemTheme, ItemEdit, ItemColor },
   computed: {
     user () {
       return this.$store.state.user
