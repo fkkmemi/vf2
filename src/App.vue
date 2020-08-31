@@ -4,10 +4,12 @@
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <site-title v-if="(!searchable && $vuetify.breakpoint.xs) || !$vuetify.breakpoint.xs" :title="site.title"></site-title>
       <v-spacer/>
-      <site-search v-show="searchable" class="mx-2"/>
-      <v-btn icon @click="searchable=!searchable">
-        <v-icon>{{searchable ? 'mdi-magnify-close' : 'mdi-magnify'}}</v-icon>
-      </v-btn>
+      <template v-if="isIndexEnable">
+        <site-search v-show="searchable" class="mx-2"/>
+        <v-btn icon @click="searchable=!searchable">
+          <v-icon>{{searchable ? 'mdi-magnify-close' : 'mdi-magnify'}}</v-icon>
+        </v-btn>
+      </template>
       <site-sign></site-sign>
     </v-app-bar>
     <v-navigation-drawer
@@ -88,6 +90,9 @@ export default {
   computed: {
     user () {
       return this.$store.state.user
+    },
+    isIndexEnable () {
+      return !!this.$index
     }
   },
   created () {
@@ -103,10 +108,7 @@ export default {
     subscribe () {
       this.$firebase.database().ref().child('site').on('value', (sn) => {
         const v = sn.val()
-        if (!v) {
-          this.$firebase.database().ref().child('site').set(this.site)
-          return
-        }
+        if (!v) return
         this.site = v
       }, (e) => {
         console.error(e.message)

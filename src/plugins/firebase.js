@@ -10,7 +10,7 @@ import store from '../store/'
 
 firebase.initializeApp(firebaseConfig)
 firebase.auth().languageCode = 'ko'
-firebase.analytics()
+if (firebaseConfig.measurementId) firebase.analytics()
 
 let unsubscribe = null
 

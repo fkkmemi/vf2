@@ -17,14 +17,18 @@ const db = admin.firestore()
 // https://www.algolia.com/doc/api-client/javascript/getting-started/#install
 //
 // App ID and API Key are stored in functions config variables
-const ALGOLIA_ID = functions.config().algolia.app_id
-const ALGOLIA_ADMIN_KEY = functions.config().algolia.api_key
+let index
+if (functions.config().algolia) {
+  const ALGOLIA_ID = functions.config().algolia.app_id
+  const ALGOLIA_ADMIN_KEY = functions.config().algolia.api_key
 
-const ALGOLIA_INDEX_NAME = 'boards'
-const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY)
-const index = client.initIndex(ALGOLIA_INDEX_NAME)
+  const ALGOLIA_INDEX_NAME = 'boards'
+  const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY)
+  index = client.initIndex(ALGOLIA_INDEX_NAME)
+}
 
 const initialize = async () => {
+  if (!index) return
   await index.setSettings({
     searchableAttributes: [
       'title',
@@ -173,9 +177,11 @@ exports.onCreateBoardArticle = functions.region(region).firestore
     }
 
     try {
-      const r = await index.saveObject(algoliaDoc, { autoGenerateObjectIDIfNotExist: true })
-      // r is objectID, taskID
-      await snap.ref.update({ objectID: r.objectID })
+      if (index) {
+        const r = await index.saveObject(algoliaDoc, { autoGenerateObjectIDIfNotExist: true })
+        // r is objectID, taskID
+        await snap.ref.update({ objectID: r.objectID })
+      }
     } catch (e) {
       console.log('algolia err: ' + e.message)
     }
@@ -268,7 +274,7 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
         .catch(e => console.error('boards update err: ' + e.message))
       return
     }
-    if (doc.objectID !== beforeDoc.objectID) return
+    if (index && (doc.objectID !== beforeDoc.objectID)) return
 
     if (doc.category && beforeDoc.category !== doc.category) {
       // set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
