@@ -16,6 +16,7 @@
               :src="srcFromItem(item)"
               :aspect-ratio="1"
               class="align-end"
+              :gradient="item.read ? 'rgba(189,189,189,.77), rgba(25,32,72,.77)' : null"
             >
               <template v-slot:placeholder>
                 <v-row
@@ -67,6 +68,19 @@
           </v-card>
         </v-col>
       </template>
+      <v-col cols="6" sm="4" md="3" lg="2" v-if="isMoreEnable">
+        <v-card flat width="100%" height="100%" class="d-flex justify-center align-center">
+          <v-btn
+            @click="$emit('more')"
+            v-intersect="onIntersect"
+            color="primary"
+            text
+            x-large
+            :loading="loading">
+            <v-icon>mdi-dots-horizontal</v-icon>더보기
+          </v-btn>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -83,7 +97,7 @@ import getImageUrlFromMd from '@/util/getImageUrlFromMd'
 
 export default {
   components: { DisplayTitle, DisplayTime, DisplayUser, DisplayCount },
-  props: ['items', 'boardId', 'category', 'isWidget'],
+  props: ['items', 'boardId', 'category', 'isWidget', 'isMoreEnable', 'loading'],
   data () {
     return {
       newCheck,
@@ -135,6 +149,9 @@ export default {
       return isGif(item.images[0].id)
         ? item.images[0].url
         : item.images[0].thumbUrl
+    },
+    onIntersect (entries, observer, isIntersecting) {
+      if (isIntersecting) this.$emit('more')
     }
   }
 }

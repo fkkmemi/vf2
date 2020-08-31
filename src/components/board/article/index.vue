@@ -9,11 +9,34 @@
   </v-container>
   <v-container fluid v-else :class="$vuetify.breakpoint.xs || $store.state.boardTypeList || isWidget ? 'pa-0' : ''">
     <template v-if="board.type === '일반'">
-      <list-compact v-if="$store.state.boardTypeList || isWidget" :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
-      <list-normal v-else :items="items" :boardId="boardId" :category="category"/>
+      <list-compact
+        v-if="$store.state.boardTypeList || isWidget"
+        :items="items"
+        :boardId="boardId"
+        :category="category"
+        :isWidget="isWidget"
+        :isMoreEnable="isMoreEnable"
+        @more="more"
+        :loading="loading" />
+      <list-normal
+        v-else
+        :items="items"
+        :boardId="boardId"
+        :category="category"
+        :isMoreEnable="isMoreEnable"
+        @more="more"
+        :loading="loading" />
     </template>
-    <list-gallery v-else :items="items" :boardId="boardId" :category="category" :isWidget="isWidget"/>
-    <v-list-item v-if="isMoreEnable && !isWidget">
+    <list-gallery
+      v-else
+      :items="items"
+      :boardId="boardId"
+      :category="category"
+      :isWidget="isWidget"
+      :isMoreEnable="isMoreEnable"
+      @more="more"
+      :loading="loading" />
+    <!-- <v-list-item v-if="isMoreEnable">
       <v-btn
         @click="more"
         v-intersect="onIntersect"
@@ -23,7 +46,7 @@
         :loading="loading">
         <v-icon>mdi-dots-horizontal</v-icon>더보기
       </v-btn>
-    </v-list-item>
+    </v-list-item> -->
   </v-container>
 </template>
 <script>
@@ -65,10 +88,14 @@ export default {
       return this.category
     },
     typeLimit () {
-      if (!this.board) return 4
-      return this.board.type === '일반' ? 4 : 4
+      // if (!this.board) return 4
+      // return this.board.type === '일반' ? 4 : 4
+      if (this.isWidget) return 4
+      if (!this.items.length) return 4
+      return 4 - (this.items.length % 4)
     },
     isMoreEnable () {
+      if (this.isWidget) return false
       if (!this.board) return false
       if (this.category) {
         if (this.board.categoryCount[this.category] > this.items.length) return true
@@ -229,10 +256,10 @@ export default {
       } finally {
         this.loading = false
       }
-    },
-    onIntersect (entries, observer, isIntersecting) {
-      if (isIntersecting) this.more()
     }
+    // onIntersect (entries, observer, isIntersecting) {
+    //   if (isIntersecting) this.more()
+    // }
   }
 }
 </script>

@@ -4,6 +4,7 @@
       <v-col cols="12" sm="6" md="4" lg="3" :key="item.id">
         <v-hover v-slot:default="{ hover }" open-delay="300">
           <v-card
+            max-height="500"
             :class="cardClass(hover)"
             :flat="$vuetify.breakpoint.xs"
             :tile="$vuetify.breakpoint.xs"
@@ -15,7 +16,7 @@
             </v-card-subtitle>
             <template v-if="!(item.important > 0 && $vuetify.breakpoint.xs)">
               <v-card-text class="text--primary">
-                <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
+                <viewer height="300" :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
                 <v-container v-else>
                   <v-row justify="center" align="center">
                     <v-progress-circular indeterminate></v-progress-circular>
@@ -60,12 +61,23 @@
               </v-card-text>
             </template>
           </v-card>
-
         </v-hover>
         <v-divider v-if="i < items.length - 1 && $vuetify.breakpoint.xs" :key="i" inset/>
-
       </v-col>
     </template>
+    <v-col cols="12" sm="6" md="4" lg="3" v-if="isMoreEnable">
+      <v-card flat width="100%" height="100%" class="d-flex justify-center align-center ma-1">
+        <v-btn
+          @click="$emit('more')"
+          v-intersect="onIntersect"
+          color="primary"
+          text
+          x-large
+          :loading="loading">
+          <v-icon>mdi-dots-horizontal</v-icon>더보기
+        </v-btn>
+      </v-card>
+    </v-col>
   </v-row>
 </template>
 <script>
@@ -78,7 +90,7 @@ import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
   components: { DisplayTime, DisplayUser, DisplayTitle, DisplayCount },
-  props: ['items', 'boardId', 'category'],
+  props: ['items', 'boardId', 'category', 'isMoreEnable', 'loading'],
   data () {
     return {
       tuiOptions: {
@@ -130,6 +142,9 @@ export default {
     },
     goCategory (item) {
       this.$router.push(`/board/${this.boardId}?category=${item.category}`)
+    },
+    onIntersect (entries, observer, isIntersecting) {
+      if (isIntersecting) this.$emit('more')
     }
   }
 }

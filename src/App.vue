@@ -29,6 +29,7 @@
         <v-btn
           v-show="offsetTop > 500"
           color="pink"
+          dark
           absolute
           bottom
           right

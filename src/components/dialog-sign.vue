@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :flat="$vuetify.breakpoint.xs" :tile="$vuetify.breakpoint.xs">
     <v-toolbar dense color="primary" flat dark>
       <v-toolbar-title>
         {{ modeIn ? '로그인' : '회원가입'}}
@@ -50,8 +50,8 @@
               </v-tabs-items>
               <v-card-actions v-if="signUpTab > 0">
                 <v-spacer/>
-                <v-btn @click="scrollToTop" color="primary" fab small>
-                  <v-icon>mdi-arrow-up</v-icon>
+                <v-btn @click="scrollToTop" color="pink" fab small dark>
+                  <v-icon>mdi-chevron-up</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-card>

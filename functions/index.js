@@ -602,7 +602,7 @@ const removeOldTempFiles = async () => {
   const sn = await db.collection('tempFiles')
     .where('createdAt', '<', moment().subtract(1, 'hours').toDate())
     .orderBy('createdAt')
-    .limit(5)
+    .limit(10)
     .get()
   if (sn.empty) return
   const batch = db.batch()

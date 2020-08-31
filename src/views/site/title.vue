@@ -9,7 +9,7 @@
           {{ title }}
         </span>
       </template>
-      <span>{{site.title}} {{site.description}}</span>
+      <span>{{site.description}}</span>
     </v-tooltip>
     <v-btn v-if="$store.state.editable" icon @click="openDialog">
       <v-icon small>mdi-tools</v-icon>

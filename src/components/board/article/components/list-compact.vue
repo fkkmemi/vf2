@@ -32,6 +32,17 @@
       </v-list-item>
       <v-divider v-if="i < items.length - 1" :key="i"/>
     </template>
+    <v-list-item v-if="isMoreEnable">
+      <v-btn
+        @click="$emit('more')"
+        v-intersect="onIntersect"
+        text
+        color="primary"
+        block
+        :loading="loading">
+        <v-icon>mdi-dots-horizontal</v-icon>더보기
+      </v-btn>
+    </v-list-item>
   </div>
 </template>
 <script>
@@ -45,7 +56,7 @@ import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
   components: { DisplayTime, DisplayUser, DisplayTitle, DisplayCount },
-  props: ['items', 'boardId', 'category', 'isWidget'],
+  props: ['items', 'boardId', 'category', 'isWidget', 'isMoreEnable', 'loading'],
   data () {
     return {
       tuiOptions: {
@@ -90,6 +101,9 @@ export default {
     },
     onViewerLoad (v) {
       addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
+    },
+    onIntersect (entries, observer, isIntersecting) {
+      if (isIntersecting) this.$emit('more')
     }
   }
 }

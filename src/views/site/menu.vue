@@ -225,6 +225,7 @@ export default {
       if (this.user.level > 1) throw Error('관리 권한이 필요합니다')
     },
     async save () {
+      this.authCheck()
       try {
         this.loading = true
         this.items.forEach((item, i) => {
@@ -239,21 +240,22 @@ export default {
       }
     },
     openDialogItem (index) {
-      this.authCheck()
-
       this.selectedItemIndex = index
       if (index < 0) {
         this.formItem.icon = 'mdi-help'
         this.formItem.title = ''
         this.formItem.level = 5
+        this.formItem.createdAt = new Date()
       } else {
         this.formItem.icon = this.items[index].icon
         this.formItem.title = this.items[index].title
         this.formItem.level = this.items[index].level
+        this.formItem.createdAt = this.items[index].createdAt
       }
       this.dialogItem = true
     },
     async saveItem () {
+      this.authCheck()
       this.formItem.createdAt = new Date().getTime()
       if (this.selectedItemIndex < 0) this.items.push(this.formItem)
       else {
@@ -265,22 +267,23 @@ export default {
       this.save()
     },
     openDialogSubItem (index, subIndex) {
-      this.authCheck()
-
       this.selectedItemIndex = index
       this.selectedSubItemIndex = subIndex
       if (subIndex < 0) {
         this.formSubItem.title = ''
         this.formSubItem.to = ''
         this.formSubItem.level = 5
+        this.formSubItem.createdAt = new Date()
       } else {
         this.formSubItem.title = this.items[index].subItems[subIndex].title
         this.formSubItem.to = this.items[index].subItems[subIndex].to
         this.formSubItem.level = this.items[index].subItems[subIndex].level
+        this.formSubItem.createdAt = this.items[index].subItems[subIndex].createdAt
       }
       this.dialogSubItem = true
     },
     async saveSubItem () {
+      this.authCheck()
       this.formSubItem.createdAt = new Date().getTime()
       if (this.selectedSubItemIndex < 0) {
         if (!this.items[this.selectedItemIndex].subItems) this.items[this.selectedItemIndex].subItems = []
