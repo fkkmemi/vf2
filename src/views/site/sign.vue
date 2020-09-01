@@ -71,9 +71,21 @@
             <v-icon>mdi-badge-account-alert-outline</v-icon>
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title >권한</v-list-item-title>
+            <v-list-item-title>권한</v-list-item-title>
             <v-list-item-subtitle v-text="levelStr"></v-list-item-subtitle>
           </v-list-item-content>
+        </v-list-item>
+        <v-list-item :to="`/user/${user.uid}`">
+          <v-list-item-avatar>
+            <v-icon>mdi-account-search</v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>나의 페이지</v-list-item-title>
+            <v-list-item-subtitle>작성한 글 모음</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
+          </v-list-item-action>
         </v-list-item>
       </v-list>
       <v-divider/>

@@ -56,6 +56,11 @@ const routes = [
     component: () => import('@/views/comment')
   },
   {
+    path: '/user/:uid',
+    name: 'user',
+    component: () => import('@/views/user')
+  },
+  {
     path: '*',
     name: 'error',
     component: () => import('../views/error')

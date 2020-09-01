@@ -13,7 +13,7 @@
         전체댓글
       </v-toolbar>
       <v-divider/>
-      <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch"/>
+      <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
     </v-card>
   </v-container>
 </template>
@@ -39,6 +39,12 @@ export default {
       if (md) return 3
       if (lg || xl) return 4
       return 4
+    }
+  },
+  watch: {
+    uid () {
+      this.items = []
+      this.fetch()
     }
   },
   mounted () {
@@ -73,7 +79,9 @@ export default {
       if (this.loading) return
       try {
         this.loading = true
-        let query = this.ref.orderBy('createdAt', 'desc')
+        let query = this.ref
+        if (this.uid) query = query.where('uid', '==', this.uid)
+        query = query.orderBy('createdAt', 'desc')
         if (this.lastDoc) query = query.startAfter(this.lastDoc)
         const sn = await query.limit(this.limit).get()
         this.snapshotToItems(sn)
