@@ -86,7 +86,7 @@
                 작성자
               </v-list-item-title>
               <v-list-item-subtitle>
-                <display-user :user="board.user"></display-user>
+                <display-user :user="board.user" :uid="board.uid"></display-user>
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>

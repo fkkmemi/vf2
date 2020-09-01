@@ -34,7 +34,7 @@
           </v-list-item-subtitle>
           <v-list-item-subtitle class="d-flex justify-end align-center">
             <span class="font-italic caption mr-4"><display-time :time="item.createdAt"></display-time></span>
-            <display-user :user="item.user" size="small"></display-user>
+            <display-user :user="item.user" size="small" :uid="item.uid"></display-user>
           </v-list-item-subtitle>
           <v-list-item-title class="d-flex justify-end">
             <v-btn

@@ -8,12 +8,20 @@
     </v-alert>
   </v-container>
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card :outlined="!isWidget" :tile="$vuetify.breakpoint.xs">
+    <v-card :outlined="!isWidget" :tile="$vuetify.breakpoint.xs" :flat="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
-        전체댓글
+        <v-toolbar-title>
+          전체댓글
+        </v-toolbar-title>
+        <v-spacer/>
+        <v-btn @click="show=!show" icon v-if="uid">
+          <v-icon v-text="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"></v-icon>
+        </v-btn>
       </v-toolbar>
-      <v-divider/>
-      <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
+      <template v-if="show">
+        <v-divider/>
+        <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
+      </template>
     </v-card>
   </v-container>
 </template>
@@ -29,7 +37,8 @@ export default {
       loading: false,
       items: [],
       ref: null,
-      lastDoc: null
+      lastDoc: null,
+      show: true
     }
   },
   computed: {

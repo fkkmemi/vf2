@@ -23,7 +23,7 @@
             <span class="font-italic caption"><display-time :time="item.createdAt"></display-time></span>
             <v-spacer/>
             <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
-            <display-user :user="item.user" :size="'small'"></display-user>
+            <display-user :user="item.user" :size="'small'" :uid="item.uid"></display-user>
           </v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action v-if="!isWidget">

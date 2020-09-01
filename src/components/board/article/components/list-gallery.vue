@@ -58,7 +58,7 @@
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <display-user :user="item.user" size="small"></display-user>
+                  <display-user :user="item.user" size="small" :uid="item.uid"></display-user>
                 </v-list-item-action>
               </v-list-item>
             <!-- </v-sheet> -->

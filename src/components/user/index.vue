@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row no-gutters>
     <v-col cols="12" sm="6">
       <articles :uid="uid"/>
 

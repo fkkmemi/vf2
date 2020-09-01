@@ -49,7 +49,7 @@ service cloud.firestore {
       }
     }
     match /users/{userId} {
-      allow read: if approvedLevel(1) || (request.auth != null && request.auth.uid == userId);
+      allow read: if true; // if approvedLevel(1) || (request.auth != null && request.auth.uid == userId);
       allow update: if approvedLevel(1) || (request.auth != null && request.auth.uid == userId && resource.data.level == request.resource.data.level);
       allow create, delete: if false; // functions
     }

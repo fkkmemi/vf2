@@ -46,7 +46,7 @@
                 <v-spacer/>
               </v-card-actions>
               <v-card-actions>
-                <display-user :user="item.user"></display-user>
+                <display-user :user="item.user" :uid="item.uid"></display-user>
                 <v-spacer/>
                 <display-count :item="item" :column="false"></display-count>
               </v-card-actions>

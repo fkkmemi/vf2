@@ -65,7 +65,7 @@
         <span class="font-italic caption mr-4">
           작성자:
         </span>
-        <display-user :user="article.user"></display-user>
+        <display-user :user="article.user" :uid="article.uid"></display-user>
       </v-card-actions>
       <v-card-actions>
         <v-spacer/>

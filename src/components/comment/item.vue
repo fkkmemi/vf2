@@ -7,7 +7,7 @@
       :flat="$vuetify.breakpoint.xs"
       :tile="$vuetify.breakpoint.xs"
       :outlined="!$vuetify.breakpoint.xs"
-      :to="`/board/${item.boardId}/${item.articleId}`">
+      @click="$router.push(`/board/${item.boardId}/${item.articleId}`)">
       <v-card-subtitle class="text--primary body-1 d-flex align-center">
         <v-chip color="accent" outlined small class="mr-4">{{index}}</v-chip>
         <v-btn color="primary" depressed small :to="`/board/${item.boardId}`">
@@ -28,7 +28,7 @@
       <v-card-actions>
         <span class="font-italic caption ml-2"><display-time :time="item.createdAt"></display-time></span>
         <v-spacer/>
-        <display-user :user="item.user"></display-user>
+        <display-user :user="item.user" :uid="item.uid"></display-user>
       </v-card-actions>
     </v-card>
   </v-hover>
