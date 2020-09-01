@@ -1,8 +1,9 @@
 <template>
-  <articles :board="board" :category="category" :uid="uid" />
+  <articles :boardId="board" :category="category" :uid="uid" />
 </template>
 <script>
 import Articles from '@/components/article'
+import setMeta from '@/util/setMeta'
 export default {
   components: { Articles },
   computed: {
@@ -15,6 +16,13 @@ export default {
     uid () {
       return this.$route.query.uid
     }
+  },
+  created () {
+    setMeta({
+      title: '전체게시물',
+      description: '전체게시물을 조회하는 페이지',
+      image: '/logo.png'
+    })
   }
 }
 </script>

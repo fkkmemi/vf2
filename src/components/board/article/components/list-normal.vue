@@ -4,10 +4,11 @@
       <v-col cols="12" sm="6" md="4" lg="3" :key="item.id">
         <v-hover v-slot:default="{ hover }" open-delay="300">
           <v-card
-            :class="cardClass(hover)"
+            :class="$vuetify.breakpoint.xs ? null : cardClass(hover)"
+            :elevation="$vuetify.breakpoint.xs ? null : hover ? 16 : 0"
             :flat="$vuetify.breakpoint.xs"
             :tile="$vuetify.breakpoint.xs"
-            :elevation="hover ? 16 : 2"
+            :outlined="!$vuetify.breakpoint.xs"
             color="" @click="goTo(item)" :ref="item.id">
             <v-card-subtitle class="text--primary body-1">
               <display-title :item="item"/>

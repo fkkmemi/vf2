@@ -75,7 +75,8 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
     visitCount: 0,
     emailVerified,
     articleCount: 0,
-    commentCount: 0
+    commentCount: 0,
+    likeCount: 0
   }
   if (!displayName) u.displayName = email.split('@')[0]
   if (providerData && providerData.length) u.providerId = providerData[0].providerId
@@ -264,16 +265,30 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
 
     const readCountDiff = doc.readCount - beforeDoc.readCount
     if (readCountDiff !== 0) {
-      await db.collection('boards').doc(context.params.bid)
-        .update({ readCount: admin.firestore.FieldValue.increment(readCountDiff) })
-        .catch(e => console.error('boards update err: ' + e.message))
+      // await db.collection('boards').doc(context.params.bid)
+      //   .update({ readCount: admin.firestore.FieldValue.increment(readCountDiff) })
+      //   .catch(e => console.error('boards update err: ' + e.message))
+      const up = { readCount: admin.firestore.FieldValue.increment(readCountDiff) }
+      const batch = db.batch()
+      batch.update(db.collection('boards').doc(context.params.bid), up)
+      batch.update(db.collection('articles').doc(context.params.aid), {
+        readCount: doc.readCount
+      })
+      await batch.commit().catch(e => console.error('readCount update err: ' + e.message))
       return
     }
     const likeCountDiff = doc.likeCount - beforeDoc.likeCount
     if (likeCountDiff !== 0) {
-      await db.collection('boards').doc(context.params.bid)
-        .update({ likeCount: admin.firestore.FieldValue.increment(likeCountDiff) })
-        .catch(e => console.error('boards update err: ' + e.message))
+      // await db.collection('boards').doc(context.params.bid)
+      //   .update({ likeCount: admin.firestore.FieldValue.increment(likeCountDiff) })
+      //   .catch(e => console.error('boards update err: ' + e.message))
+      const up = { likeCount: admin.firestore.FieldValue.increment(likeCountDiff) }
+      const batch = db.batch()
+      batch.update(db.collection('boards').doc(context.params.bid), up)
+      batch.update(db.collection('articles').doc(context.params.aid), {
+        likeCount: doc.likeCount
+      })
+      await batch.commit().catch(e => console.error('likeCount update err: ' + e.message))
       return
     }
     if (index && (doc.objectID !== beforeDoc.objectID)) return
