@@ -53,6 +53,7 @@ export default {
       }
       if (this.$store.state.boardTypeList) this.$store.commit('toggleBoardType')
       localStorage.removeItem('site-themes')
+      this.$store.commit('setEdit', false)
     }
   }
 }

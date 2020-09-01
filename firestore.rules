@@ -62,5 +62,11 @@ service cloud.firestore {
     match /meta/{id} {
       allow read: if true;
     }
+    match /articles/{articleId} {
+      allow read: if true;
+    }
+    match /comments/{commentId} {
+      allow read: if true;
+    }
   }
 }

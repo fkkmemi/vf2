@@ -46,6 +46,16 @@ const routes = [
     component: () => import('@/views/terms')
   },
   {
+    path: '/article',
+    name: 'article',
+    component: () => import('@/views/article')
+  },
+  {
+    path: '/comment',
+    name: 'comment',
+    component: () => import('@/views/comment')
+  },
+  {
     path: '*',
     name: 'error',
     component: () => import('../views/error')
