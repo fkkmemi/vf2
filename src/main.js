@@ -9,6 +9,7 @@ import './plugins/moment'
 import './plugins/toast'
 import './plugins/swal'
 import './plugins/search'
+import './plugins/youtube'
 import './error'
 import './registerServiceWorker'
 

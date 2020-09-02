@@ -8,17 +8,21 @@
     </v-alert>
   </v-container>
   <v-container v-else fluid :class="xs ? 'pa-0' : ''">
-    <v-card :outlined="!xs && !widget" :tile="xs" :flat="xs || !widget">
+    <v-card :outlined="!widget || (widget && xs)" :tile="xs" :flat="xs || !widget">
       <v-toolbar color="transparent" dense flat>
-        <v-toolbar-title>
+        <span>
           전체게시물
-        </v-toolbar-title>
+        </span>
         <v-spacer/>
         <template v-if="!widget">
           <v-btn icon @click="$store.commit('toggleBoardType')">
             <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
           </v-btn>
         </template>
+        <v-btn icon :to="'/article'" v-else>
+          <v-icon>mdi-arrow-right-circle-outline</v-icon>
+        </v-btn>
+
         <v-btn @click="show=!show" icon v-if="uid">
           <v-icon v-text="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"></v-icon>
         </v-btn>
@@ -68,6 +72,7 @@ export default {
   },
   computed: {
     limit () {
+      if (this.widget) return 4
       const { xs, sm, md, lg, xl } = this.$vuetify.breakpoint
       if (xs || sm) return 2
       if (md) return 3

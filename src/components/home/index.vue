@@ -89,9 +89,7 @@
               </v-toolbar>
             </v-card>
           </v-container>
-          <v-card v-if="item.type === '유튜브'" color="red">
-            youtube {{item.id}}
-          </v-card>
+          <card-youtube :id="item.id" v-if="item.type === '유튜브'"></card-youtube>
           <template v-else-if="item.type === '게시판'">
             <board-content v-if="item.id" :boardId="item.id" :isWidget="true" />
             <articles v-else :widget="true" />
@@ -108,14 +106,16 @@
 <script>
 import setMeta from '@/util/setMeta'
 import BoardContent from '@/components/board/content'
+import CardYoutube from '@/components/card-youtube'
 import Articles from '@/components/article'
 import CardCount from './card-count'
 import CardReadCount from './card-read-count'
 import CardTotal from './card-total'
+
 const LIMIT = 10
 
 export default {
-  components: { BoardContent, Articles, CardCount, CardReadCount, CardTotal },
+  components: { BoardContent, Articles, CardYoutube, CardCount, CardReadCount, CardTotal },
   // components: { CardCount, CardReadCount, CardTotal },
   data () {
     return {
