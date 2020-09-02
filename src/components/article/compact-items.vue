@@ -1,8 +1,8 @@
 <template>
-  <v-list>
+  <div>
     <template v-for="(item, i) in items">
       <compact-item :key="item.id" :index="i + 1" :item="item" :widget="widget" :boardId="boardId"/>
-      <v-divider :key="i"/>
+      <v-divider :key="i" v-if="i < items.length - 1"/>
     </template>
     <v-list-item v-if="lastDoc && !widget">
       <v-btn
@@ -15,7 +15,7 @@
         <v-icon>mdi-dots-horizontal</v-icon>더보기
       </v-btn>
     </v-list-item>
-  </v-list>
+  </div>
 </template>
 <script>
 import CompactItem from './compact-item'

@@ -18,38 +18,104 @@
       <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 3 : null">
         <card-total :item="total"/>
       </v-col>
-      <v-col cols="12" sm="6">
-        <board-content :boardId="'test'" :widget="true" />
-      </v-col>
-      <v-col cols="12" sm="6" v-if="$store.state.editable">
-        <v-card>
-          <v-btn icon><v-icon>mdi-plus</v-icon></v-btn>
-        </v-card>
-      </v-col>
+      <v-col cols="12" v-if="editable">
+        <v-container fluid>
+          <v-form>
+            <v-card>
+              <v-subheader>카드 추가
+                <v-spacer/>
+                <v-btn text @click="add" color="primary"><v-icon left>mdi-plus</v-icon>추가하기</v-btn>
 
-      <!-- <v-col cols="12" sm="6">
-        <board-content :boardId="first.id" :isWidget="true" />
+              </v-subheader>
+              <v-card-text>
+                <v-row>
+                  <v-col cols="6">
+                    <v-select
+                      :items="types"
+                      v-model="form.type"
+                      outlined
+                      hide-details
+                      label="유형" />
+                  </v-col>
+                  <v-col cols="6" v-if="form.type !== '유튜브'">
+                    <v-select
+                      :items="boardIds"
+                      v-model="form.id"
+                      outlined
+                      hide-details
+                      label="게시판" />
+                  </v-col>
+                  <v-col cols="6" v-else>
+                    <v-text-field
+                      v-model="form.id"
+                      outlined
+                      hide-details
+                      label="유튜브아이디"
+                      placeholder="ABCDEFGEAF" />
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-form>
+        </v-container>
       </v-col>
-      <v-col cols="12" sm="6" v-if="second">
-        <board-content :boardId="second.id" :isWidget="true" />
-      </v-col>
-      <v-col cols="12" v-if="third">
-        <board-content :boardId="third.id" :isWidget="true" />
-      </v-col> -->
+      <template v-for="(item, i) in cards">
+        <v-col :key="i" cols="12" :sm="item.type === '갤러리' ? null : 6">
+          <v-container fluid v-if="editable">
+            <v-card dense>
+              <v-toolbar flat>
+                <v-toolbar-title>
+                  <v-select
+                    v-if="item.type !== '유튜브'"
+                    :items="boardIds"
+                    v-model="item.id"
+                    outlined
+                    hide-details
+                    clearable
+                    dense
+                    label="" />
+                  <v-text-field
+                    v-else
+                    v-model="item.id"
+                    outlined
+                    hide-details
+                    label=""
+                    dense
+                    placeholder="ABCDEFGEAF" />
+                </v-toolbar-title>
+                <v-spacer/>
+                <v-btn icon @click="save"><v-icon>mdi-content-save</v-icon></v-btn>
+                <v-btn icon @click="remove(i)"><v-icon>mdi-delete</v-icon></v-btn>
+              </v-toolbar>
+            </v-card>
+          </v-container>
+          <v-card v-if="item.type === '유튜브'" color="red">
+            youtube {{item.id}}
+          </v-card>
+          <template v-else-if="item.type === '게시판'">
+            <board-content v-if="item.id" :boardId="item.id" :isWidget="true" />
+            <articles v-else :widget="true" />
+          </template>
+          <board-content v-else-if="item.type === '갤러리'" :boardId="item.id" :isWidget="true" />
+          <v-card v-else>
+            error
+          </v-card>
+        </v-col>
+      </template>
     </v-row>
   </v-container>
 </template>
 <script>
 import setMeta from '@/util/setMeta'
-// import BoardContent from '@/components/board/content'
-import BoardContent from '@/components/article'
+import BoardContent from '@/components/board/content'
+import Articles from '@/components/article'
 import CardCount from './card-count'
 import CardReadCount from './card-read-count'
 import CardTotal from './card-total'
 const LIMIT = 10
 
 export default {
-  components: { BoardContent, CardCount, CardReadCount, CardTotal },
+  components: { BoardContent, Articles, CardCount, CardReadCount, CardTotal },
   // components: { CardCount, CardReadCount, CardTotal },
   data () {
     return {
@@ -61,10 +127,18 @@ export default {
       first: null,
       second: null,
       third: null,
-      sitemaps: []
+      sitemaps: [],
+      types: ['게시판', '갤러리', '유튜브'],
+      form: {
+        type: '게시판',
+        id: null
+      },
+      loading: false,
+      cards: []
     }
   },
   created () {
+    if (this.site && this.site.cards) this.cards = this.site.cards
     setMeta({ title: '메인페이지', description: '메인페이지', image: '/logo.png' })
     this.getSitemapLogs()
     this.subscribe()
@@ -73,6 +147,9 @@ export default {
     if (this.unsubscribe) this.unsubscribe()
   },
   computed: {
+    user () {
+      return this.$store.state.user
+    },
     total () {
       const values = {
         count: 0,
@@ -109,16 +186,32 @@ export default {
       if (this.total.count) values.counts.push(this.total.count)
       if (this.total.readCount) values.readCounts.push(this.total.readCount)
       return values
+    },
+    boardIds () {
+      if (!this.items.length) return []
+      const items = this.items.map(item => {
+        return { value: item.id, text: `${item.id} (${item.type})` }
+      })
+      items.unshift({ value: null, text: '전체' })
+      return items
+    },
+    site () {
+      return this.$store.state.site
+    },
+    editable () {
+      return this.$store.state.editable
+    }
+  },
+  watch: {
+    site (n) {
+      if (n.cards === undefined) return
+      this.cards = n.cards
     }
   },
   methods: {
-    setBoards () {
-      const filteredItem = this.items.filter(item => item.main && item.type === '일반')
-      if (filteredItem.length > 0) {
-        this.first = filteredItem[0]
-        if (filteredItem.length > 1) this.second = filteredItem[1]
-      }
-      this.third = this.items.find(item => item.type === '갤러리')
+    authCheck () {
+      if (!this.user) throw Error('로그인이 필요합니다')
+      if (this.user.level > 1) throw Error('관리 권한이 필요합니다')
     },
     snapshotToItems (sn) {
       sn.docs.forEach(doc => {
@@ -143,7 +236,6 @@ export default {
           findItem.updatedAt = item.updatedAt.toDate()
         }
       })
-      this.setBoards()
     },
     async subscribe () {
       if (this.unsubscribe) this.unsubscribe()
@@ -170,6 +262,25 @@ export default {
         return item
       })
       this.sitemaps = items
+    },
+    async save () {
+      this.authCheck()
+      try {
+        this.loading = true
+        this.$store.commit('setSiteCards', this.cards)
+        await this.$firebase.database().ref().child('site').child('cards').set(this.cards)
+        this.form.id = ''
+      } finally {
+        this.loading = false
+      }
+    },
+    add () {
+      this.cards.push(this.form)
+      this.save()
+    },
+    remove (i) {
+      this.cards.splice(i, 1)
+      this.save()
     }
   }
 }

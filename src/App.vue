@@ -110,6 +110,7 @@ export default {
         const v = sn.val()
         if (!v) return
         this.site = v
+        this.$store.commit('setSite', v)
       }, (e) => {
         console.error(e.message)
       })

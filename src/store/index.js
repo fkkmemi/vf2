@@ -9,7 +9,8 @@ export default new Vuex.Store({
     fireUser: null,
     user: null,
     boardTypeList: localStorage.getItem('boardTypeList') === 'true',
-    cached: {}
+    cached: {},
+    site: null
   },
   mutations: {
     setEdit (state, edit) {
@@ -43,6 +44,13 @@ export default new Vuex.Store({
       if (!cached.items) return
       const findItem = cached.items.find(item => item.id === articleId)
       if (findItem) findItem.read = read
+    },
+    setSite (state, site) {
+      state.site = site
+    },
+    setSiteCards (state, cards) {
+      if (!state.site) return
+      state.site.cards = cards
     }
   },
   actions: {
