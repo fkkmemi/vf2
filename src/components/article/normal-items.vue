@@ -3,7 +3,7 @@
     <v-row :no-gutters="$vuetify.breakpoint.xs">
       <template v-for="(item, i) in items">
         <v-col cols="12" :sm="uid ? null: 6" :md="uid ? null : 4" :lg="uid ? null : 3" :key="item.id">
-          <item :index="i + 1" :item="item"/>
+          <normal-item :index="i + 1" :item="item" :boardId="boardId"/>
           <v-divider :key="i" v-if="$vuetify.breakpoint.xs && i < items.length - 1"/>
         </v-col>
       </template>
@@ -24,10 +24,10 @@
   </v-container>
 </template>
 <script>
-import Item from './item'
+import NormalItem from './normal-item'
 export default {
-  components: { Item },
-  props: ['items', 'lastDoc', 'loading', 'uid'],
+  components: { NormalItem },
+  props: ['items', 'lastDoc', 'loading', 'uid', 'boardId'],
   methods: {
     onIntersect (entries, observer, isIntersecting) {
       if (isIntersecting) this.$emit('more')

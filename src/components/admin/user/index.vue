@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid v-if="!user">
+  <v-container fluid v-if="!loaded">
+    <v-skeleton-loader type="article" v-for="i in 3" :key="i"></v-skeleton-loader>
+  </v-container>
+  <v-container fluid v-else-if="loaded && !user">
     <v-alert type="warning" border="left" class="mb-0">
       로그인이 필요합니다
     </v-alert>
@@ -9,12 +12,9 @@
       권한이 없습니다
     </v-alert>
   </v-container>
-  <v-container fluid v-else-if="!loaded">
-    <v-skeleton-loader type="article" v-for="i in 3" :key="i"></v-skeleton-loader>
-  </v-container>
-  <v-container fluid v-else-if="loaded && !items.length">
+  <v-container fluid v-else-if="!items.length">
     <v-alert type="warning" border="left" class="mb-0">
-      사용자가 없습니다
+      데이터가 없습니다
     </v-alert>
   </v-container>
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
@@ -67,9 +67,14 @@ export default {
       return this.$store.state.user
     }
   },
+  watch: {
+    user (n) {
+      if (n && n.level < 2) this.init()
+    }
+  },
   created () {
     setMeta({ title: '사용자 관리', description: '사용자 관리', image: '/logo.png' })
-    if (this.user && this.user.level < 2) this.init()
+    // if (this.user && this.user.level < 2) this.init()
   },
   destroyed () {
   },

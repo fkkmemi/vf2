@@ -18,7 +18,16 @@
       <v-col cols="12" sm="4" :order="$vuetify.breakpoint.xs ? 3 : null">
         <card-total :item="total"/>
       </v-col>
-      <v-col cols="12" sm="6" v-if="first">
+      <v-col cols="12" sm="6">
+        <board-content :boardId="'test'" :widget="true" />
+      </v-col>
+      <v-col cols="12" sm="6" v-if="$store.state.editable">
+        <v-card>
+          <v-btn icon><v-icon>mdi-plus</v-icon></v-btn>
+        </v-card>
+      </v-col>
+
+      <!-- <v-col cols="12" sm="6">
         <board-content :boardId="first.id" :isWidget="true" />
       </v-col>
       <v-col cols="12" sm="6" v-if="second">
@@ -26,13 +35,14 @@
       </v-col>
       <v-col cols="12" v-if="third">
         <board-content :boardId="third.id" :isWidget="true" />
-      </v-col>
+      </v-col> -->
     </v-row>
   </v-container>
 </template>
 <script>
 import setMeta from '@/util/setMeta'
-import BoardContent from '@/components/board/content'
+// import BoardContent from '@/components/board/content'
+import BoardContent from '@/components/article'
 import CardCount from './card-count'
 import CardReadCount from './card-read-count'
 import CardTotal from './card-total'
@@ -40,6 +50,7 @@ const LIMIT = 10
 
 export default {
   components: { BoardContent, CardCount, CardReadCount, CardTotal },
+  // components: { CardCount, CardReadCount, CardTotal },
   data () {
     return {
       empty: false,

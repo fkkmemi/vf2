@@ -6,10 +6,10 @@
       :flat="$vuetify.breakpoint.xs"
       :tile="$vuetify.breakpoint.xs"
       :outlined="!$vuetify.breakpoint.xs"
-      @click="$router.push(`/board/${item.boardId}/${item.id}`)">
+      @click="$router.push(`/board/${item.boardId}/${item.id}?category=${item.category}`)">
       <v-card-subtitle class="text--primary body-1 d-flex align-center">
         <v-chip color="accent" outlined small class="mr-4">{{index}}</v-chip>
-        <v-btn color="primary" depressed small :to="`/board/${item.boardId}`">
+        <v-btn v-if="!boardId" color="primary" depressed small :to="`/board/${item.boardId}?category=${item.category}`">
           {{item.boardId}}
           <v-icon right>mdi-menu-right</v-icon>
         </v-btn>
@@ -76,7 +76,7 @@ import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
   components: { DisplayTitle, DisplayTime, DisplayUser, DisplayCount },
-  props: ['item', 'index'],
+  props: ['item', 'index', 'boardId'],
   data () {
     return {
       tuiOptions: {

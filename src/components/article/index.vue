@@ -7,13 +7,18 @@
       데이터가 없습니다
     </v-alert>
   </v-container>
-  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card :outlined="!isWidget" :tile="$vuetify.breakpoint.xs" :flat="$vuetify.breakpoint.xs">
+  <v-container v-else fluid :class="xs ? 'pa-0' : ''">
+    <v-card :outlined="!xs && !widget" :tile="xs" :flat="xs || !widget">
       <v-toolbar color="transparent" dense flat>
         <v-toolbar-title>
           전체게시물
         </v-toolbar-title>
         <v-spacer/>
+        <template v-if="!widget">
+          <v-btn icon @click="$store.commit('toggleBoardType')">
+            <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
+          </v-btn>
+        </template>
         <v-btn @click="show=!show" icon v-if="uid">
           <v-icon v-text="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"></v-icon>
         </v-btn>
@@ -21,7 +26,24 @@
       <template v-if="show">
         <v-divider/>
         <v-expand-transition>
-          <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
+          <compact-items
+            v-if="$store.state.boardTypeList || widget"
+            :items="items"
+            :loading="loading"
+            :lastDoc="lastDoc"
+            @more="fetch"
+            :uid="uid"
+            :boardId="boardId"
+            :widget="widget"/>
+          <normal-items
+            v-else
+            :items="items"
+            :loading="loading"
+            :lastDoc="lastDoc"
+            @more="fetch"
+            :uid="uid"
+            :boardId="boardId"
+            :widget="widget"/>
         </v-expand-transition>
       </template>
     </v-card>
@@ -29,10 +51,11 @@
 </template>
 <script>
 import { last } from 'lodash'
-import Items from './items'
+import NormalItems from './normal-items'
+import CompactItems from './compact-items'
 export default {
-  components: { Items },
-  props: ['boardId', 'category', 'uid', 'isWidget'],
+  components: { NormalItems, CompactItems },
+  props: ['boardId', 'category', 'uid', 'widget'],
   data () {
     return {
       loaded: false,
@@ -50,9 +73,16 @@ export default {
       if (md) return 3
       if (lg || xl) return 4
       return 4
+    },
+    xs () {
+      return this.$vuetify.breakpoint.xs
     }
   },
   watch: {
+    boardId () {
+      this.items = []
+      this.fetch()
+    },
     uid () {
       this.items = []
       this.fetch()
@@ -110,7 +140,8 @@ export default {
       try {
         this.loading = true
         let query = this.ref
-        if (this.uid) query = query.where('uid', '==', this.uid)
+        if (this.boardId) query = query.where('boardId', '==', this.boardId)
+        else if (this.uid) query = query.where('uid', '==', this.uid)
         query = query.orderBy('createdAt', 'desc')
         if (this.lastDoc) query = query.startAfter(this.lastDoc)
         const sn = await query.limit(this.limit).get()
