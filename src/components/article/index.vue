@@ -18,12 +18,12 @@
           <v-icon v-text="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"></v-icon>
         </v-btn>
       </v-toolbar>
-        <template v-if="show">
-          <v-divider/>
-          <v-expand-transition>
-            <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
-          </v-expand-transition>
-        </template>
+      <template v-if="show">
+        <v-divider/>
+        <v-expand-transition>
+          <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
+        </v-expand-transition>
+      </template>
     </v-card>
   </v-container>
 </template>

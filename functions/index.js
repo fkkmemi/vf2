@@ -254,6 +254,10 @@ exports.onCreateBoardArticle = functions.region(region).firestore
 //   }
 // }
 // test()
+const getRemainItem = (a, b) => {
+  if (a.length > b.length) return a.filter(x => !b.includes(x))[0]
+  else return b.filter(x => !a.includes(x))[0]
+}
 
 exports.onUpdateBoardArticle = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}')
@@ -286,8 +290,11 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
       const batch = db.batch()
       batch.update(db.collection('boards').doc(context.params.bid), up)
       batch.update(db.collection('articles').doc(context.params.aid), {
-        likeCount: doc.likeCount
+        likeCount: doc.likeCount,
+        likeUids: doc.likeUids
       })
+      const uid = getRemainItem(doc.likeUids, beforeDoc.likeUids)
+      batch.update(db.collection('users').doc(uid), up)
       await batch.commit().catch(e => console.error('likeCount update err: ' + e.message))
       return
     }

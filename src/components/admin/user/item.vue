@@ -29,24 +29,33 @@
           {{item.email}}
         </v-list-item-subtitle>
         <v-list-item-subtitle class="caption">
-          수정일: <display-time :time="item.updatedAt"/> |
           가입일: <display-time :time="item.createdAt"/>
         </v-list-item-subtitle>
         <v-list-item-subtitle class="caption">
-          방문일: <display-time :time="item.visitedAt"/> |
-          방문횟수: {{item.visitCount}}
-        </v-list-item-subtitle>
-        <!-- <v-list-item-subtitle class="caption">
           수정일: <display-time :time="item.updatedAt"/>
         </v-list-item-subtitle>
         <v-list-item-subtitle class="caption">
           방문일: <display-time :time="item.visitedAt"/>
-        </v-list-item-subtitle> -->
+        </v-list-item-subtitle>
+        <v-list-item-subtitle class="caption">
+          방문횟수: {{item.visitCount}}
+        </v-list-item-subtitle>
+        <v-list-item-subtitle class="caption">
+          게시물수: {{item.articleCount}}
+        </v-list-item-subtitle>
+        <v-list-item-subtitle class="caption">
+          댓글수: {{item.commentCount}}
+        </v-list-item-subtitle>
+        <v-list-item-subtitle class="caption">
+          좋아요수: {{item.likeCount}}
+        </v-list-item-subtitle>
       </v-list-item-content>
       <!-- <v-list-item-action>
-        <v-select :items="levels" v-model="level" outlined label="권한" />
+        <v-btn :to="`/user/${item.id}`" icon><v-icon>mdi-account-search</v-icon></v-btn>
       </v-list-item-action> -->
       <v-list-item-action>
+        <v-btn :to="`/user/${item.id}`" icon><v-icon>mdi-account-search</v-icon></v-btn>
+
         <v-dialog v-model="dialog" max-width="300">
           <template v-slot:activator="{ on }">
             <v-btn

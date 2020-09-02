@@ -25,8 +25,9 @@
         </v-toolbar-title>
       </v-toolbar>
       <v-divider/>
-      <template v-for="item in items">
+      <template v-for="(item, i) in items">
         <item-user :key="item.uid" :item="item" />
+        <v-divider :key="i" v-if="$vuetify.breakpoint.xs && i < items.length -1"/>
       </template>
       <v-list-item v-if="lastDoc">
         <v-btn
