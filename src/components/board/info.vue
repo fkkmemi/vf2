@@ -72,9 +72,9 @@
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
-          생성자
+          작성자
         </v-list-item-title>
-        <v-list-item-subtitle>
+        <v-list-item-subtitle class="pt-2">
           <display-user :user="board.user" :uid="board.uid" size="small"></display-user>
         </v-list-item-subtitle>
       </v-list-item-content>

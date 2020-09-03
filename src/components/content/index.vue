@@ -8,136 +8,152 @@
     </v-alert>
   </v-container>
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card outlined :tile="$vuetify.breakpoint.xs">
-      <v-toolbar color="transparent" dense flat>
-        <v-toolbar-title>
-          <v-btn
-            color="primary"
-            depressed
-            small
-            class="mr-4"
-            outlined
-            @click="goCategory"
-          >
-            {{article.category}}
-            <v-icon v-if="!category" right>mdi-menu-right</v-icon>
-          </v-btn>
-        </v-toolbar-title>
-        <v-spacer/>
-        <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level < 2)">
-          <v-spacer/>
-          <v-btn @click="articleWrite" icon color="primary"><v-icon>mdi-pencil</v-icon></v-btn>
-          <v-btn @click="remove" icon color="error"><v-icon>mdi-delete</v-icon></v-btn>
-        </template>
-        <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
-      </v-toolbar>
-      <v-divider/>
-      <v-card-subtitle class="text--primary body-1">
-        <display-title :item="article"/>
-      </v-card-subtitle>
-      <v-card-text class="text--primary" v-if="article.level > 5 || (user && user.level <= article.level)">
-        <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
-        <v-container v-else>
-          <v-row justify="center" align="center">
-            <v-progress-circular indeterminate></v-progress-circular>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-text v-else>
-        <v-alert type="warning" border="left" class="mb-0">
-          게시물 읽기 권한이 없습니다
-        </v-alert>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer/>
-        <span class="font-italic caption">
-          작성일: <display-time :time="article.createdAt"></display-time>
-        </span>
-      </v-card-actions>
-      <v-card-actions>
-        <v-spacer/>
-        <span class="font-italic caption">
-          수정일: <display-time :time="article.updatedAt"></display-time>
-        </span>
-      </v-card-actions>
-      <v-card-actions>
-        <v-spacer/>
-        <span class="font-italic caption mr-4">
-          작성자:
-        </span>
-        <display-user :user="article.user" :uid="article.uid"></display-user>
-      </v-card-actions>
-      <v-card-actions>
-        <v-spacer/>
-        <display-count :item="article" :column="false"></display-count>
-      </v-card-actions>
-      <v-card-actions>
-        <v-spacer/>
-        <v-btn rounded @click="like" :color="liked ? 'success' : ''">
-          <v-icon left>mdi-thumb-up-outline</v-icon>
-          좋아요
-        </v-btn>
-      </v-card-actions>
-      <v-card-text>
-        <v-row justify="start" align="center" class="px-4">
-          <v-btn
-            color="primary"
-            depressed
-            small
-            outlined
-            class="mr-4 mb-2"
-            @click="goCategory"
-          >
-            {{article.category}}
-            <v-icon right>mdi-menu-right</v-icon>
-          </v-btn>
-          <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip>
-        </v-row>
-      </v-card-text>
-      <v-card-actions v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
-        <v-spacer/>
-        <v-btn @click="articleWrite" text color="primary"><v-icon left>mdi-pencil</v-icon>수정</v-btn>
-        <v-btn @click="remove" text color="error"><v-icon left>mdi-delete</v-icon>삭제</v-btn>
-        <v-btn @click="back" text><v-icon left>mdi-close</v-icon>닫기</v-btn>
-      </v-card-actions>
-      <v-divider/>
-      <v-card-actions class="py-0" v-intersect="onIntersect">
-        <v-row no-gutters>
-          <v-col cols="12" sm="1">
-          </v-col>
-          <v-col cols="12" sm="4">
-            <v-list-item v-if="prev.to" :to="prev.to">
-              <v-list-item-icon>
-                <v-icon x-large>mdi-menu-left</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content class="subtitle-2">
-                {{prev.text}}
-              </v-list-item-content>
-            </v-list-item>
-          </v-col>
-          <v-col cols="12" sm="2" class="d-flex justify-center hidden-xs-only">
-            <v-divider vertical></v-divider>
-          </v-col>
-          <v-col cols="12" sm="4">
-            <v-list-item v-if="next.to" :to="next.to">
-              <v-list-item-content class="subtitle-2">
-                <span class="text-end">{{next.text}}</span>
-              </v-list-item-content>
-              <v-list-item-icon><v-icon x-large>mdi-menu-right</v-icon></v-list-item-icon>
-            </v-list-item>
-          </v-col>
-          <v-col cols="12" sm="1">
-          </v-col>
-        </v-row>
-      </v-card-actions>
-      <v-divider/>
-      <display-comment :boardId="boardId" :articleId="articleId" :article="article" :docRef="ref"></display-comment>
-    </v-card>
+    <v-row :no-gutters="xs">
+      <v-col cols="12" :md="!xs && !isWidget ? 9 : null" :lg="!xs && !isWidget ? 10 : null">
+        <v-card outlined :tile="$vuetify.breakpoint.xs">
+          <v-toolbar color="transparent" dense flat>
+            <v-toolbar-title>
+              <v-btn
+                color="primary"
+                depressed
+                small
+                class="mr-4"
+                outlined
+                @click="goCategory"
+              >
+                {{article.category}}
+                <v-icon v-if="!category" right>mdi-menu-right</v-icon>
+              </v-btn>
+            </v-toolbar-title>
+            <v-spacer/>
+            <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level < 2)">
+              <v-spacer/>
+              <v-btn @click="articleWrite" icon color="primary"><v-icon>mdi-pencil</v-icon></v-btn>
+              <v-btn @click="remove" icon color="error"><v-icon>mdi-delete</v-icon></v-btn>
+            </template>
+            <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
+          </v-toolbar>
+          <v-divider/>
+          <v-card-subtitle class="text--primary body-1">
+            <display-title :item="article"/>
+          </v-card-subtitle>
+          <v-card-text class="text--primary" v-if="article.level > 5 || (user && user.level <= article.level)">
+            <viewer :class="$vuetify.theme.dark ? 'tui-dark' : null" v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
+            <v-container v-else>
+              <v-row justify="center" align="center">
+                <v-progress-circular indeterminate></v-progress-circular>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-text v-else>
+            <v-alert type="warning" border="left" class="mb-0">
+              게시물 읽기 권한이 없습니다
+            </v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer/>
+            <span class="font-italic caption">
+              작성일: <display-time :time="article.createdAt"></display-time>
+            </span>
+          </v-card-actions>
+          <v-card-actions>
+            <v-spacer/>
+            <span class="font-italic caption">
+              수정일: <display-time :time="article.updatedAt"></display-time>
+            </span>
+          </v-card-actions>
+          <v-card-actions>
+            <v-spacer/>
+            <span class="font-italic caption mr-4">
+              작성자:
+            </span>
+            <display-user :user="article.user" :uid="article.uid"></display-user>
+          </v-card-actions>
+          <v-card-actions>
+            <v-spacer/>
+            <display-count :item="article" :column="false"></display-count>
+          </v-card-actions>
+          <v-card-actions>
+            <v-spacer/>
+            <v-btn rounded @click="like" :color="liked ? 'success' : ''">
+              <v-icon left>mdi-thumb-up-outline</v-icon>
+              좋아요
+            </v-btn>
+          </v-card-actions>
+          <v-card-text>
+            <v-row justify="start" align="center" class="px-4">
+              <v-btn
+                color="primary"
+                depressed
+                small
+                outlined
+                class="mr-4 mb-2"
+                @click="goCategory"
+              >
+                {{article.category}}
+                <v-icon right>mdi-menu-right</v-icon>
+              </v-btn>
+              <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip>
+            </v-row>
+          </v-card-text>
+          <v-card-actions v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
+            <v-spacer/>
+            <v-btn @click="articleWrite" text color="primary"><v-icon left>mdi-pencil</v-icon>수정</v-btn>
+            <v-btn @click="remove" text color="error"><v-icon left>mdi-delete</v-icon>삭제</v-btn>
+            <v-btn @click="back" text><v-icon left>mdi-close</v-icon>닫기</v-btn>
+          </v-card-actions>
+          <v-divider/>
+          <v-card-actions class="py-0" v-intersect="onIntersect">
+            <v-row no-gutters>
+              <v-col cols="12" sm="1">
+              </v-col>
+              <v-col cols="12" sm="4">
+                <v-list-item v-if="prev.to" :to="prev.to">
+                  <v-list-item-icon>
+                    <v-icon x-large>mdi-menu-left</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content class="subtitle-2">
+                    {{prev.text}}
+                  </v-list-item-content>
+                </v-list-item>
+              </v-col>
+              <v-col cols="12" sm="2" class="d-flex justify-center hidden-xs-only">
+                <v-divider vertical></v-divider>
+              </v-col>
+              <v-col cols="12" sm="4">
+                <v-list-item v-if="next.to" :to="next.to">
+                  <v-list-item-content class="subtitle-2">
+                    <span class="text-end">{{next.text}}</span>
+                  </v-list-item-content>
+                  <v-list-item-icon><v-icon x-large>mdi-menu-right</v-icon></v-list-item-icon>
+                </v-list-item>
+              </v-col>
+              <v-col cols="12" sm="1">
+              </v-col>
+            </v-row>
+          </v-card-actions>
+          <v-divider/>
+          <display-comment :boardId="boardId" :articleId="articleId" :article="article" :docRef="ref"></display-comment>
+        </v-card>
+      </v-col>
+      <v-col cols="12" :md="xs ? null : 3" :lg="xs ? null : 2" v-if="!xs && !isWidget">
+        <v-card outlined>
+          <v-toolbar color="transparent" dense flat>
+            <v-toolbar-title class="body-1">정보</v-toolbar-title>
+            <v-spacer/>
+            <!-- <v-btn icon @click="write" v-if="user && user.level < 2"><v-icon>mdi-pencil</v-icon></v-btn> -->
+          </v-toolbar>
+          <v-divider/>
+          <article-info :article="article" :boardId="boardId"/>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
 import 'highlight.js/styles/github.css'
 import axios from 'axios'
+import ArticleInfo from './info'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
 import DisplayUser from '@/components/display-user'
@@ -159,8 +175,8 @@ hljs.registerLanguage('dart', dart)
 hljs.registerLanguage('vue', vue)
 
 export default {
-  components: { DisplayTime, DisplayComment, DisplayUser, DisplayTitle, DisplayCount },
-  props: ['boardId', 'articleId', 'action', 'category', 'tag'],
+  components: { ArticleInfo, DisplayTime, DisplayComment, DisplayUser, DisplayTitle, DisplayCount },
+  props: ['boardId', 'articleId', 'action', 'category', 'tag', 'isWidget'],
   data () {
     return {
       tuiOptions: {
@@ -197,6 +213,9 @@ export default {
     liked () {
       if (!this.fireUser) return false
       return this.article.likeUids.includes(this.fireUser.uid)
+    },
+    xs () {
+      return this.$vuetify.breakpoint.xs
     }
   },
   watch: {

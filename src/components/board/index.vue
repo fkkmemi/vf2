@@ -56,7 +56,7 @@
       <v-col cols="12" :md="xs ? null : 3" :lg="xs ? null : 2" v-if="!xs && !isWidget">
         <v-card outlined>
           <v-toolbar color="transparent" dense flat>
-            <v-toolbar-title class="body-1">게시판 정보</v-toolbar-title>
+            <v-toolbar-title class="body-1">정보</v-toolbar-title>
             <v-spacer/>
             <v-btn icon @click="write" v-if="user && user.level < 2"><v-icon>mdi-pencil</v-icon></v-btn>
           </v-toolbar>
@@ -69,7 +69,7 @@
     <v-dialog v-model="dialog" max-width="500">
       <v-card>
         <v-toolbar color="transparent" dense flat>
-          <v-toolbar-title class="body-1">게시판 정보</v-toolbar-title>
+          <v-toolbar-title class="body-1">정보</v-toolbar-title>
           <v-spacer/>
           <v-btn icon @click="write" v-if="user && user.level < 2"><v-icon small>mdi-pencil</v-icon></v-btn>
           <v-btn icon @click="dialog=false"><v-icon small>mdi-close</v-icon></v-btn>
