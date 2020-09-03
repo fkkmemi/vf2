@@ -11,24 +11,24 @@ const routes = [
   },
   {
     path: '/board',
+    component: () => import('@/views/board-list')
+  },
+  {
+    path: '/board/:id',
     component: () => import('@/views/board')
   },
   {
-    path: '/board/:info',
-    component: () => import('@/views/board/info')
-  },
-  {
     path: '/board/:info/:article',
-    component: () => import('@/views/board/article')
-  },
-  {
-    path: '/search',
-    component: () => import('@/views/board/search')
+    component: () => import('@/views/content')
   },
   {
     path: '/admin/user',
     name: 'admin-user',
     component: () => import('@/views/admin/user')
+  },
+  {
+    path: '/search',
+    component: () => import('@/views/search')
   },
   {
     path: '/settings',

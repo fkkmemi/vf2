@@ -3,8 +3,8 @@
   <article-form v-else :boardId="info" :articleId="article" :category="category" :action="action" />
 </template>
 <script>
-import ArticleContent from '@/components/board/article/content'
-import ArticleForm from '@/components/board/article/form'
+import ArticleContent from '@/components/content'
+import ArticleForm from '@/components/content/form.vue'
 export default {
   components: { ArticleContent, ArticleForm },
   computed: {

@@ -1,192 +1,130 @@
 <template>
   <v-container v-if="!loaded" fluid>
-    <v-row>
-      <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="i in 4" :key="i">
-        <v-skeleton-loader type="card"></v-skeleton-loader>
-      </v-col>
-    </v-row>
+    <v-skeleton-loader type="card"></v-skeleton-loader>
   </v-container>
-  <v-container fluid v-else-if="(loaded && !items.length) && (!user || (user && user.level > 0))">
+  <v-container v-else-if="loaded && !board" fluid>
     <v-alert type="warning" border="left" class="mb-0">
       게시판이 없습니다
     </v-alert>
   </v-container>
-  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card outlined :tile="$vuetify.breakpoint.xs">
-      <v-toolbar color="transparent" dense flat>
-        <v-toolbar-title>게시판 목록</v-toolbar-title>
-        <v-spacer/>
-      </v-toolbar>
-        <v-sheet :color="$vuetify.theme.dark ? 'black' : 'transparent'">
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-if="user && user.level === 0">
-                <v-card height="100%">
-                  <v-subheader>
-                    새로운 게시판 추가
-                  </v-subheader>
-                  <v-divider/>
-                  <v-card-text>
-                    <v-text-field
-                      v-model="boardId"
-                      label="게시판 아이디"
-                      placeholder="주소에 사용 될 문자입니다"
-                      outlined
-                      hide-details />
-                  </v-card-text>
-                  <v-card-actions v-if="boardId">
-                    <v-btn
-                      :to="`/board/${boardId}`"
-                      x-large
-                      color="primary"
-                      text
-                      block>
-                      <v-icon left>mdi-plus</v-icon>
-                      추가
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-col>
-              <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item) in items" :key="item.id">
-                <v-card height="100%">
-                  <v-subheader>
-                    <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
-                    {{item.id}}
-                    <v-spacer/>
-                    <template v-if="user && user.level === 0">
-                      <v-btn
-                        icon
-                        :to="`/board/${item.id}?&action=write`">
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn
-                        icon
-                        @click="remove(item)">
-                        <v-icon>mdi-delete</v-icon>
-                      </v-btn>
-                    </template>
-                  </v-subheader>
-                  <v-divider/>
-                  <v-card-text>
-                    <v-alert border="left" type="info" outlined class="white-space">{{item.description}}</v-alert>
-                  </v-card-text>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>
-                        제목
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        {{item.title}}
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>
-                        작성자
-                      </v-list-item-title>
-                      <v-list-item-subtitle>
-                        <display-user :user="item.user" :uid="item.uid"></display-user>
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>
-                        작성일
-                      </v-list-item-title>
-                      <v-list-item-subtitle class="font-italic">
-                        <display-time :time="item.createdAt"></display-time>
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>
-                        수정일
-                      </v-list-item-title>
-                      <v-list-item-subtitle class="font-italic">
-                        <display-time :time="item.updatedAt"></display-time>
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-divider/>
-                  <v-list-item
-                    :to="`/board/${item.id}`">
-                    <v-list-item-content>
-                      전체 ({{item.count}})
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-btn icon>
-                        <v-icon>mdi-menu-right</v-icon>
-                      </v-btn>
-                    </v-list-item-action>
-                  </v-list-item>
-                  <v-divider/>
-                  <template v-for="(category, i) in item.categories">
-                    <v-list-item
-                      :key="category"
-                      :to="`/board/${item.id}?category=${category}`">
-                      <v-list-item-content>
-                        {{category}} ({{item.categoryCount[category]}})
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <v-btn icon>
-                          <v-icon>mdi-menu-right</v-icon>
-                        </v-btn>
-                      </v-list-item-action>
-                    </v-list-item>
-                    <v-divider :key="i" />
-                  </template>
-                </v-card>
-              </v-col>
-              <v-col cols="12" sm="6" md="4" lg="3" xl="2"
-                v-if="lastDoc">
-                <v-container fluid fill-height>
-                  <v-btn
-                    @click="more"
-                    v-intersect="onIntersect"
-                    text
-                    color="primary"
-                    block
-                    :loading="loading">
-                    <v-icon>mdi-dots-horizontal</v-icon>더보기
-                  </v-btn>
-                </v-container>
-              </v-col>
-            </v-row>
-          </v-card-text>
-      </v-sheet>
-    </v-card>
+  <v-container v-else-if="board.level < 6 && (user && user.level > board.level)" fluid>
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판 읽기 권한이 없습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="xs ? 'pa-0' : ''">
+    <v-row :no-gutters="xs">
+      <v-col cols="12" :md="!xs && !isWidget ? 9 : null" :lg="!xs && !isWidget ? 10 : null">
+        <v-card :outlined="!isWidget" :tile="xs">
+          <v-toolbar color="transparent" dense flat>
+            <v-sheet :width="120" class="mr-4">
+              <v-select
+                :value="getCategory"
+                :items="categories"
+                @change="changeCategory"
+                dense
+                outlined
+                single-line
+                flat
+                hide-details/>
+            </v-sheet>
+            <template v-if="!xs">
+              <v-icon color="error" left v-if="newCheck(board.updatedAt, 'days', 1)">mdi-fire</v-icon>
+              <span v-text="board.title" class="mr-2 text-truncate"></span>
+            </template>
+            <v-spacer/>
+            <v-btn icon :to="'/board/' + board.id" v-if="isWidget"><v-icon>mdi-arrow-right-circle-outline</v-icon></v-btn>
+            <v-btn icon @click="dialog=true" v-if="!isWidget && $vuetify.breakpoint.smAndDown"><v-icon>mdi-information-outline</v-icon></v-btn>
+            <template v-if="!isWidget">
+              <v-btn icon v-if="board.type === '일반'" @click="$store.commit('toggleBoardType')">
+                <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
+              </v-btn>
+            </template>
+            <v-btn icon @click="articleWrite" :disabled="!user"><v-icon>mdi-plus</v-icon></v-btn>
+          </v-toolbar>
+          <v-divider/>
+          <v-sheet :color="$vuetify.theme.dark ? 'black' : 'transparent'">
+            <article-list
+              :boardId="boardId"
+              :board="board"
+              :category="category"
+              :createdAt="createdAt"
+              :isWidget="isWidget"/>
+          </v-sheet>
+        </v-card>
+      </v-col>
+      <v-col cols="12" :md="xs ? null : 3" :lg="xs ? null : 2" v-if="!xs && !isWidget">
+        <v-card outlined>
+          <v-toolbar color="transparent" dense flat>
+            <v-toolbar-title class="body-1">게시판 정보</v-toolbar-title>
+            <v-spacer/>
+            <v-btn icon @click="write" v-if="user && user.level < 2"><v-icon>mdi-pencil</v-icon></v-btn>
+          </v-toolbar>
+          <v-divider/>
+          <board-info :board="board"/>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-dialog v-model="dialog" max-width="500">
+      <v-card>
+        <v-toolbar color="transparent" dense flat>
+          <v-toolbar-title class="body-1">게시판 정보</v-toolbar-title>
+          <v-spacer/>
+          <v-btn icon @click="write" v-if="user && user.level < 2"><v-icon small>mdi-pencil</v-icon></v-btn>
+          <v-btn icon @click="dialog=false"><v-icon small>mdi-close</v-icon></v-btn>
+        </v-toolbar>
+        <v-divider/>
+        <board-info :board="board"/>
+        <v-divider/>
+        <v-card-actions>
+          <v-spacer/>
+          <v-btn text @click="dialog=false"><v-icon left>mdi-close</v-icon>닫기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 <script>
-import { last } from 'lodash'
-import DisplayTime from '@/components/display-time'
-import DisplayUser from '@/components/display-user'
+import BoardInfo from './info'
+import ArticleList from './list'
 import newCheck from '@/util/newCheck'
-import setMeta from '@/util/setMeta'
-
-const LIMIT = 5
 
 export default {
-  components: { DisplayTime, DisplayUser },
+  components: { BoardInfo, ArticleList },
+  props: ['boardId', 'category', 'tag', 'createdAt', 'isWidget'],
   data () {
     return {
       unsubscribe: null,
-      items: [],
-      ref: null,
-      lastDoc: null,
-      order: 'createdAt',
-      sort: 'desc',
-      boardId: '',
+      board: null,
       loading: false,
+      dialog: false,
       newCheck,
-      loaded: false
+      loaded: false,
+      categories: []
+    }
+  },
+  watch: {
+    boardId () {
+      this.cacheClear()
+      this.subscribe()
+    },
+    category () {
+      this.cacheClear()
     }
   },
   computed: {
-    user () { return this.$store.state.user }
+    getCategory () {
+      if (!this.category) return '전체'
+      return this.category
+    },
+    user () {
+      return this.$store.state.user
+    },
+    xs () {
+      return this.$vuetify.breakpoint.xs
+    }
   },
   created () {
     this.subscribe()
@@ -195,77 +133,48 @@ export default {
     if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
-    snapshotToItems (sn) {
-      this.lastDoc = last(sn.docs)
-      sn.docs.forEach(doc => {
-        const findItem = this.items.find(item => doc.id === item.id)
-        const item = doc.data()
-        if (!findItem) {
-          item.id = doc.id
-          item.createdAt = item.createdAt.toDate()
-          item.updatedAt = item.updatedAt.toDate()
-          this.items.push(item)
-        } else {
-          findItem.category = item.category
-          findItem.title = item.title
-          findItem.count = item.count
-          findItem.description = item.description
-          findItem.categories = item.categories
-          findItem.tags = item.tags
-          findItem.updatedAt = item.updatedAt.toDate()
-        }
-      })
-      this.items.sort((before, after) => {
-        return Number(after.createdAt.getTime()) - Number(before.createdAt.getTime())
+    cacheClear () {
+      this.$store.commit('setCached', {
+        boardId: this.boardId,
+        lastDoc: null,
+        items: [],
+        articleId: null
       })
     },
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
-      setMeta({
-        title: '게시판 전체 목록',
-        description: '게시판 전체 목록입니다',
-        image: '/logo.png'
-      })
-      this.ref = this.$firebase.firestore()
-        .collection('boards')
-        .orderBy(this.order, this.sort).limit(LIMIT)
+      const ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
       this.loaded = false
-      this.unsubscribe = this.ref.onSnapshot(sn => {
+      this.unsubscribe = ref.onSnapshot(doc => {
         this.loaded = true
-        if (sn.empty) {
-          this.items = []
-          return
-        }
-        this.snapshotToItems(sn)
+        if (!doc.exists) return this.write()
+        const item = doc.data()
+        item.id = doc.id
+        item.createdAt = item.createdAt.toDate()
+        item.updatedAt = item.updatedAt.toDate()
+        item.categories.unshift('전체')
+        this.categories = item.categories.map(v => {
+          return { value: v, text: `${v} (${item.categoryCount[v]})` }
+        })
+        this.categories.unshift({ value: '전체', text: `전체 (${item.count})` })
+        // .item.categories.unshift('전체')
+        this.board = item
       }, console.error)
     },
-    async more () {
-      if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
-      if (this.loading) return
-      this.loading = true
-      try {
-        const sn = await this.ref.startAfter(this.lastDoc).get()
-        this.snapshotToItems(sn)
-      } finally {
-        this.loading = false
+    async write () {
+      this.$router.push({ path: '/board/' + this.boardId, query: { action: 'write' } })
+    },
+    async articleWrite () {
+      const to = {
+        path: '/board/' + this.boardId + '/' + new Date().getTime(),
+        query: { action: 'write' }
       }
+      if (this.category) to.query.category = this.category
+      this.$router.push(to)
     },
-    onIntersect (entries, observer, isIntersecting) {
-      if (isIntersecting) this.more()
-    },
-    async remove (item) {
-      const r = await this.$swal.fire({
-        title: '정말 삭제하시겠습니까?',
-        text: '삭제 후 되돌릴 수 없습니다.',
-        icon: 'error',
-        // confirmButtonText: 'Cool',
-        showCancelButton: true
-      })
-      if (!r.value) return
-      await this.$firebase.firestore()
-        .collection('boards').doc(item.id).delete()
-      const i = this.items.findIndex(el => el.id === item.id)
-      this.items.splice(i, 1)
+    changeCategory (item) {
+      if (item === '전체') this.$router.push('/board/' + this.boardId)
+      else this.$router.push({ path: '/board/' + this.boardId, query: { category: item } })
     }
   }
 }

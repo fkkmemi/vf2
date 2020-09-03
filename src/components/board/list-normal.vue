@@ -1,7 +1,7 @@
 <template>
   <v-row :no-gutters="$vuetify.breakpoint.xs">
     <template v-for="(item, i) in items">
-      <v-col cols="12" sm="6" md="4" lg="3" :key="item.id">
+      <v-col cols="12" md="6" lg="4" :key="item.id">
         <v-hover v-slot:default="{ hover }" open-delay="300">
           <v-card
             :class="$vuetify.breakpoint.xs ? null : cardClass(hover)"
@@ -72,7 +72,7 @@
         <v-divider v-if="i < items.length - 1 && $vuetify.breakpoint.xs" :key="i" inset/>
       </v-col>
     </template>
-    <v-col cols="12" sm="6" md="4" lg="3" v-if="isMoreEnable">
+    <v-col cols="12" md="6" lg="4" v-if="isMoreEnable">
       <v-card flat width="100%" height="100%" class="d-flex justify-center align-center ma-1">
         <v-btn
           @click="$emit('more')"

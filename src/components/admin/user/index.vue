@@ -7,12 +7,12 @@
       로그인이 필요합니다
     </v-alert>
   </v-container>
-  <v-container fluid v-else-if="user && user.level > 1">
+  <v-container fluid v-else-if="loaded && user && user.level > 1">
     <v-alert type="warning" border="left" class="mb-0">
       권한이 없습니다
     </v-alert>
   </v-container>
-  <v-container fluid v-else-if="!items.length">
+  <v-container fluid v-else-if="loaded && !items.length">
     <v-alert type="warning" border="left" class="mb-0">
       데이터가 없습니다
     </v-alert>
@@ -69,12 +69,12 @@ export default {
   },
   watch: {
     user (n) {
-      if (n && n.level < 2) this.init()
+      this.init()
     }
   },
   created () {
     setMeta({ title: '사용자 관리', description: '사용자 관리', image: '/logo.png' })
-    // if (this.user && this.user.level < 2) this.init()
+    this.init()
   },
   destroyed () {
   },
@@ -103,6 +103,11 @@ export default {
       this.items.sort((before, after) => after.createdAt.getTime() - before.createdAt.getTime())
     },
     async init () {
+      if (this.user && this.user.level > 1) {
+        this.loaded = true
+        this.items = []
+        return
+      }
       this.ref = this.$firebase.firestore()
         .collection('users').orderBy('createdAt', 'desc').limit(LIMIT)
       try {

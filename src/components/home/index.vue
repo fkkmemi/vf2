@@ -105,7 +105,7 @@
 </template>
 <script>
 import setMeta from '@/util/setMeta'
-import BoardContent from '@/components/board/content'
+import BoardContent from '@/components/board'
 import CardYoutube from '@/components/card-youtube'
 import Articles from '@/components/article'
 import CardCount from './card-count'

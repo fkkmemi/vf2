@@ -2,7 +2,7 @@
   <board-search :text="text" />
 </template>
 <script>
-import BoardSearch from '@/components/board/search'
+import BoardSearch from '@/components/search'
 export default {
   components: { BoardSearch },
   computed: {

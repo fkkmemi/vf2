@@ -51,9 +51,9 @@
 </template>
 <script>
 import { last } from 'lodash'
-import ListCompact from './components/list-compact'
-import ListNormal from './components/list-normal'
-import ListGallery from './components/list-gallery'
+import ListCompact from './list-compact'
+import ListNormal from './list-normal'
+import ListGallery from './list-gallery'
 import setMeta from '@/util/setMeta'
 import getThumbnailContent from '@/util/getThumbnailContent'
 

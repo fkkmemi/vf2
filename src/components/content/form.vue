@@ -25,8 +25,8 @@
   </v-container>
 </template>
 <script>
-import FormNormal from './components/form-normal'
-import FormGallery from './components/form-gallery'
+import FormNormal from './form-normal'
+import FormGallery from './form-gallery'
 import setMeta from '@/util/setMeta'
 
 export default {

@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row :dense="$vuetify.breakpoint.xs">
       <template v-for="item in items">
-        <v-col cols="6" sm="4" md="3" lg="2" :key="item.id">
+        <v-col cols="6" sm="4" lg="3" :key="item.id">
           <v-card
             height="100%"
             @click="goTo(item)" :ref="item.id">
@@ -79,7 +79,7 @@
           </v-card>
         </v-col>
       </template>
-      <v-col cols="6" sm="4" md="3" lg="2" v-if="isMoreEnable">
+      <v-col cols="6" sm="4" lg="3" v-if="isMoreEnable">
         <v-card flat width="100%" height="100%" class="d-flex justify-center align-center">
           <v-btn
             @click="$emit('more')"

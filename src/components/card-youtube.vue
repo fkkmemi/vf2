@@ -1,13 +1,25 @@
 <template>
   <v-container fluid class="ma-0 iframe d-flex justify-center">
     <v-card dark height="100%">
-      <youtube :video-id="id" ref="youtube" fitParent resize></youtube>
+      <youtube
+        :video-id="id"
+        :player-vars="playerVars"
+        ref="youtube"
+        fitParent
+        resize></youtube>
     </v-card>
   </v-container>
 </template>
 <script>
 export default {
-  props: ['id']
+  props: ['id'],
+  data () {
+    return {
+      playerVars: {
+        autoplay: 1
+      }
+    }
+  }
 }
 </script>
 <style scoped>
