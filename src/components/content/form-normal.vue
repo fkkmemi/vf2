@@ -195,14 +195,15 @@ export default {
           doc.likeUids = []
           await this.ref.set(doc)
           this.exists = true
-          this.$router.push('/board/' + this.boardId)
+          // this.$router.push('/board/' + this.boardId)
         } else {
           if (this.article.createdAt.toDate().getTime() !== createdAt.getTime()) doc.createdAt = createdAt
           const fn = this.articleId + '-' + this.article.uid + '.md'
           await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           await this.ref.update(doc)
-          this.$router.push('/board/' + this.boardId + '/' + this.articleId)
+          // this.$router.push('/board/' + this.boardId + '/' + this.articleId)
         }
+        this.back()
       } finally {
         this.loading = false
       }
