@@ -3,7 +3,7 @@
     <v-card outlined :tile="$vuetify.breakpoint.xs" v-if="board">
       <v-toolbar color="transparent" dense flat>
         <!-- <v-chip color="primary" label class="mr-4">{{board.category}}</v-chip> -->
-        <v-sheet width="90" class="mr-4">
+        <v-sheet width="100" class="mr-4">
           <v-select
             :value="getCategory"
             :items="board.categories"
@@ -16,7 +16,7 @@
             flat
             hide-details/>
         </v-sheet>
-        <v-toolbar-title v-text="board.title"></v-toolbar-title>
+        <v-toolbar-title class="hidden-xs-only" v-text="board.title"></v-toolbar-title>
 
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
@@ -28,6 +28,7 @@
         </template>
       </v-toolbar>
       <v-divider/>
+      <v-card-title class="hidden-sm-and-up" v-text="board.title"></v-card-title>
       <board-article :boardId="boardId" :board="board" :category="category"></board-article>
       <v-dialog v-model="dialog" max-width="300">
         <v-card>

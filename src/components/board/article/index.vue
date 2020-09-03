@@ -3,19 +3,6 @@
     <template v-for="(item, i) in items">
       <template v-if="$store.state.boardTypeList">
         <v-list-item three-line :key="item.id" :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
-          <!-- <v-list-item-action>
-            <v-btn
-              v-if="category != item.category"
-              color="info"
-              depressed
-              small
-              :to="`${$route.path}?category=${item.category}`"
-            >
-              {{item.category}}
-              <v-icon right>mdi-menu-right</v-icon>
-            </v-btn>
-
-          </v-list-item-action> -->
           <v-list-item-content>
             <v-list-item-title>
               <v-btn
@@ -29,8 +16,9 @@
                 {{item.category}}
                 <v-icon right>mdi-menu-right</v-icon>
               </v-btn>
-              {{item.title}}
+              <span class="hidden-xs-only" v-text="item.title"></span>
             </v-list-item-title>
+            <v-list-item-title class="hidden-sm-and-up" v-text="item.title" ></v-list-item-title>
             <v-list-item-subtitle>
               {{getSummary(item.summary, 100, '!')}}
             </v-list-item-subtitle>
@@ -49,7 +37,7 @@
               <span class="body-2">{{item.commentCount.toString().padStart(2, ' ')}}</span>
             </v-sheet>
             <v-sheet>
-              <v-icon left :color="item.likeCount ? 'success' : ''">mdi-thumb-up</v-icon>
+              <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
               <span class="body-2">{{item.likeCount}}</span>
             </v-sheet>
           </v-list-item-action>
@@ -103,7 +91,7 @@
             <span class="body-2">{{item.commentCount}}</span>
           </v-sheet>
           <v-sheet class="mr-0">
-            <v-icon left :color="item.likeCount ? 'success' : ''">mdi-thumb-up</v-icon>
+            <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
             <span class="body-2">{{item.likeCount}}</span>
           </v-sheet>
         </v-card-actions>
@@ -238,6 +226,10 @@ export default {
     },
     onIntersect (entries, observer, isIntersecting) {
       if (isIntersecting) this.more()
+    },
+    liked (item) {
+      if (!this.fireUser) return false
+      return item.likeUids.includes(this.fireUser.uid)
     }
   }
 }
