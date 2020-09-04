@@ -185,7 +185,19 @@ export default {
       })
       if (this.total.count) values.counts.push(this.total.count)
       if (this.total.readCount) values.readCounts.push(this.total.readCount)
-      return values
+      const r = {
+        counts: [],
+        readCounts: []
+      }
+      for (let i = 1; i < values.counts.length; i++) {
+        const count = values.counts[i] - values.counts[i - 1]
+        const readCount = values.readCounts[i] - values.readCounts[i - 1]
+        r.counts.push(count)
+        r.readCounts.push(readCount)
+      }
+      // console.log(values)
+      // console.log(r)
+      return r
     },
     boardIds () {
       if (!this.items.length) return []

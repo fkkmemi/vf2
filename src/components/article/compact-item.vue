@@ -6,10 +6,14 @@
     <v-list-item-content>
       <v-list-item-subtitle class="text--primary body-1 d-flex align-center">
         <v-chip v-if="!widget" color="accent" outlined small class="mr-4">{{index}}</v-chip>
-        <v-btn v-if="!xs && !boardId" color="primary" depressed small :to="`/board/${item.boardId}?category=${item.category}`" class="mr-4">
-          {{item.boardId}}
-          <v-icon right>mdi-menu-right</v-icon>
-        </v-btn>
+        <v-chip
+          v-if="!xs && !boardId"
+          color="primary" label small
+          exact class="mr-4"
+          :to="`/board/${item.boardId}?category=${item.category}`">
+          {{item.boardId}} > {{item.category}}
+          <!-- <v-icon right>mdi-menu-right</v-icon> -->
+        </v-chip>
         <display-title :item="item"/>
         <v-spacer/>
       </v-list-item-subtitle>

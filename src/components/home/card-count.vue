@@ -20,14 +20,14 @@
               <span>{{item.createdAt.toLocaleDateString()}}</span>
               <span>{{values[i]}}</span>
             </v-sheet>
-            <v-sheet
+            <!-- <v-sheet
               width="140"
               color="transparent"
               dark
               class="d-flex justify-space-between">
               <span>현재 </span>
               <span>{{values[values.length - 1]}}</span>
-            </v-sheet>
+            </v-sheet> -->
           </div>
         </v-tooltip>
       </v-subheader>

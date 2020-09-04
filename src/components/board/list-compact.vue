@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-list>
     <template v-for="(item, i) in items">
       <v-list-item :three-line="!isWidget" :key="item.id" @click="goTo(item)" :ref="item.id">
         <v-list-item-content>
@@ -43,7 +43,7 @@
         <v-icon>mdi-dots-horizontal</v-icon>더보기
       </v-btn>
     </v-list-item>
-  </div>
+  </v-list>
 </template>
 <script>
 // import { last } from 'lodash'

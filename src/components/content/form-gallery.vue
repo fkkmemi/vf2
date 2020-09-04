@@ -97,6 +97,7 @@ import axios from 'axios'
 import imageCompress from '@/util/imageCompress'
 import setMdFromImageUrl from '@/util/setMdFromImageUrl'
 import getImageUrlFromMd from '@/util/getImageUrlFromMd'
+import constants from '@/util/constants'
 
 export default {
   props: ['boardId', 'articleId', 'action', 'board', 'category'],
@@ -128,6 +129,10 @@ export default {
     },
     viewImage () {
       return getImageUrlFromMd(this.form.content)
+    },
+    levels () {
+      if (!this.user) return []
+      return constants.levels.filter(level => level.value >= this.user.level)
     }
 
   },
@@ -202,14 +207,13 @@ export default {
           doc.likeUids = []
           await this.ref.set(doc)
           this.exists = true
-          this.$router.push('/board/' + this.boardId)
         } else {
           if (this.article.createdAt.toDate().getTime() !== createdAt.getTime()) doc.createdAt = createdAt
           const fn = this.articleId + '-' + this.article.uid + '.md'
           await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           await this.ref.update(doc)
-          this.$router.push('/board/' + this.boardId + '/' + this.articleId)
         }
+        this.back()
       } finally {
         this.loading = false
       }

@@ -69,7 +69,7 @@
             </template>
           </v-card>
         </v-hover>
-        <v-divider v-if="i < items.length - 1 && $vuetify.breakpoint.xs" :key="i" inset/>
+        <v-divider v-if="i < items.length - 1 && $vuetify.breakpoint.xs" :key="i"/>
       </v-col>
     </template>
     <v-col cols="12" md="6" lg="4" v-if="isMoreEnable">

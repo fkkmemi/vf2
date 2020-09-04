@@ -16,7 +16,7 @@
         </v-btn>
         <v-spacer/>
       </v-card-subtitle>
-      <v-card-text class="text--primary">
+      <v-card-text class="text--primary white-space">
         {{ item.comment }}
       </v-card-text>
       <!-- <v-card-actions>

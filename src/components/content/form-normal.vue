@@ -25,7 +25,7 @@
             <v-select
               v-model="form.level"
               :items="levels"
-              label="권한"
+              label="읽기권한"
               outlined hide-details />
           </v-col>
           <v-col cols="12" sm="3">

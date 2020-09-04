@@ -43,7 +43,7 @@
             <v-btn icon @click="articleWrite" :disabled="!user"><v-icon>mdi-plus</v-icon></v-btn>
           </v-toolbar>
           <v-divider/>
-          <v-sheet :color="$vuetify.theme.dark ? 'black' : 'transparent'">
+          <v-sheet :color="$vuetify.theme.dark && !xs ? 'black' : 'transparent'">
             <article-list
               :boardId="boardId"
               :board="board"
