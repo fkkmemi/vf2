@@ -12,7 +12,7 @@ export default {
     light: {
       primary: '#0277BD',
       secondary: '#BDBDBD',
-      accent: '#2C4027',
+      accent: '#7986CB',
       info: '#4E7DA6',
       success: '#26A699',
       warning: '#F29727',
@@ -21,7 +21,7 @@ export default {
     dark: {
       primary: '#0277BD',
       secondary: '#424242',
-      accent: '#2C4027',
+      accent: '#7986CB',
       info: '#4E7DA6',
       success: '#26A699',
       warning: '#F29727',
