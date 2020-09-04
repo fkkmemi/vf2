@@ -10,6 +10,8 @@
           <v-icon>{{searchable ? 'mdi-magnify-close' : 'mdi-magnify'}}</v-icon>
         </v-btn>
       </template>
+      <v-btn @click="drawerChat=true" icon><v-icon>mdi-chat</v-icon></v-btn>
+
       <site-sign></site-sign>
     </v-app-bar>
     <v-navigation-drawer
@@ -18,11 +20,15 @@
       disable-resize-watcher
       :width="$store.state.editable ? 380 : 256"
       v-model="drawer">
-      <site-menu :items="site.menu" @close="drawer=false"></site-menu>
+      <template v-slot:default>
+        <site-menu :items="site.menu" @close="drawer=false"></site-menu>
+      </template>
       <template v-slot:append>
         <site-menu-bottom/>
       </template>
     </v-navigation-drawer>
+    <chat :drawerStart="drawerChat" @close="drawerChat=false"/>
+
     <v-main onscroll="onScroll">
       <banner-email-confirm v-if="user && !user.emailVerified" />
       <router-view/>
@@ -56,13 +62,15 @@ import SiteMenuBottom from '@/views/site/menu-bottom'
 import SiteSign from '@/views/site/sign'
 import SiteSearch from '@/views/site/search'
 import BannerEmailConfirm from '@/components/banner-email-confirm'
+import Chat from '@/components/chat'
 
 export default {
-  components: { SiteTitle, SiteFooter, SiteMenu, SiteMenuBottom, SiteSign, SiteSearch, BannerEmailConfirm },
+  components: { SiteTitle, SiteFooter, SiteMenu, SiteMenuBottom, SiteSign, SiteSearch, BannerEmailConfirm, Chat },
   name: 'App',
   data () {
     return {
       drawer: false,
+      drawerChat: false,
       site: {
         menu: [
           {
