@@ -16,10 +16,19 @@ let unsubscribe = null
 
 const subscribe = async (fu) => {
   const ref = firebase.firestore().collection('users').doc(fu.uid)
-  await ref.update({
-    visitedAt: new Date(),
-    visitCount: firebase.firestore.FieldValue.increment(1)
-  }).catch(e => console.error('visit update err: ' + e.message))
+  // await ref.update({
+  //   visitedAt: new Date(),
+  //   visitCount: firebase.firestore.FieldValue.increment(1)
+  // }).catch(e => console.error('visit update err: ' + e.message))
+  const connRef = firebase.database().ref('users').child(fu.uid).child('connections')
+  firebase.database().ref('.info/connected').on('value', (snap) => {
+    const online = snap.val()
+    if (!online) return
+    const con = connRef.push()
+    con.set(true)
+    con.onDisconnect().remove()
+  })
+
   unsubscribe = ref.onSnapshot(doc => {
     if (doc.exists) {
       const user = doc.data()
@@ -57,8 +66,8 @@ firebase.auth().onAuthStateChanged((fu) => {
   // console.log('user evnet: ' + JSON.stringify(fu, null, 2))
   store.commit('setFireUser', fu)
   if (!fu) {
-    store.commit('setUser', null)
     if (unsubscribe) unsubscribe()
+    store.commit('setUser', null)
     return
   }
   subscribe(fu)

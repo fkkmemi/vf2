@@ -106,6 +106,27 @@ exports.deleteUser = functions.region(region).auth.user().onDelete(async (user) 
     .catch(e => console.error('meta update err: ' + e.message))
 })
 
+exports.userOnline = functions.region(region)
+  .database.ref('/users/{uid}/connections')
+  .onCreate(async (snapshot, context) => {
+    const item = {
+      online: true,
+      visitedAt: new Date(),
+      visitCount: admin.firestore.FieldValue.increment(1)
+    }
+    await db.collection('users').doc(context.params.uid).update(item)
+  })
+
+exports.userOffline = functions.region(region)
+  .database.ref('/users/{uid}/connections')
+  .onDelete(async (snapshot, context) => {
+    const item = {
+      online: false,
+      visitedAt: new Date()
+    }
+    await db.collection('users').doc(context.params.uid).update(item)
+  })
+
 exports.onCreateBoard = functions.region(region).firestore
   .document('boards/{bid}').onCreate(async (snap, context) => {
     try {

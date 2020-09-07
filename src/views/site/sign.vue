@@ -122,6 +122,10 @@ export default {
   },
   methods: {
     signOut () {
+      if (this.user) {
+        this.$firebase.database().ref('users')
+          .child(this.user.uid).child('connections').remove()
+      }
       this.$firebase.auth().signOut()
     },
     emailConfirm () {

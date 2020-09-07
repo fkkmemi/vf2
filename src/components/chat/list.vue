@@ -48,16 +48,21 @@ export default {
   },
   watch: {
     user (n) {
-      this.subscribe()
+      if (n) this.subscribe()
+      else this.destroy()
     }
   },
   created () {
     if (this.user) this.subscribe()
   },
   destroyed () {
-    if (this.unsubscribe) this.unsubscribe()
+    this.destroy()
   },
   methods: {
+    destroy () {
+      this.items = []
+      if (this.unsubscribe) this.unsubscribe()
+    },
     snapshotToItems (sn) {
       this.lastDoc = last(sn.docs)
       sn.docs.forEach(doc => {
@@ -77,12 +82,15 @@ export default {
           findItem.level = item.level
           findItem.visitedAt = item.visitedAt.toDate()
           findItem.visitCount = item.visitCount
+          findItem.online = item.online
         }
       })
     },
     subscribe () {
-      if (this.unsubscribe) this.unsubscribe()
-      const query = this.ref.where('email', '!=', this.user.email)
+      this.destroy()
+      const query = this.ref
+      // .where('online', '==', true)
+        .where('email', '!=', this.user.email)
       this.unsubscribe = query.limit(4).onSnapshot(sn => {
         this.loaded = true
         this.snapshotToItems(sn)

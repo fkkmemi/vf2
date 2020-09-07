@@ -8,6 +8,7 @@
         {{item.displayName}}
       </v-list-item-title>
       <v-list-item-subtitle>
+        <v-icon left x-small :color="item.online ? 'success' : 'error'">mdi-circle</v-icon>
         <span class="cation"><display-time :time="item.visitedAt"/></span>
       </v-list-item-subtitle>
     </v-list-item-content>
