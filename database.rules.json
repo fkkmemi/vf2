@@ -6,8 +6,11 @@
     },
     "users": {
       "$user_id": {
-        ".read": "$user_id === auth.uid || root.child('users').child(auth.uid).child('level').val() < 2",
-        ".write": "($user_id === auth.uid && data.child('level').val() === newData.child('level').val()) || root.child('users').child(auth.uid).child('level').val() < 2"
+        ".read": true,
+        ".write": "root.child('users').child(auth.uid).child('level').val() < 2",
+        "online": {
+          ".write": "$user_id === auth.uid"
+        }
       }
     }
   }

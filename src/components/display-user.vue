@@ -6,6 +6,7 @@
           <v-img :src="user.photoURL"/>
         </v-avatar>
         <span class="text-truncate">{{size === 'small' ? user.displayName.substr(0, 5) : user.displayName}}</span>
+        <v-icon right small color="success">mdi-circle</v-icon>
       </v-chip>
     </template>
     <v-list>

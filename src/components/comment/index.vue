@@ -10,9 +10,9 @@
   <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-card :outlined="!isWidget" :tile="$vuetify.breakpoint.xs" :flat="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
-        <v-toolbar-title>
+        <span>
           전체댓글
-        </v-toolbar-title>
+        </span>
         <v-spacer/>
         <v-btn @click="show=!show" icon v-if="uid">
           <v-icon v-text="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"></v-icon>
@@ -52,6 +52,7 @@ export default {
   },
   watch: {
     uid () {
+      this.lastDoc = null
       this.items = []
       this.fetch()
     }

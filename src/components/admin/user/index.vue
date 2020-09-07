@@ -109,9 +109,9 @@ export default {
         return
       }
       this.ref = this.$firebase.firestore()
-        .collection('users').orderBy('createdAt', 'desc').limit(LIMIT)
+        .collection('users').orderBy('createdAt', 'desc')
       try {
-        const sn = await this.ref.get()
+        const sn = await this.ref.limit(LIMIT).get()
         this.snapshotToItems(sn)
         this.loaded = true
       } finally {
@@ -123,7 +123,7 @@ export default {
       if (this.loading) return
       this.loading = true
       try {
-        const sn = await this.ref.startAfter(this.lastDoc).get()
+        const sn = await this.ref.startAfter(this.lastDoc).limit(LIMIT).get()
         this.snapshotToItems(sn)
       } finally {
         this.loading = false

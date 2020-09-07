@@ -11,7 +11,7 @@
       <chat-head @close="close" :permanent="permanent" @lock="lock" />
     </template>
     <template v-slot:default>
-      <v-card color="blue">middle</v-card>
+      <chat-list/>
     </template>
     <template v-slot:append>
       <v-card color="red">bottom</v-card>
@@ -21,8 +21,9 @@
 </template>
 <script>
 import ChatHead from './head'
+import ChatList from './list'
 export default {
-  components: { ChatHead },
+  components: { ChatHead, ChatList },
   props: ['drawerStart'],
   data () {
     return {
