@@ -4,13 +4,14 @@
   </v-list>
   <v-list v-else>
     <template v-for="(item) in items">
-      <chat-item :item="item" :key="item.id" @select="selectItem"/>
+      <chat-item :item="selectUser(item)" :key="item.id" @select="selectItem"/>
       <!-- <v-list-item :key="item.id">
         <v-list-item-action>
           <display-user :user="item" :uid="item.id"/>
         </v-list-item-action>
       </v-list-item> -->
       <!-- <v-divider :key="i" v-if="i < items.length - 1"/> -->
+
     </template>
     <v-list-item v-if="lastDoc">
       <v-btn
@@ -36,7 +37,7 @@ export default {
       items: [],
       unsubscribe: null,
       loaded: false,
-      ref: this.$firebase.firestore().collection('users'),
+      ref: this.$firebase.firestore().collection('chats'),
       lastDoc: null,
       loading: false
     }
@@ -64,33 +65,31 @@ export default {
       if (this.unsubscribe) this.unsubscribe()
     },
     snapshotToItems (sn) {
-      this.lastDoc = last(sn.docs)
+      this.lastDoc = sn.docs.length >= 4 ? last(sn.docs) : null
       sn.docs.forEach(doc => {
         const findItem = this.items.find(item => doc.id === item.id)
         const item = doc.data()
         if (!findItem) {
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
-          item.updatedAt = item.updatedAt.toDate()
-          item.visitedAt = item.visitedAt.toDate()
+          item.users.forEach(user => {
+            user.createdAt = user.createdAt.toDate()
+            user.updatedAt = user.updatedAt.toDate()
+            user.visitedAt = user.visitedAt.toDate()
+          })
           this.items.push(item)
         } else {
-          findItem.email = item.email
-          findItem.displayName = item.displayName
-          findItem.photoURL = item.photoURL
           findItem.updatedAt = item.updatedAt.toDate()
-          findItem.level = item.level
-          findItem.visitedAt = item.visitedAt.toDate()
-          findItem.visitCount = item.visitCount
-          findItem.online = item.online
+          item.users.forEach(user => {
+            user.updatedAt = user.updatedAt.toDate()
+            user.visitedAt = user.visitedAt.toDate()
+          })
         }
       })
     },
     subscribe () {
       this.destroy()
-      const query = this.ref
-      // .where('online', '==', true)
-        .where('email', '!=', this.user.email)
+      const query = this.ref.where('uids', 'array-contains-any', [this.user.uid])
       this.unsubscribe = query.limit(4).onSnapshot(sn => {
         this.loaded = true
         this.snapshotToItems(sn)
@@ -101,7 +100,7 @@ export default {
       if (this.loading) return
       this.loading = true
       try {
-        const sn = await this.ref.where('email', '!=', this.user.email).startAfter(this.lastDoc).limit(4).get()
+        const sn = await this.ref.where('uids', 'array-contains-any', [this.user.uid]).startAfter(this.lastDoc).limit(4).get()
         this.snapshotToItems(sn)
       } finally {
         this.loading = false
@@ -109,6 +108,9 @@ export default {
     },
     selectItem (item) {
       this.$emit('select', item)
+    },
+    selectUser (item) {
+      return item.users.find(u => u.uid !== this.user.uid)
     }
   }
 }

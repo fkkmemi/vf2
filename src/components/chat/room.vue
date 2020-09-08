@@ -90,7 +90,8 @@ export default {
           uids: this.uids,
           updatedAt: new Date(),
           createdAt: new Date(),
-          count: 0
+          count: 0,
+          users: [this.user, this.selectedUser]
         }
         await this.$firebase.firestore()
           .collection('chats').doc(this.uids.join('-')).set(set)

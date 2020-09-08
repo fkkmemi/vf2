@@ -69,7 +69,7 @@ service cloud.firestore {
       allow read: if true;
     }
     match /chats/{roomId} { // /messages/{messageId} {
-      allow read: if approvedLevel(5) && request.auth.uid in roomId.split('-'); // resource.data.uids;
+      allow read: if approvedLevel(5) && (request.auth.uid in roomId.split('-') || request.auth.uid in resource.data.uids);
       allow write: if approvedLevel(5) && request.auth.uid in roomId.split('-');
       match /messages/{messageId} {
         allow read: if approvedLevel(5) && request.auth.uid in roomId.split('-');
