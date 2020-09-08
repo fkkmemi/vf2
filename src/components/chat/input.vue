@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     user () { return this.$store.state.user },
-    uids () { return [this.user.uid, this.selectedUser.id].sort() }
+    uids () { return [this.user.uid, this.selectedUser.uid].sort() }
   },
   mounted () {
   },

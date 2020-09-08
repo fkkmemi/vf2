@@ -10,7 +10,21 @@
           <v-icon>{{searchable ? 'mdi-magnify-close' : 'mdi-magnify'}}</v-icon>
         </v-btn>
       </template>
-      <v-btn v-if="user" @click="drawerChat=true" icon><v-icon>mdi-chat</v-icon></v-btn>
+      <v-badge
+        v-if="user"
+        :content="user.messageCount || null"
+        :value="user.messageCount || null"
+        color="success"
+        overlap
+        class="mx-4"
+      >
+        <v-btn icon small>
+          <v-icon @click="drawerChat=true" >mdi-chat</v-icon>
+        </v-btn>
+        <!-- <v-progress-circular v-if="loading" indeterminate></v-progress-circular>
+        <v-icon v-else>mdi-forum</v-icon> -->
+
+      </v-badge>
 
       <site-sign></site-sign>
     </v-app-bar>

@@ -127,6 +127,35 @@ exports.userOffline = functions.region(region)
     await db.collection('users').doc(context.params.uid).update(item)
   })
 
+exports.onCreateMessage = functions.region(region).firestore
+  .document('chats/{roomId}/messages/{messageId}').onCreate(async (snap, context) => {
+    const increment = admin.firestore.FieldValue.increment(1)
+    try {
+      await db.collection('chats').doc(context.params.roomId).update({ count: increment })
+    } catch (e) {
+      await db.collection('chats').doc(context.params.roomId).update({ count: 1 })
+        .catch(e => console.error('chats count update err: ' + e.message))
+    }
+    const doc = snap.data()
+    const uid = doc.uids.find(d => d !== doc.uid)
+    try {
+      await db.collection('users').doc(uid).update({ messageCount: increment })
+    } catch (e) {
+      await db.collection('users').doc(uid).update({ messageCount: 1 })
+        .catch(e => console.error('users messageCount update err: ' + e.message))
+    }
+  })
+exports.onDeleteMessage = functions.region(region).firestore
+  .document('chats/{roomId}/messages/{messageId}').onDelete(async (snap, context) => {
+    const increment = admin.firestore.FieldValue.increment(-1)
+    await db.collection('chats').doc(context.params.roomId).update({ count: increment })
+      .catch(e => console.error('chats count update err: ' + e.message))
+    // const doc = snap.data()
+    // const uid = doc.uids.find(d => d !== doc.uid)
+    // await db.collection('users').doc(uid).update({ messageCount: increment })
+    //   .catch(e => console.error('users messageCount update err: ' + e.message))
+  })
+
 exports.onCreateBoard = functions.region(region).firestore
   .document('boards/{bid}').onCreate(async (snap, context) => {
     try {

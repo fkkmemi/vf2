@@ -20,7 +20,16 @@
             <v-icon left>mdi-account</v-icon> 사용자
           </v-tab>
           <v-tab>
-            <v-icon left>mdi-chat</v-icon> 대화
+
+            <v-badge
+              v-if="user"
+              :content="user.messageCount || null"
+              :value="user.messageCount || null"
+              color="success"
+              inline
+            >
+              <v-icon left>mdi-chat</v-icon>대화
+            </v-badge>
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab" class="mt-4">
@@ -63,6 +72,9 @@ export default {
       selectedItem: null,
       tab: null
     }
+  },
+  computed: {
+    user () { return this.$store.state.user }
   },
   watch: {
     drawerStart (n) {

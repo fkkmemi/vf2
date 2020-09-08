@@ -4,7 +4,7 @@
   </v-list>
   <v-list v-else>
     <template v-for="(item) in items">
-      <chat-item :item="item" :key="item.id" @select="selectItem"/>
+      <chat-item :item="item" :key="item.uid" @select="selectItem"/>
       <!-- <v-list-item :key="item.id">
         <v-list-item-action>
           <display-user :user="item" :uid="item.id"/>
@@ -69,7 +69,7 @@ export default {
         const findItem = this.items.find(item => doc.id === item.id)
         const item = doc.data()
         if (!findItem) {
-          item.id = doc.id
+          item.uid = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           item.visitedAt = item.visitedAt.toDate()
