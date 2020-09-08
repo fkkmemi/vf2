@@ -68,5 +68,13 @@ service cloud.firestore {
     match /comments/{commentId} {
       allow read: if true;
     }
+    match /chats/{roomId} { // /messages/{messageId} {
+      allow read: if approvedLevel(5) && request.auth.uid in roomId.split('-'); // resource.data.uids;
+      allow write: if approvedLevel(5) && request.auth.uid in roomId.split('-');
+      match /messages/{messageId} {
+        allow read: if approvedLevel(5) && request.auth.uid in roomId.split('-');
+        allow write: if approvedLevel(5) && request.auth.uid in roomId.split('-');
+      }
+    }
   }
 }

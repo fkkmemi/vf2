@@ -4,7 +4,7 @@
   </v-list>
   <v-list v-else>
     <template v-for="(item) in items">
-      <chat-item :item="item" :key="item.id"/>
+      <chat-item :item="item" :key="item.id" @select="selectItem"/>
       <!-- <v-list-item :key="item.id">
         <v-list-item-action>
           <display-user :user="item" :uid="item.id"/>
@@ -106,6 +106,9 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    selectItem (item) {
+      this.$emit('select', item)
     }
   }
 }

@@ -10,7 +10,7 @@
           <v-icon>{{searchable ? 'mdi-magnify-close' : 'mdi-magnify'}}</v-icon>
         </v-btn>
       </template>
-      <v-btn @click="drawerChat=true" icon><v-icon>mdi-chat</v-icon></v-btn>
+      <v-btn v-if="user" @click="drawerChat=true" icon><v-icon>mdi-chat</v-icon></v-btn>
 
       <site-sign></site-sign>
     </v-app-bar>

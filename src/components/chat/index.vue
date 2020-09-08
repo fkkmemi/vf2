@@ -8,13 +8,24 @@
     disable-resize-watcher
     >
     <template v-slot:prepend>
-      <chat-head @close="close" :permanent="permanent" @lock="lock" />
+      <chat-head
+        @close="close"
+        :permanent="permanent"
+        @lock="lock" />
     </template>
-    <template v-slot:default>
-      <chat-list/>
+    <template v-slot:default v-if="drawer">
+      <chat-list
+        v-if="!selectedItem"
+        @select="selectItem"
+      />
+      <chat-room
+        v-else
+        @select="selectItem"
+        :selectedUser="selectedItem"
+      />
     </template>
     <template v-slot:append>
-      <v-card color="red">bottom</v-card>
+      <chat-input v-if="selectedItem" :selectedUser="selectedItem" />
     </template>
   </v-navigation-drawer>
 
@@ -22,13 +33,16 @@
 <script>
 import ChatHead from './head'
 import ChatList from './list'
+import ChatRoom from './room'
+import ChatInput from './input'
 export default {
-  components: { ChatHead, ChatList },
+  components: { ChatHead, ChatList, ChatRoom, ChatInput },
   props: ['drawerStart'],
   data () {
     return {
       drawer: false,
-      permanent: false
+      permanent: false,
+      selectedItem: null
     }
   },
   watch: {
@@ -46,6 +60,9 @@ export default {
     },
     lock (pin) {
       this.permanent = pin
+    },
+    selectItem (item) {
+      this.selectedItem = item
     }
   }
 }

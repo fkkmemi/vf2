@@ -1,5 +1,5 @@
 <template>
-  <v-list-item :to="`/user/${item.id}`">
+  <v-list-item @click="selectItem">
     <v-list-item-avatar>
       <v-img :src="item.photoURL"></v-img>
     </v-list-item-avatar>
@@ -16,7 +16,7 @@
       <v-btn :to="`/user/${item.id}`" icon><v-icon>mdi-arrow-right-bold-circle-outline</v-icon></v-btn>
     </v-list-item-action> -->
     <v-list-item-action>
-      <v-btn @click="chat(item)" icon><v-icon>mdi-chat</v-icon></v-btn>
+      <v-icon>mdi-chat</v-icon>
     </v-list-item-action>
   </v-list-item>
 </template>
@@ -26,8 +26,8 @@ export default {
   components: { DisplayTime },
   props: ['item'],
   methods: {
-    chat (item) {
-
+    selectItem () {
+      this.$emit('select', this.item)
     }
   }
 }

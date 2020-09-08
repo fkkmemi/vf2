@@ -6,7 +6,7 @@
           <v-img :src="user.photoURL"/>
         </v-avatar>
         <span class="text-truncate">{{size === 'small' ? user.displayName.substr(0, 5) : user.displayName}}</span>
-        <v-icon right small color="success">mdi-circle</v-icon>
+        <!-- <v-icon right small color="success">mdi-circle</v-icon> -->
       </v-chip>
     </template>
     <v-list>
@@ -77,6 +77,7 @@
 </template>
 <script>
 import constants from '@/util/constants'
+import hiddenEmail from '@/util/hiddenEmail'
 export default {
   props: ['user', 'size', 'uid'],
   data () {
@@ -100,6 +101,7 @@ export default {
     async fetch () {
       const doc = await this.$firebase.firestore().collection('users').doc(this.uid).get()
       this.fsuser = doc.data()
+      this.fsuser.email = hiddenEmail(this.fsuser.email)
     }
   }
 }
