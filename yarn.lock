@@ -2178,6 +2178,13 @@ brorand@^1.0.1:
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
   integrity sha1-EsJe/kCkXjwyPrhnWgoM5XsiNx8=
 
+browser-image-resizer@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/browser-image-resizer/-/browser-image-resizer-2.1.3.tgz#0c94977676cc7736699078fe30087753ad3b9660"
+  integrity sha512-tladZU5n+9HtMg4Kx3F7u+fB/O9RxSnYbLwgkpMXLpxqf8vwgIqM3hvl9bU+hP33mnv+RNrQbZnwJ0WXrALdJw==
+  dependencies:
+    exifreader "^3.1.0"
+
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/browserify-aes/-/browserify-aes-1.2.0.tgz#326734642f403dabc3003209853bb70ad428ef48"
@@ -3912,6 +3919,13 @@ execa@^3.3.0:
     p-finally "^2.0.0"
     signal-exit "^3.0.2"
     strip-final-newline "^2.0.0"
+
+exifreader@^3.1.0:
+  version "3.12.2"
+  resolved "https://registry.yarnpkg.com/exifreader/-/exifreader-3.12.2.tgz#b7390d986ef91a5db9e4529c522b56329c21b266"
+  integrity sha512-4+WpOVVW0iVbdMq4JnsmOx7vOurKEwb6vfopVkDW/g/JSIpdflkH6Q04yEBvh4ZzAU9l0UbvsSGf9LaW/Bu14w==
+  optionalDependencies:
+    xmldom "^0.1.31"
 
 expand-brackets@^2.1.4:
   version "2.1.4"
@@ -8996,6 +9010,11 @@ ws@^6.0.0, ws@^6.2.1:
   integrity sha512-GIyAXC2cB7LjvpgMt9EKS2ldqr0MTrORaleiOno6TweZ6r3TKtoFQWay/2PceJ3RuBasOHzXNn5Lrw1X0bEjqA==
   dependencies:
     async-limiter "~1.0.0"
+
+xmldom@^0.1.31:
+  version "0.1.31"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.31.tgz#b76c9a1bd9f0a9737e5a72dc37231cf38375e2ff"
+  integrity sha512-yS2uJflVQs6n+CyjHoaBmVSqIDevTAWrzMmjG1Gc7h1qQ7uVozNhEPJAwZXWyGQ/Gafo3fCwrcaokezLPupVyQ==
 
 xmlhttprequest@1.8.0:
   version "1.8.0"

@@ -101,15 +101,47 @@ exports.onDeleteBoardArticle = functions.region(region).firestore
     }
 
     // remove storage
+    const doc = snap.data()
     const ps = []
     ps.push('boards')
     ps.push(context.params.bid)
-    ps.push(context.params.aid + '-' + snap.data().uid + '.md')
+    ps.push(context.params.aid + '-' + doc.uid + '.md')
 
     await admin.storage().bucket().file(ps.join('/'))
       .delete()
       .catch(e => console.error('storage remove err: ' + e.message))
+
+    const images = []
+    images.push('images')
+    images.push('boards')
+    images.push(context.params.bid)
+    images.push(context.params.aid)
+    return admin.storage().bucket().deleteFiles({
+      prefix: images.join('/')
+    })
   })
+
+exports.remove = functions.region(region).https.onRequest(async (req, res) => {
+  const test = async () => {
+    const images = []
+    images.push('images')
+    images.push('boards')
+    images.push('notice')
+    images.push('1596243879845')
+    return admin.storage().bucket().deleteFiles(
+      { prefix: 'images/boards/notice/1596243879845' }
+    )
+  }
+  test()
+    .then(r => {
+      res.send(r)
+    })
+    .catch(e => {
+      console.error('err')
+      console.log(e.message)
+      res.send(e)
+    })
+})
 
 exports.onCreateBoardComment = functions.region(region).firestore
   .document('boards/{bid}/articles/{aid}/comments/{cid}')
