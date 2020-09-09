@@ -1,8 +1,15 @@
 <template>
-  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card outlined :tile="$vuetify.breakpoint.xs" v-if="board">
+  <v-container v-if="!loaded" fluid>
+    <v-skeleton-loader type="card"></v-skeleton-loader>
+  </v-container>
+  <v-container v-else-if="loaded && !board" fluid>
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판이 없습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+    <v-card outlined :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
-        <!-- <v-chip color="primary" label class="mr-4">{{board.category}}</v-chip> -->
         <v-sheet width="100" class="mr-4">
           <v-select
             :value="getCategory"
@@ -119,7 +126,6 @@
         </v-card>
       </v-dialog>
     </v-card>
-    <v-skeleton-loader type="card" v-else></v-skeleton-loader>
   </v-container>
 </template>
 <script>
@@ -137,7 +143,8 @@ export default {
       board: null,
       loading: false,
       dialog: false,
-      newCheck
+      newCheck,
+      loaded: false
     }
   },
   watch: {
@@ -164,7 +171,9 @@ export default {
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
       const ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
+      this.loaded = false
       this.unsubscribe = ref.onSnapshot(doc => {
+        this.loaded = true
         if (!doc.exists) return this.write()
         const item = doc.data()
         item.createdAt = item.createdAt.toDate()

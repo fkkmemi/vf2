@@ -14,6 +14,11 @@
           <v-icon v-text="$store.state.editable ? 'mdi-eye' : 'mdi-pencil'"></v-icon>
         </v-btn>
       </v-list-item-action>
+      <v-list-item-action>
+        <v-btn @click="$emit('close')" icon>
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-list-item-action>
     </v-list-item>
     <v-divider></v-divider>
 

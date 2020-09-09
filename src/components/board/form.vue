@@ -1,5 +1,13 @@
 <template>
-  <v-container v-if="user && user.level === 0" fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+  <v-container v-if="!loaded" fluid>
+    <v-skeleton-loader type="card"></v-skeleton-loader>
+  </v-container>
+  <v-container v-else-if="loaded && !user || (user && user.level > 0)" fluid>
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판 생성은 관리자만 할 수 있습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-form>
       <v-card :loading="loading" outlined :tile="$vuetify.breakpoint.xs">
         <v-toolbar color="transparent" dense flat>
@@ -77,17 +85,9 @@
 
             </v-card-actions>
           </v-card>
-          <v-card outlined>
-
-          </v-card>
         </v-card-text>
       </v-card>
     </v-form>
-  </v-container>
-  <v-container v-else fluid>
-    <v-alert type="warning" border="left" class="mb-0">
-      게시판이 없습니다
-    </v-alert>
   </v-container>
 </template>
 <script>
@@ -106,7 +106,8 @@ export default {
       loading: false,
       ref: null,
       category: '',
-      tag: ''
+      tag: '',
+      loaded: false
     }
   },
   computed: {
@@ -125,7 +126,9 @@ export default {
   methods: {
     async fetch () {
       this.ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
+      this.loaded = false
       const doc = await this.ref.get()
+      this.loaded = true
       this.exists = doc.exists
       if (this.exists) {
         const item = doc.data()

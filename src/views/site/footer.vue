@@ -2,7 +2,7 @@
   <v-footer app color="primary" dark absolute :footer="footer">
     <v-spacer></v-spacer>
     <div>&copy; {{ new Date().getFullYear() + ' ' + footer }}</div>
-    <v-btn icon @click="openDialog"><v-icon>mdi-pencil</v-icon></v-btn>
+    <v-btn v-if="$store.state.editable" icon @click="openDialog"><v-icon>mdi-pencil</v-icon></v-btn>
     <v-dialog v-model="dialog" max-width="400">
       <v-card>
         <v-card-title>

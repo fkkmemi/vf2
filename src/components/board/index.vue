@@ -1,6 +1,18 @@
 <template>
-  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card outlined :tile="$vuetify.breakpoint.xs" v-if="items.length">
+  <v-container v-if="!loaded" fluid>
+    <v-row>
+      <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="i in 4" :key="i">
+        <v-skeleton-loader type="card"></v-skeleton-loader>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container fluid v-else-if="loaded && !items.length">
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판이 없습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+    <v-card outlined :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
         <v-toolbar-title>게시판 목록</v-toolbar-title>
         <v-spacer/>
@@ -18,7 +30,8 @@
                   v-model="boardId"
                   label="게시판 아이디"
                   placeholder="주소에 사용 될 문자입니다"
-                  outlined />
+                  outlined
+                  hide-details />
               </v-card-text>
               <v-card-actions v-if="boardId">
                 <v-btn
@@ -129,7 +142,8 @@
           <v-col cols="12" sm="6" md="4" lg="3" xl="2"
             v-if="lastDoc">
             <v-container fluid fill-height>
-              <v-btn @click="more"
+              <v-btn
+                @click="more"
                 v-intersect="onIntersect"
                 text
                 color="primary"
@@ -142,13 +156,6 @@
         </v-row>
       </v-card-text>
     </v-card>
-    <v-container v-else fluid>
-      <v-row>
-        <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="i in 4" :key="i">
-          <v-skeleton-loader type="card"></v-skeleton-loader>
-        </v-col>
-      </v-row>
-    </v-container>
   </v-container>
 </template>
 <script>
@@ -170,7 +177,8 @@ export default {
       sort: 'desc',
       boardId: '',
       loading: false,
-      newCheck
+      newCheck,
+      loaded: false
     }
   },
   computed: {
@@ -211,13 +219,15 @@ export default {
       this.ref = this.$firebase.firestore()
         .collection('boards')
         .orderBy(this.order, this.sort).limit(LIMIT)
+      this.loaded = false
       this.unsubscribe = this.ref.onSnapshot(sn => {
+        this.loaded = true
         if (sn.empty) {
           this.items = []
           return
         }
         this.snapshotToItems(sn)
-      })
+      }, console.error)
     },
     async more () {
       if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
