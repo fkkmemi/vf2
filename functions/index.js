@@ -150,10 +150,10 @@ exports.onDeleteMessage = functions.region(region).firestore
     const increment = admin.firestore.FieldValue.increment(-1)
     await db.collection('chats').doc(context.params.roomId).update({ count: increment })
       .catch(e => console.error('chats count update err: ' + e.message))
-    // const doc = snap.data()
-    // const uid = doc.uids.find(d => d !== doc.uid)
-    // await db.collection('users').doc(uid).update({ messageCount: increment })
-    //   .catch(e => console.error('users messageCount update err: ' + e.message))
+    const doc = snap.data()
+    const uid = doc.uids.find(d => d !== doc.uid)
+    await db.collection('users').doc(uid).update({ messageCount: increment })
+      .catch(e => console.error('users messageCount update err: ' + e.message))
   })
 
 exports.onCreateBoard = functions.region(region).firestore

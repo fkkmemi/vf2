@@ -10,7 +10,8 @@ export default new Vuex.Store({
     user: null,
     boardTypeList: localStorage.getItem('boardTypeList') === 'true',
     cached: {},
-    site: null
+    site: null,
+    messageCount: 0
   },
   mutations: {
     setEdit (state, edit) {
@@ -21,6 +22,13 @@ export default new Vuex.Store({
     },
     setUser (state, user) {
       state.user = user
+      const key = `message-count-${user.uid}`
+      state.messageCount = localStorage.getItem(key) || 0
+    },
+    setMessageCount (state, count) {
+      const key = `message-count-${state.user.uid}`
+      localStorage.setItem(key, count)
+      state.messageCount = count
     },
     toggleBoardType (state) {
       state.boardTypeList = !state.boardTypeList

@@ -23,8 +23,8 @@
 
             <v-badge
               v-if="user"
-              :content="user.messageCount || null"
-              :value="user.messageCount || null"
+              :content="messageCount || null"
+              :value="messageCount || null"
               color="success"
               inline
             >
@@ -74,7 +74,11 @@ export default {
     }
   },
   computed: {
-    user () { return this.$store.state.user }
+    user () { return this.$store.state.user },
+    messageCount () {
+      if (!this.user) return 0
+      return this.user.messageCount - this.$store.state.messageCount
+    }
   },
   watch: {
     drawerStart (n) {

@@ -12,8 +12,8 @@
       </template>
       <v-badge
         v-if="user"
-        :content="user.messageCount || null"
-        :value="user.messageCount || null"
+        :content="messageCount || null"
+        :value="messageCount || null"
         color="success"
         overlap
         class="mx-4"
@@ -115,6 +115,10 @@ export default {
     },
     isIndexEnable () {
       return !!this.$index
+    },
+    messageCount () {
+      if (!this.user) return 0
+      return this.user.messageCount - this.$store.state.messageCount
     }
   },
   created () {

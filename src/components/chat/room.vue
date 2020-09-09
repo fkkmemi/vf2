@@ -16,6 +16,17 @@
       </v-tooltip>
     </v-toolbar>
     <v-divider/>
+    <v-list-item v-if="firstDoc">
+      <v-btn
+        @click="more"
+        v-intersect="onIntersect"
+        text
+        color="primary"
+        block
+        :loading="loading">
+        <v-icon>mdi-dots-horizontal</v-icon>더보기
+      </v-btn>
+    </v-list-item>
     <v-container fluid v-for="(item, i) in items" :key="i" class="">
       <template v-if="item.uid === user.uid">
         <v-row no-gutters>
@@ -56,7 +67,11 @@
   </v-card>
 </template>
 <script>
+import { head } from 'lodash'
 import DisplayTime from '@/components/display-time'
+const itemsSort = (before, after) => {
+  return Number(before.id) - Number(after.id)
+}
 export default {
   components: { DisplayTime },
   props: ['selectedUser'],
@@ -67,7 +82,11 @@ export default {
   data () {
     return {
       items: [],
-      unsubscribe: null
+      unsubscribe: null,
+      firstDoc: null,
+      ref: null,
+      loading: false,
+      loaded: false
     }
   },
   mounted () {
@@ -98,19 +117,51 @@ export default {
       }
       this.subscribe()
     },
+    snapshotToItems (sn) {
+      this.firstDoc = sn.docs.length >= 4 ? head(sn.docs) : null
+      sn.docs.forEach(doc => {
+        const findItem = this.items.find(item => doc.id === item.id)
+        const item = doc.data()
+        if (!findItem) {
+          item.id = doc.id
+          item.createdAt = item.createdAt.toDate()
+          this.items.push(item)
+        }
+      })
+      this.items.sort(itemsSort)
+    },
     subscribe () {
-      this.unsubscribe = this.$firebase.firestore()
+      this.ref = this.$firebase.firestore()
         .collection('chats').doc(this.uids.join('-'))
         .collection('messages')
-        .limit(1000)
+        .orderBy('createdAt')
+      this.unsubscribe = this.ref
+        .limitToLast(4)
         .onSnapshot(sn => {
-          this.items = sn.docs.map(doc => {
-            const item = doc.data()
-            item.id = doc.id
-            item.createdAt = item.createdAt.toDate()
-            return item
-          })
+          this.loaded = true
+          // this.items = sn.docs.map(doc => {
+          //   const item = doc.data()
+          //   item.id = doc.id
+          //   item.createdAt = item.createdAt.toDate()
+          //   return item
+          // })
+          this.snapshotToItems(sn)
+          this.$store.commit('setMessageCount', this.user.messageCount)
         }, (e) => console.error('messages subscribe err: ' + e.message))
+    },
+    async more () {
+      if (!this.loaded) return
+      if (!this.firstDoc) throw Error('더이상 데이터가 없습니다')
+      this.loading = true
+      try {
+        const sn = await this.ref.endBefore(this.firstDoc).limitToLast(4).get()
+        this.snapshotToItems(sn)
+      } finally {
+        this.loading = false
+      }
+    },
+    onIntersect (entries, observer, isIntersecting) {
+      if (isIntersecting) this.more()
     }
   }
 }
