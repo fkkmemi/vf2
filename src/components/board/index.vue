@@ -36,6 +36,7 @@
           <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="(item) in items" :key="item.id">
             <v-card height="100%">
               <v-subheader>
+                <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
                 {{item.title}}
                 <v-spacer/>
                 <template v-if="user && user.level === 0">
@@ -55,6 +56,36 @@
               <v-card-text>
                 <v-alert border="left" type="info" outlined class="white-space">{{item.description}}</v-alert>
               </v-card-text>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    작성자
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    <display-user :user="item.user"></display-user>
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    작성일
+                  </v-list-item-title>
+                  <v-list-item-subtitle class="font-italic">
+                    <display-time :time="item.createdAt"></display-time>
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    수정일
+                  </v-list-item-title>
+                  <v-list-item-subtitle class="font-italic">
+                    <display-time :time="item.updatedAt"></display-time>
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>
@@ -111,14 +142,24 @@
         </v-row>
       </v-card-text>
     </v-card>
-    <v-skeleton-loader v-else type="card"></v-skeleton-loader>
+    <v-container v-else fluid>
+      <v-row>
+        <v-col cols="12" sm="6" md="4" lg="3" xl="2" v-for="i in 4" :key="i">
+          <v-skeleton-loader type="card"></v-skeleton-loader>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 <script>
 import { last } from 'lodash'
+import DisplayTime from '@/components/display-time'
+import DisplayUser from '@/components/display-user'
+import newCheck from '@/util/newCheck'
 const LIMIT = 5
 
 export default {
+  components: { DisplayTime, DisplayUser },
   data () {
     return {
       unsubscribe: null,
@@ -128,7 +169,8 @@ export default {
       order: 'createdAt',
       sort: 'desc',
       boardId: '',
-      loading: false
+      loading: false,
+      newCheck
     }
   },
   computed: {

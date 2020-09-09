@@ -9,14 +9,15 @@
             :items="board.categories"
             @change="changeCategory"
             dense
-            solo
-            background-color="info"
-            dark
+            outlined
             single-line
             flat
             hide-details/>
         </v-sheet>
-        <v-toolbar-title class="hidden-xs-only" v-text="board.title"></v-toolbar-title>
+        <template v-if="!$vuetify.breakpoint.xs">
+          <v-icon color="error" left v-if="newCheck(board.updatedAt)">mdi-fire</v-icon>
+          <span v-text="board.title"></span>
+        </template>
 
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
@@ -28,7 +29,10 @@
         </template>
       </v-toolbar>
       <v-divider/>
-      <v-card-title class="hidden-sm-and-up" v-text="board.title"></v-card-title>
+      <v-card-title v-if="$vuetify.breakpoint.xs">
+        <v-icon color="error" left v-if="newCheck(board.updatedAt)">mdi-fire</v-icon>
+        <span v-text="board.title"></span>
+      </v-card-title>
       <board-article :boardId="boardId" :board="board" :category="category"></board-article>
       <v-dialog v-model="dialog" max-width="300">
         <v-card>
@@ -122,6 +126,7 @@
 import BoardArticle from './article/index'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+import newCheck from '@/util/newCheck'
 
 export default {
   components: { BoardArticle, DisplayTime, DisplayUser },
@@ -131,7 +136,8 @@ export default {
       unsubscribe: null,
       board: null,
       loading: false,
-      dialog: false
+      dialog: false,
+      newCheck
     }
   },
   watch: {

@@ -14,7 +14,10 @@
             {{article.category}}
             <v-icon v-if="!category" right>mdi-menu-right</v-icon>
           </v-btn>
-          <span class="hidden-xs-only" v-text="article.title"></span>
+          <template v-if="!$vuetify.breakpoint.xs">
+            <v-icon color="error" left v-if="newCheck(article.updatedAt)">mdi-fire</v-icon>
+            <span v-text="article.title"></span>
+          </template>
         </v-toolbar-title>
         <v-spacer/>
         <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
@@ -24,7 +27,10 @@
         <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-divider/>
-      <v-card-title class="hidden-sm-and-up">{{article.title}}</v-card-title>
+      <v-card-title v-if="$vuetify.breakpoint.xs">
+        <v-icon color="error" left v-if="newCheck(article.updatedAt)">mdi-fire</v-icon>
+        <span v-text="article.title"></span>
+      </v-card-title>
       <v-card-text>
         <viewer v-if="content" :initialValue="content"></viewer>
         <v-container v-else>
@@ -107,6 +113,7 @@ import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
 import DisplayUser from '@/components/display-user'
+import newCheck from '@/util/newCheck'
 
 export default {
   components: { DisplayTime, DisplayComment, DisplayUser },
@@ -117,7 +124,8 @@ export default {
       ref: null,
       unsubscribe: null,
       article: null,
-      doc: null
+      doc: null,
+      newCheck
     }
   },
   computed: {
