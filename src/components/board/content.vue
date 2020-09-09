@@ -186,7 +186,7 @@ export default {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
     },
     async articleWrite () {
-      this.$router.push({ path: this.$route.path + '/new', query: { action: 'write' } })
+      this.$router.push({ path: this.$route.path + '/' + new Date().getTime(), query: { action: 'write' } })
     },
     changeCategory (item) {
       if (item === '전체') this.$router.push(this.$route.path)

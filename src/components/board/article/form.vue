@@ -39,9 +39,18 @@
               <v-text-field v-model="form.title" outlined label="제목" hide-details></v-text-field>
             </v-col>
             <v-col cols="12">
-              <editor v-if="articleId === 'new'" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" height="400px" :options="{ }"></editor>
+              <editor
+                v-if="!exists"
+                :initialValue="form.content"
+                ref="editor" initialEditType="wysiwyg" height="400px"
+                :options="options"
+                ></editor>
               <template v-else>
-                <editor v-if="form.content" :initialValue="form.content" ref="editor" initialEditType="wysiwyg" height="400px" :options="{ }"></editor>
+                <editor
+                  v-if="form.content"
+                  :initialValue="form.content"
+                  ref="editor" initialEditType="wysiwyg" height="400px"
+                  :options="options"></editor>
                 <v-container v-else>
                   <v-row justify="center" align="center">
                     <v-progress-circular indeterminate></v-progress-circular>
@@ -74,14 +83,21 @@ export default {
         category: '',
         tags: [],
         title: '',
-        content: ''
+        content: '',
+        images: []
       },
       exists: false,
       loading: false,
       ref: null,
       article: null,
       board: null,
-      loaded: false
+      loaded: false,
+      options: {
+        language: 'ko',
+        hooks: {
+          addImageBlobHook: this.addImageBlobHook
+        }
+      }
     }
   },
   computed: {
@@ -109,7 +125,7 @@ export default {
       const docBoard = await this.ref.get()
       this.loaded = true
       this.board = docBoard.data()
-      if (this.articleId === 'new') return
+      // if (this.articleId === 'new') return
       const doc = await this.ref.collection('articles').doc(this.articleId).get()
       this.exists = doc.exists
       if (!this.exists) return
@@ -118,6 +134,8 @@ export default {
       this.form.title = item.title
       this.form.category = item.category
       this.form.tags = item.tags
+      this.form.images = item.images
+      if (!item.images) this.form.images = []
       const { data } = await axios.get(item.url)
       this.form.content = data
     },
@@ -129,20 +147,19 @@ export default {
       if (!md) throw Error('내용은 필수 항목입니다')
       this.loading = true
       try {
-        const createdAt = new Date()
         const doc = {
           title: this.form.title,
           category: this.form.category,
           tags: this.form.tags,
-          updatedAt: createdAt,
+          images: this.form.images,
+          updatedAt: new Date(),
           summary: getSummary(md, 300, 'data:image')
         }
-        if (this.articleId === 'new') {
-          const id = createdAt.getTime().toString()
-          const fn = id + '-' + this.fireUser.uid + '.md'
+        if (!this.exists) {
+          const fn = this.articleId + '-' + this.fireUser.uid + '.md'
           const sn = await this.$firebase.storage().ref().child('boards').child(this.boardId).child(fn).putString(md)
           doc.url = await sn.ref.getDownloadURL()
-          doc.createdAt = createdAt
+          doc.createdAt = new Date()
           doc.commentCount = 0
           doc.readCount = 0
           doc.uid = this.$store.state.fireUser.uid
@@ -153,7 +170,7 @@ export default {
           }
           doc.likeCount = 0
           doc.likeUids = []
-          await this.ref.collection('articles').doc(id).set(doc)
+          await this.ref.collection('articles').doc(this.articleId).set(doc)
           this.$router.push('/board/' + this.boardId)
         } else {
           const fn = this.articleId + '-' + this.article.uid + '.md'
@@ -164,6 +181,40 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    async imageUpload (file) {
+      if (!this.fireUser) throw Error('로그인이 필요합니다')
+      const id = new Date().getTime() + '-' + this.fireUser.uid + '-' + file.name
+      const sn = await this.$firebase.storage().ref()
+        .child('images').child('boards')
+        .child(this.boardId).child(this.articleId).child(id)
+        // .child('images').child('public').child(fn)
+        .put(file)
+      const url = await sn.ref.getDownloadURL()
+      const image = {
+        origin: {
+          name: file.name,
+          size: file.size,
+          id: id,
+          url: url
+        },
+        thumbnamil: {
+          name: '',
+          size: 0,
+          id: '',
+          url: ''
+        }
+      }
+      this.form.images.push(image)
+      return url
+    },
+
+    addImageBlobHook (blob, callback) {
+      this.imageUpload(blob)
+        .then(url => {
+          callback(url, 'img')
+        })
+        .catch(console.error)
     }
   }
 }

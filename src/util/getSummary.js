@@ -11,7 +11,7 @@ export default (text, limit, filter) => {
   const s = ss.join('\n')
   if (s.length > limit) {
     summary = s.substr(0, limit)
-    summary += '\n...'
+    summary += ' ...'
   } else {
     summary = s
   }
