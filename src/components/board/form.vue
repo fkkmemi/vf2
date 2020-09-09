@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+  <v-container v-if="user && user.level === 0" fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
     <v-form>
       <v-card :loading="loading" outlined :tile="$vuetify.breakpoint.xs">
         <v-toolbar color="transparent" dense flat>
@@ -42,7 +42,6 @@
                   @keypress.enter="saveCategory"
                 />
               </div>
-
             </v-card-actions>
           </v-card>
         </v-card-text>
@@ -84,6 +83,11 @@
         </v-card-text>
       </v-card>
     </v-form>
+  </v-container>
+  <v-container v-else fluid>
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판이 없습니다
+    </v-alert>
   </v-container>
 </template>
 <script>
@@ -154,8 +158,8 @@ export default {
             photoURL: this.$store.state.user.photoURL,
             displayName: this.$store.state.user.displayName
           }
-          form.categories = ['일반']
-          form.tags = ['vue', 'firebase']
+          // form.categories = ['일반']
+          // form.tags = ['vue', 'firebase']
           await this.ref.set(form)
         } else {
           await this.ref.update(form)

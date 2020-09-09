@@ -104,7 +104,7 @@
               <v-list-item-title>
                 설명
               </v-list-item-title>
-              <v-list-item-subtitle class="comment" v-text="board.description"></v-list-item-subtitle>
+              <v-list-item-subtitle class="white-space" v-text="board.description"></v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-divider/>
@@ -180,8 +180,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.white-space {
-  white-space: pre-wrap;
-}
-</style>
