@@ -11,11 +11,49 @@
     <!-- <v-divider v-if="xs"/> -->
     <v-card :outlined="!widget && !xs" :tile="xs" :flat="(xs && !widget) || !widget">
       <v-toolbar color="transparent" dense flat>
-        <span>
+        <span v-if="sort === 'read'">
+          조회수 순위
+        </span>
+        <span v-else-if="sort === 'comment'">
+          댓글수 순위
+        </span>
+        <span v-else-if="sort === 'like'">
+          좋아요수 순위
+        </span>
+        <span v-else>
           전체게시물
         </span>
         <v-spacer/>
         <template v-if="!widget">
+          <v-chip-group active-class="primary--text">
+            <v-chip
+              exact
+              small
+              outlined
+              v-for="s in sortItems"
+              :key="s.value"
+              :to="s.to">
+              <v-icon small v-text="s.icon"></v-icon>
+            </v-chip>
+          </v-chip-group>
+          <!-- <v-btn-toggle
+            color="red"
+            rounded
+            dense
+          >
+            <v-btn>
+              <v-icon>mdi-format-align-left</v-icon>
+            </v-btn>
+            <v-btn>
+              <v-icon>mdi-format-align-center</v-icon>
+            </v-btn>
+            <v-btn>
+              <v-icon>mdi-format-align-right</v-icon>
+            </v-btn>
+            <v-btn>
+              <v-icon>mdi-format-align-justify</v-icon>
+            </v-btn>
+          </v-btn-toggle> -->
           <v-btn icon @click="$store.commit('toggleBoardType')">
             <v-icon v-text="$store.state.boardTypeList ? 'mdi-format-list-bulleted' : 'mdi-text-box-outline'"></v-icon>
           </v-btn>
@@ -62,7 +100,7 @@ import NormalItems from './normal-items'
 import CompactItems from './compact-items'
 export default {
   components: { NormalItems, CompactItems },
-  props: ['boardId', 'category', 'uid', 'widget'],
+  props: ['boardId', 'category', 'uid', 'widget', 'sort'],
   data () {
     return {
       loaded: false,
@@ -71,7 +109,13 @@ export default {
       ref: this.$firebase.firestore().collection('articles'),
       lastDoc: null,
       show: true,
-      unsubscribe: null
+      unsubscribe: null,
+      sortItems: [
+        { value: '', icon: 'mdi-restore', to: '/article' },
+        { value: 'read', icon: 'mdi-eye', to: '/article?sort=read' },
+        { value: 'comment', icon: 'mdi-comment', to: '/article?sort=comment' },
+        { value: 'like', icon: 'mdi-thumb-up', to: '/article?sort=like' }
+      ]
     }
   },
   computed: {
@@ -88,9 +132,24 @@ export default {
     },
     query () {
       let query = this.ref
-      if (this.boardId) query = query.where('boardId', '==', this.boardId)
-      else if (this.uid) query = query.where('uid', '==', this.uid)
-      query = query.orderBy('createdAt', 'desc')
+      if (this.boardId) {
+        query = query.where('boardId', '==', this.boardId)
+        query = query.orderBy('createdAt', 'desc')
+      } else if (this.uid) {
+        query = query.where('uid', '==', this.uid)
+        query = query.orderBy('createdAt', 'desc')
+      } else {
+        if (this.sort === 'read') {
+          query = query.where('readCount', '>', 0)
+          query = query.orderBy('readCount', 'desc')
+        } else if (this.sort === 'like') {
+          query = query.where('likeCount', '>', 0)
+          query = query.orderBy('likeCount', 'desc')
+        } else if (this.sort === 'comment') {
+          query = query.where('commentCount', '>', 0)
+          query = query.orderBy('commentCount', 'desc')
+        } else query = query.orderBy('createdAt', 'desc')
+      }
       if (this.lastDoc) query = query.startAfter(this.lastDoc)
       return query
     }
@@ -100,6 +159,9 @@ export default {
       this.subscribe()
     },
     uid () {
+      this.subscribe()
+    },
+    sort () {
       this.subscribe()
     }
   },
@@ -155,9 +217,8 @@ export default {
       })
     },
     subscribe () {
-      this.lastDoc = null
-      this.items = []
       this.destroy()
+      this.lastDoc = null
       this.items = []
       this.unsubscribe = this.query.limit(this.limit).onSnapshot(sn => {
         this.loaded = true

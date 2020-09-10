@@ -14,10 +14,11 @@
         dense
         outlined/>
     </v-card-actions>
-
-    <v-list-item>
-
-    </v-list-item>
+    <v-sheet
+      height="120"
+      color="transparent"
+      v-if="$vuetify.breakpoint.xs">
+    </v-sheet>
   </v-card>
 </template>
 <script>

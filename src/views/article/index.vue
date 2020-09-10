@@ -1,5 +1,5 @@
 <template>
-  <articles :boardId="board" :category="category" :uid="uid" />
+  <articles :boardId="board" :category="category" :uid="uid" :sort="sort" />
 </template>
 <script>
 import Articles from '@/components/article'
@@ -15,6 +15,9 @@ export default {
     },
     uid () {
       return this.$route.query.uid
+    },
+    sort () {
+      return this.$route.query.sort
     }
   },
   created () {

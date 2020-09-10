@@ -13,8 +13,11 @@
         </v-btn>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
-    </v-list-item>
+    <v-sheet
+      height="120"
+      color="transparent"
+      v-if="$vuetify.breakpoint.xs">
+    </v-sheet>
   </v-list>
 </template>
 <script>
