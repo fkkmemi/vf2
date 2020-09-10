@@ -15,9 +15,10 @@
   <v-container v-else fluid :class="xs ? 'pa-0' : ''">
     <v-row :no-gutters="xs">
       <v-col cols="12" :md="!xs && !isWidget ? 9 : null" :lg="!xs && !isWidget ? 10 : null">
-        <v-card :outlined="!isWidget" :tile="xs">
+        <!-- <v-divider v-if="xs"/> -->
+        <v-card :outlined="!xs && !isWidget" :flat="(xs && !isWidget) || !isWidget" :tile="xs">
           <v-toolbar color="transparent" dense flat>
-            <v-sheet :width="120" class="mr-4">
+            <v-sheet :width="140" class="mr-4">
               <v-select
                 :value="getCategory"
                 :items="categories"

@@ -22,6 +22,7 @@ export default new Vuex.Store({
     },
     setUser (state, user) {
       state.user = user
+      if (!user) return
       const key = `message-count-${user.uid}`
       state.messageCount = localStorage.getItem(key) || 0
     },

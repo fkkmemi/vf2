@@ -14,6 +14,10 @@
         dense
         outlined/>
     </v-card-actions>
+
+    <v-list-item>
+
+    </v-list-item>
   </v-card>
 </template>
 <script>

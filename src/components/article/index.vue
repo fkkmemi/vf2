@@ -8,7 +8,8 @@
     </v-alert>
   </v-container>
   <v-container v-else fluid :class="xs ? 'pa-0' : ''">
-    <v-card :outlined="!widget || (widget && xs)" :tile="xs" :flat="xs || !widget">
+    <!-- <v-divider v-if="xs"/> -->
+    <v-card :outlined="!widget && !xs" :tile="xs" :flat="(xs && !widget) || !widget">
       <v-toolbar color="transparent" dense flat>
         <span>
           전체게시물
@@ -30,24 +31,26 @@
       <template v-if="show">
         <v-divider/>
         <v-expand-transition>
-          <compact-items
-            v-if="$store.state.boardTypeList || widget"
-            :items="items"
-            :loading="loading"
-            :lastDoc="lastDoc"
-            @more="fetch"
-            :uid="uid"
-            :boardId="boardId"
-            :widget="widget"/>
-          <normal-items
-            v-else
-            :items="items"
-            :loading="loading"
-            :lastDoc="lastDoc"
-            @more="fetch"
-            :uid="uid"
-            :boardId="boardId"
-            :widget="widget"/>
+          <v-sheet :color="$vuetify.theme.dark && !xs ? 'black' : 'transparent'">
+            <compact-items
+              v-if="$store.state.boardTypeList || widget"
+              :items="items"
+              :loading="loading"
+              :lastDoc="lastDoc"
+              @more="fetch"
+              :uid="uid"
+              :boardId="boardId"
+              :widget="widget"/>
+            <normal-items
+              v-else
+              :items="items"
+              :loading="loading"
+              :lastDoc="lastDoc"
+              @more="fetch"
+              :uid="uid"
+              :boardId="boardId"
+              :widget="widget"/>
+          </v-sheet>
         </v-expand-transition>
       </template>
     </v-card>
@@ -65,9 +68,10 @@ export default {
       loaded: false,
       loading: false,
       items: [],
-      ref: null,
+      ref: this.$firebase.firestore().collection('articles'),
       lastDoc: null,
-      show: true
+      show: true,
+      unsubscribe: null
     }
   },
   computed: {
@@ -81,23 +85,34 @@ export default {
     },
     xs () {
       return this.$vuetify.breakpoint.xs
+    },
+    query () {
+      let query = this.ref
+      if (this.boardId) query = query.where('boardId', '==', this.boardId)
+      else if (this.uid) query = query.where('uid', '==', this.uid)
+      query = query.orderBy('createdAt', 'desc')
+      if (this.lastDoc) query = query.startAfter(this.lastDoc)
+      return query
     }
   },
   watch: {
     boardId () {
-      this.items = []
-      this.fetch()
+      this.subscribe()
     },
     uid () {
-      this.items = []
-      this.fetch()
+      this.subscribe()
     }
   },
   mounted () {
-    this.items = []
-    this.fetch()
+    this.subscribe()
+  },
+  destroyed () {
+    this.destroy()
   },
   methods: {
+    destroy () {
+      if (this.unsubscribe) this.unsubscribe()
+    },
     snapshotToItems (sn) {
       if (sn.empty) {
         this.lastDoc = null
@@ -139,20 +154,24 @@ export default {
         }
       })
     },
+    subscribe () {
+      this.lastDoc = null
+      this.items = []
+      this.destroy()
+      this.items = []
+      this.unsubscribe = this.query.limit(this.limit).onSnapshot(sn => {
+        this.loaded = true
+        this.snapshotToItems(sn)
+      })
+    },
     async fetch () {
-      this.ref = this.$firebase.firestore().collection('articles')
       if (this.loading) return
       try {
         this.loading = true
-        let query = this.ref
-        if (this.boardId) query = query.where('boardId', '==', this.boardId)
-        else if (this.uid) query = query.where('uid', '==', this.uid)
-        query = query.orderBy('createdAt', 'desc')
-        if (this.lastDoc) query = query.startAfter(this.lastDoc)
-        const sn = await query.limit(this.limit).get()
+        const sn = await this.query.limit(this.limit).get()
         this.snapshotToItems(sn)
       } finally {
-        this.loaded = true
+        // this.loaded = true
         this.loading = false
       }
     }

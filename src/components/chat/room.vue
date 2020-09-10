@@ -8,7 +8,7 @@
       <v-spacer/>
       <v-tooltip bottom>
         <template v-slot:activator="{on}">
-          <v-btn v-on="on" icon :to="`/user/${selectedUser.id}`">
+          <v-btn v-on="on" icon :to="`/user/${selectedUser.uid}`">
             <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
           </v-btn>
         </template>

@@ -1,12 +1,11 @@
 <template>
   <v-hover v-slot:default="{ hover }" open-delay="300">
     <v-card
-      height="100%"
-      :class="$vuetify.breakpoint.xs ? null : cardClass(hover)"
-      :elevation="$vuetify.breakpoint.xs ? null : hover ? 16 : 0"
-      :flat="$vuetify.breakpoint.xs"
-      :tile="$vuetify.breakpoint.xs"
-      :outlined="!$vuetify.breakpoint.xs"
+      :class="xs ? null : cardClass(hover)"
+      :elevation="xs ? null : hover ? 16 : 0"
+      :flat="xs"
+      :tile="xs"
+      :outlined="!xs"
       @click="$router.push(`/board/${item.boardId}/${item.articleId}`)">
       <v-card-subtitle class="text--primary body-1 d-flex align-center">
         <v-chip color="accent" outlined small class="mr-4">{{index}}</v-chip>
@@ -55,6 +54,9 @@ export default {
   computed: {
     fireUser () {
       return this.$store.state.fireUser
+    },
+    xs () {
+      return this.$vuetify.breakpoint.xs
     }
   },
   methods: {
@@ -66,7 +68,7 @@ export default {
       addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
     },
     cardClass (hover) {
-      if (this.$vuetify.breakpoint.xs) return 'ma-0'
+      if (this.xs) return 'ma-0'
       return hover ? 'ma-0 pa-1' : 'ma-1'
     }
   }

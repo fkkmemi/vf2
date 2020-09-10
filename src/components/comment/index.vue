@@ -7,8 +7,9 @@
       데이터가 없습니다
     </v-alert>
   </v-container>
-  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card :outlined="!isWidget" :tile="$vuetify.breakpoint.xs" :flat="$vuetify.breakpoint.xs">
+  <v-container v-else fluid :class="xs ? 'pa-0' : ''">
+    <!-- <v-divider v-if="xs"/> -->
+    <v-card :outlined="!isWidget && !xs" :tile="xs" :flat="xs">
       <v-toolbar color="transparent" dense flat>
         <span>
           전체댓글
@@ -20,7 +21,11 @@
       </v-toolbar>
       <template v-if="show">
         <v-divider/>
-        <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
+        <v-expand-transition>
+          <v-sheet :color="$vuetify.theme.dark && !xs ? 'black' : 'transparent'">
+            <items :items="items" :loading="loading" :lastDoc="lastDoc" @more="fetch" :uid="uid"/>
+          </v-sheet>
+        </v-expand-transition>
       </template>
     </v-card>
   </v-container>
@@ -36,31 +41,43 @@ export default {
       loaded: false,
       loading: false,
       items: [],
-      ref: null,
+      ref: this.$firebase.firestore().collection('comments'),
       lastDoc: null,
-      show: true
+      show: true,
+      unsubscribe: null
     }
   },
   computed: {
+    xs () {
+      return this.$vuetify.breakpoint.xs
+    },
     limit () {
       const { xs, sm, md, lg, xl } = this.$vuetify.breakpoint
       if (xs || sm) return 2
       if (md) return 3
       if (lg || xl) return 4
       return 4
+    },
+    query () {
+      let query = this.ref
+      if (this.uid) query = query.where('uid', '==', this.uid)
+      query = query.orderBy('createdAt', 'desc')
+      if (this.lastDoc) query = query.startAfter(this.lastDoc)
+      return query
     }
   },
   watch: {
     uid () {
-      this.lastDoc = null
-      this.items = []
-      this.fetch()
+      this.subscribe()
     }
   },
   mounted () {
-    this.fetch()
+    this.subscribe()
   },
   methods: {
+    destroy () {
+      if (this.unsubscribe) this.unsubscribe()
+    },
     snapshotToItems (sn) {
       if (sn.empty) {
         this.lastDoc = null
@@ -84,19 +101,22 @@ export default {
         }
       })
     },
+    subscribe () {
+      this.lastDoc = null
+      this.items = []
+      this.destroy()
+      this.unsubscribe = this.query.limit(this.limit).onSnapshot(sn => {
+        this.loaded = true
+        this.snapshotToItems(sn)
+      })
+    },
     async fetch () {
-      this.ref = this.$firebase.firestore().collection('comments')
       if (this.loading) return
       try {
         this.loading = true
-        let query = this.ref
-        if (this.uid) query = query.where('uid', '==', this.uid)
-        query = query.orderBy('createdAt', 'desc')
-        if (this.lastDoc) query = query.startAfter(this.lastDoc)
-        const sn = await query.limit(this.limit).get()
+        const sn = await this.query.limit(this.limit).get()
         this.snapshotToItems(sn)
       } finally {
-        this.loaded = true
         this.loading = false
       }
     }

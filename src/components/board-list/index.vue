@@ -17,75 +17,76 @@
         <v-toolbar-title>게시판 목록</v-toolbar-title>
         <v-spacer/>
       </v-toolbar>
-        <v-sheet :color="$vuetify.theme.dark ? 'black' : 'transparent'">
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" sm="4" md="3" lg="2" xl="1" v-if="user && user.level === 0">
-                <v-card height="100%">
-                  <v-subheader>
-                    새로운 게시판 추가
-                  </v-subheader>
-                  <v-divider/>
-                  <v-card-text>
-                    <v-text-field
-                      v-model="boardId"
-                      label="게시판 아이디"
-                      placeholder="주소에 사용 될 문자입니다"
-                      outlined
-                      hide-details />
-                  </v-card-text>
-                  <v-card-actions v-if="boardId">
-                    <v-btn
-                      :to="`/board/${boardId}`"
-                      x-large
-                      color="primary"
-                      text
-                      block>
-                      <v-icon left>mdi-plus</v-icon>
-                      추가
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-col>
-              <v-col cols="12" sm="4" md="3" lg="2" xl="1" v-for="(item) in items" :key="item.id">
-                <v-card height="100%">
-                  <v-subheader>
-                    <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
-                    {{item.id}}
-                    <v-spacer/>
-                    <template v-if="user && user.level === 0">
-                      <v-btn
-                        icon
-                        :to="`/board/${item.id}?&action=write`">
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn
-                        icon
-                        @click="remove(item)">
-                        <v-icon>mdi-delete</v-icon>
-                      </v-btn>
-                    </template>
-                  </v-subheader>
-                  <v-divider/>
-                  <board-info :board="item"/>
-                </v-card>
-              </v-col>
-              <v-col cols="12" sm="4" md="3" lg="2" xl="1"
-                v-if="lastDoc">
-                <v-container fluid fill-height>
+      <v-divider/>
+      <v-sheet :color="$vuetify.theme.dark ? 'black' : 'transparent'">
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" sm="4" md="3" lg="2" xl="1" v-if="user && user.level === 0">
+              <v-card height="100%">
+                <v-subheader>
+                  새로운 게시판 추가
+                </v-subheader>
+                <v-divider/>
+                <v-card-text>
+                  <v-text-field
+                    v-model="boardId"
+                    label="게시판 아이디"
+                    placeholder="주소에 사용 될 문자입니다"
+                    outlined
+                    hide-details />
+                </v-card-text>
+                <v-card-actions v-if="boardId">
                   <v-btn
-                    @click="more"
-                    v-intersect="onIntersect"
-                    text
+                    :to="`/board/${boardId}`"
+                    x-large
                     color="primary"
-                    block
-                    :loading="loading">
-                    <v-icon>mdi-dots-horizontal</v-icon>더보기
+                    text
+                    block>
+                    <v-icon left>mdi-plus</v-icon>
+                    추가
                   </v-btn>
-                </v-container>
-              </v-col>
-            </v-row>
-          </v-card-text>
+                </v-card-actions>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="4" md="3" lg="2" xl="1" v-for="(item) in items" :key="item.id">
+              <v-card height="100%">
+                <v-subheader>
+                  <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
+                  {{item.id}}
+                  <v-spacer/>
+                  <template v-if="user && user.level === 0">
+                    <v-btn
+                      icon
+                      :to="`/board/${item.id}?&action=write`">
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn
+                      icon
+                      @click="remove(item)">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </template>
+                </v-subheader>
+                <v-divider/>
+                <board-info :board="item"/>
+              </v-card>
+            </v-col>
+            <v-col cols="12" sm="4" md="3" lg="2" xl="1"
+              v-if="lastDoc">
+              <v-container fluid fill-height>
+                <v-btn
+                  @click="more"
+                  v-intersect="onIntersect"
+                  text
+                  color="primary"
+                  block
+                  :loading="loading">
+                  <v-icon>mdi-dots-horizontal</v-icon>더보기
+                </v-btn>
+              </v-container>
+            </v-col>
+          </v-row>
+        </v-card-text>
       </v-sheet>
     </v-card>
   </v-container>

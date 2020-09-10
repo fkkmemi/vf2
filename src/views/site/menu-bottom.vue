@@ -1,17 +1,21 @@
 <template>
-  <v-list-item>
-    <v-list-item-content></v-list-item-content>
-    <v-list-item-action>
-      <v-btn @click="$store.commit('setEdit', !$store.state.editable)" icon>
-        <v-icon v-text="$store.state.editable ? 'mdi-exit-to-app' : 'mdi-tools'"></v-icon>
-      </v-btn>
-    </v-list-item-action>
-    <v-list-item-action>
-      <v-btn @click="toggleDark" icon>
-        <v-icon>mdi-brightness-6</v-icon>
-      </v-btn>
-    </v-list-item-action>
-  </v-list-item>
+  <v-list class="py-0">
+    <v-list-item>
+      <v-list-item-content></v-list-item-content>
+      <v-list-item-action>
+        <v-btn @click="$store.commit('setEdit', !$store.state.editable)" icon>
+          <v-icon v-text="$store.state.editable ? 'mdi-exit-to-app' : 'mdi-tools'"></v-icon>
+        </v-btn>
+      </v-list-item-action>
+      <v-list-item-action>
+        <v-btn @click="toggleDark" icon>
+          <v-icon>mdi-brightness-6</v-icon>
+        </v-btn>
+      </v-list-item-action>
+    </v-list-item>
+    <v-list-item>
+    </v-list-item>
+  </v-list>
 </template>
 <script>
 export default {

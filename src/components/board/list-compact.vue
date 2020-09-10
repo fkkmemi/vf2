@@ -1,5 +1,5 @@
 <template>
-  <v-list>
+  <v-list class="py-0">
     <template v-for="(item, i) in items">
       <v-list-item :three-line="!isWidget" :key="item.id" @click="goTo(item)" :ref="item.id">
         <v-list-item-content>
