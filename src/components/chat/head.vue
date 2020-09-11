@@ -2,7 +2,7 @@
   <v-toolbar color="primary" dark dense>
     <v-toolbar-title>채팅</v-toolbar-title>
     <v-spacer/>
-    <v-btn @click="$emit('lock', !permanent)" icon>
+    <v-btn @click="$emit('lock', !permanent)" icon v-if="!$vuetify.breakpoint.xs">
       <v-icon small v-text="permanent ? 'mdi-pin' : 'mdi-pin-off'"></v-icon>
     </v-btn>
     <v-btn @click="$emit('close')" icon>

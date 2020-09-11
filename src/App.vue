@@ -69,13 +69,13 @@
 </template>
 
 <script>
-import SiteTitle from '@/views/site/title'
-import SiteFooter from '@/views/site/footer'
-import SiteMenu from '@/views/site/menu'
-import SiteMenuBottom from '@/views/site/menu-bottom'
-import SiteSign from '@/views/site/sign'
-import SiteSearch from '@/views/site/search'
-import BannerEmailConfirm from '@/components/banner-email-confirm'
+import SiteTitle from '@/components/site/title'
+import SiteFooter from '@/components/site/footer'
+import SiteMenu from '@/components/site/menu'
+import SiteMenuBottom from '@/components/site/menu-bottom'
+import SiteSign from '@/components/site/sign'
+import SiteSearch from '@/components/site/search'
+import BannerEmailConfirm from '@/components/site/banner-email-confirm'
 import Chat from '@/components/chat'
 
 export default {

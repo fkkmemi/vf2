@@ -230,6 +230,7 @@ export default {
     }
   },
   async created () {
+    console.log(this.$route)
     this.subscribe()
   },
   destroyed () {

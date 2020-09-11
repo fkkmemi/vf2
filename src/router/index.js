@@ -27,6 +27,11 @@ const routes = [
     component: () => import('@/views/admin/user')
   },
   {
+    path: '/admin/indexing',
+    name: 'admin-indexing',
+    component: () => import('@/views/admin/indexing')
+  },
+  {
     path: '/search',
     component: () => import('@/views/search')
   },

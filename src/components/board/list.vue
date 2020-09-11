@@ -47,6 +47,7 @@
         <v-icon>mdi-dots-horizontal</v-icon>더보기
       </v-btn>
     </v-list-item> -->
+    <!-- <v-card>len: {{items.length}}</v-card> -->
   </v-container>
 </template>
 <script>

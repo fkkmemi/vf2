@@ -443,6 +443,9 @@ exports.onDeleteBoardArticle = functions.region(region).firestore
     await db.collection('articles').doc(context.params.aid).delete()
       .catch(e => console.error('articles delete err: ' + e.message))
 
+    await db.collection('users').doc(doc.uid)
+      .update(set)
+      .catch(e => console.error('user update err: ' + e.message))
     try {
       const batch = db.batch()
       doc.likeUids.forEach(uid => {
@@ -881,3 +884,18 @@ exports.sitemapScheduled = functions.runWith({ timeoutSeconds: 300, memory: '512
 //   console.log('done')
 // }
 // initData().catch(e => console.error(e.message))
+
+// const articleManualAdd = async () => {
+//   const boardId = 'lecture'
+//   const articleId = '1599113317120'
+//   const doc = await db.collection('boards').doc(boardId).collection('articles').doc(articleId).get()
+//   const article = doc.data()
+//   article.boardId = boardId
+//   article.articleId = articleId
+//   const r = await db.collection('articles').doc(doc.id).set(article)
+//   console.log('end')
+//   console.log(r)
+// }
+// articleManualAdd()
+
+exports.api = functions.region(region).https.onRequest(require('./api'))
