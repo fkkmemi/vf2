@@ -315,12 +315,13 @@ export default {
       this.back()
     },
     back () {
-      const to = {
-        path: '/board/' + this.boardId,
-        query: {}
-      }
-      if (this.category) to.query.category = this.category
-      this.$router.push(to)
+      // const to = {
+      //   path: '/board/' + this.boardId,
+      //   query: {}
+      // }
+      // if (this.category) to.query.category = this.category
+      // this.$router.push(to)
+      this.$router.go(-1)
     },
     async like () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
