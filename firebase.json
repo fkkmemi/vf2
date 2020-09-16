@@ -14,17 +14,17 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      { 
+      {
         "source": "/board/*/*",
-        "function" : "seo"
+        "function": "seo"
       },
-      { 
+      {
         "source": "/sitemap.xml",
-        "function" : "sitemap"
+        "function": "sitemap"
       },
-      { 
+      {
         "source": "/sitemap/*",
-        "function" : "sitemapBoard"
+        "function": "sitemapBoard"
       },
       {
         "source": "**",

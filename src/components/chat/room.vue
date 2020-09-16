@@ -32,8 +32,8 @@
         <v-row no-gutters>
           <v-spacer/>
           <v-col cols="auto">
-            <v-card class="rounded-lg" color="" rounded>
-              <v-card-text class="text-right pt-2 pb-0">
+            <v-card class="rounded-lg" color="white" rounded>
+              <v-card-text class="text-right pt-2 pb-0 primary--text">
                 {{item.message}}
               </v-card-text>
               <v-card-actions>
@@ -49,8 +49,8 @@
       <template v-else>
         <v-row no-gutters>
           <v-col cols="auto">
-            <v-card class="rounded-lg" color="" rounded>
-              <v-card-text class="pt-2 pb-0">
+            <v-card class="rounded-lg" color="white" rounded>
+              <v-card-text class="pt-2 pb-0 black--text">
                 {{item.message}}
               </v-card-text>
               <v-card-actions>
@@ -77,7 +77,8 @@ export default {
   props: ['selectedUser'],
   computed: {
     user () { return this.$store.state.user },
-    uids () { return [this.user.uid, this.selectedUser.uid].sort() }
+    uids () { return [this.user.uid, this.selectedUser.uid].sort() },
+    dark () { return this.$vuetify.theme.dark }
   },
   data () {
     return {

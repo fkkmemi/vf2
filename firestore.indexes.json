@@ -5,6 +5,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "boardId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "category",
           "order": "ASCENDING"
         },
@@ -33,26 +47,12 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "important",
-          "order": "DESCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "articles",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "important",
+          "fieldPath": "category",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdAt",
-          "order": "ASCENDING"
+          "fieldPath": "important",
+          "order": "DESCENDING"
         }
       ]
     },
@@ -79,11 +79,25 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "category",
+          "fieldPath": "important",
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "important",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
           "order": "DESCENDING"
         }
       ]
@@ -103,15 +117,15 @@
       ]
     },
     {
-      "collectionGroup": "articles",
+      "collectionGroup": "chats",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "boardId",
-          "order": "ASCENDING"
+          "fieldPath": "uids",
+          "arrayConfig": "CONTAINS"
         },
         {
-          "fieldPath": "createdAt",
+          "fieldPath": "count",
           "order": "DESCENDING"
         }
       ]
@@ -135,8 +149,8 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "email",
-          "order": "ASCENDING"
+          "fieldPath": "online",
+          "order": "DESCENDING"
         },
         {
           "fieldPath": "visitedAt",

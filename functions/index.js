@@ -76,7 +76,8 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
     emailVerified,
     articleCount: 0,
     commentCount: 0,
-    likeCount: 0
+    likeCount: 0,
+    online: true
   }
   if (!displayName) u.displayName = email.split('@')[0]
   if (providerData && providerData.length) u.providerId = providerData[0].providerId

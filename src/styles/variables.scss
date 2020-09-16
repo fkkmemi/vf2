@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+$body-font-family: 'Nanum Gothic Coding', monospace, 'Roboto', sans-serif !default;
+.tui-editor-contents {
+  h1, h2, h3, h4, h5, h6, p, ul, li, pre, table {
+    font-family: 'Nanum Gothic Coding', monospace, 'Roboto', sans-serif;
+  }
+  code, span {
+    font-family: 'Nanum Gothic Coding', monospace, 'Roboto', sans-serif;
+  }  
+}
+.tui-dark {
+  h1, h2, h3, h4, h5, h6, p, ul, li, pre, table, ol {
+    color: var(--v-primary-base) !important
+  }
+  code, span {
+    color: rgb(50, 50, 50) !important
+  }
+}
+// .te-preview {
+//   background-color: white
+// }
+.white-space {
+  white-space: pre-wrap
+}

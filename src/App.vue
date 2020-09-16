@@ -147,27 +147,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-  // .tui-editor-contents {
-  //   h1, h2, h3, h4, h5, h6, p, ul, li, pre, table {
-  //     color: var(--v-primary-base) !important
-  //   }
-  //   code, span {
-  //     color: rgb(50, 50, 50) !important
-  //   }
-  // }
-  .tui-dark {
-    h1, h2, h3, h4, h5, h6, p, ul, li, pre, table, ol {
-      color: var(--v-primary-base) !important
-    }
-    code, span {
-      color: rgb(50, 50, 50) !important
-    }
-  }
-  // .te-preview {
-  //   background-color: white
-  // }
-  .white-space {
-    white-space: pre-wrap
-  }
-</style>

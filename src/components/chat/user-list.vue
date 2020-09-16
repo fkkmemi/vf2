@@ -44,6 +44,14 @@ export default {
   computed: {
     user () {
       return this.$store.state.user
+    },
+    query () {
+      let q = this.ref
+        .orderBy('online', 'desc')
+        .orderBy('visitedAt', 'desc')
+      if (this.lastDoc) q = q.startAfter(this.lastDoc)
+      q = q.limit(4)
+      return q
     }
   },
   watch: {
@@ -66,14 +74,14 @@ export default {
     snapshotToItems (sn) {
       this.lastDoc = sn.docs.length >= 4 ? last(sn.docs) : null
       sn.docs.forEach(doc => {
-        const findItem = this.items.find(item => doc.id === item.id)
+        const findItem = this.items.find(item => doc.id === item.uid)
         const item = doc.data()
         if (!findItem) {
           item.uid = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           item.visitedAt = item.visitedAt.toDate()
-          this.items.push(item)
+          if (this.user.uid !== doc.id) this.items.push(item)
         } else {
           findItem.email = item.email
           findItem.displayName = item.displayName
@@ -85,15 +93,15 @@ export default {
           findItem.online = item.online
         }
       })
+      // this.items.sort((before, after) => {
+      //   // if (after.online > before.online) return 1
+      //   // else if (after.online < before.online) return -1
+      //   return after.visitedAt.getTime() - before.visitedAt.getTime()
+      // })
     },
     subscribe () {
       this.destroy()
-      const query = this.ref
-      // .where('online', '==', true)
-        .where('email', '!=', this.user.email)
-        .orderBy('email', 'asc')
-        .orderBy('visitedAt', 'desc')
-      this.unsubscribe = query.limit(4).onSnapshot(sn => {
+      this.unsubscribe = this.query.onSnapshot(sn => {
         this.loaded = true
         this.snapshotToItems(sn)
       }, (e) => console.error('users get err: ' + e.message))
@@ -103,12 +111,7 @@ export default {
       if (this.loading) return
       this.loading = true
       try {
-        const sn = await this.ref
-          .where('email', '!=', this.user.email)
-          .orderBy('email', 'asc')
-          .orderBy('visitedAt', 'desc')
-          .startAfter(this.lastDoc)
-          .limit(4).get()
+        const sn = await this.query.get()
         this.snapshotToItems(sn)
       } finally {
         this.loading = false

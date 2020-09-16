@@ -45,6 +45,15 @@ export default {
   computed: {
     user () {
       return this.$store.state.user
+    },
+    query () {
+      let q = this.ref
+        .where('uids', 'array-contains-any', [this.user.uid])
+        .where('count', '>', 0)
+        .orderBy('count', 'desc')
+      if (this.lastDoc) q = q.startAfter(this.lastDoc)
+      q = q.limit(4)
+      return q
     }
   },
   watch: {
@@ -77,7 +86,7 @@ export default {
             user.updatedAt = user.updatedAt.toDate()
             user.visitedAt = user.visitedAt.toDate()
           })
-          this.items.push(item)
+          if (item.count) this.items.push(item)
         } else {
           findItem.updatedAt = item.updatedAt.toDate()
           item.users.forEach(user => {
@@ -89,8 +98,7 @@ export default {
     },
     subscribe () {
       this.destroy()
-      const query = this.ref.where('uids', 'array-contains-any', [this.user.uid])
-      this.unsubscribe = query.limit(4).onSnapshot(sn => {
+      this.unsubscribe = this.query.onSnapshot(sn => {
         this.loaded = true
         this.snapshotToItems(sn)
       }, (e) => console.error('users get err: ' + e.message))
@@ -100,7 +108,7 @@ export default {
       if (this.loading) return
       this.loading = true
       try {
-        const sn = await this.ref.where('uids', 'array-contains-any', [this.user.uid]).startAfter(this.lastDoc).limit(4).get()
+        const sn = await this.query.get()
         this.snapshotToItems(sn)
       } finally {
         this.loading = false
