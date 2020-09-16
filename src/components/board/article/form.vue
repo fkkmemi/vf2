@@ -98,7 +98,11 @@ export default {
         hooks: {
           addImageBlobHook: this.addImageBlobHook
         }
-      }
+      },
+      plugins: [
+        [this.youtubePlugin]
+
+      ]
     }
   },
   computed: {
@@ -112,16 +116,47 @@ export default {
   watch: {
     boardId () {
       this.fetch()
+    },
+    articleId () {
+      this.fetch()
+    },
+    action () {
+      this.fetch()
     }
   },
   created () {
     this.fetch()
+  },
+  mounted () {
+    // setTimeout(() => {
+    //   console.log(this.$refs.editor)
+    //   this.$refs.editor.invoke('setHtml', '<div>wwe<iframe width="560" height="315" src="https://www.youtube.com/embed/c4PlNjJCz2Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>')
+    // }, 2000)
   },
   destroyed () {
     // if (this.exists) return
 
   },
   methods: {
+    youtubePlugin () {
+      this.$refs.editor.codeBlockManager.setReplacer('youtube', youtubeId => {
+        console.log('here')
+        // Indentify multiple code blocks
+        const wrapperId = `yt${Math.random()
+          .toString(36)
+          .substr(2, 10)}`
+
+        // Avoid sanitizing iframe tag
+        setTimeout(this.renderYoutube.bind(null, wrapperId, youtubeId), 0)
+
+        return `<div id="${wrapperId}"></div>`
+      })
+    },
+    renderYoutube (wrapperId, youtubeId) {
+      const el = document.querySelector(`#${wrapperId}`)
+
+      el.innerHTML = `<iframe width="420" height="315" src="https://www.youtube.com/embed/${youtubeId}"></iframe>`
+    },
     async fetch () {
       this.ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
       this.loaded = false
