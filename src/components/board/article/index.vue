@@ -14,7 +14,7 @@
           <v-list-item-content>
             <v-list-item-title>
               <v-btn
-                v-if="category != item.category"
+                v-if="!$vuetify.breakpoint.xs && category != item.category"
                 color="info"
                 depressed
                 small
@@ -24,24 +24,12 @@
                 {{item.category}}
                 <v-icon right>mdi-menu-right</v-icon>
               </v-btn>
-              <template v-if="!$vuetify.breakpoint.xs">
+              <template>
                 <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
                 <span v-text="item.title"></span>
+                <v-icon right v-if="item.images && item.images.length">mdi-image</v-icon>
               </template>
             </v-list-item-title>
-            <v-list-item-title v-if="$vuetify.breakpoint.xs">
-              <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
-              <span v-text="item.title"></span>
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <viewer v-if="item.summary" :initialValue="getSummary(item.summary, 100, '!')"></viewer>
-              <v-container v-else>
-                <v-row justify="center" align="center">
-                  <v-progress-circular indeterminate></v-progress-circular>
-                </v-row>
-              </v-container>
-              <!-- {{getSummary(item.summary, 100, '!')}} -->
-            </v-list-item-subtitle>
             <v-list-item-subtitle class="d-flex justify-space-between align-center">
               <display-time :time="item.createdAt"></display-time>
               <display-user :user="item.user" :size="'small'"></display-user>
@@ -64,64 +52,69 @@
         </v-list-item>
         <v-divider v-if="i < items.length - 1" :key="i"/>
       </template>
-      <v-card v-else :key="item.id" :class="i < items.length - 1 ? 'mb-4' : ''" class="ma-4">
-        <v-subheader>
-          <!-- <v-chip color="info" label small class="mr-4">{{item.category}}</v-chip> -->
-          <v-btn
-            v-if="category != item.category"
-            color="info"
-            depressed
-            small
-            class="mr-4"
-            :to="`${$route.path}?category=${item.category}`"
-          >
-            {{item.category}}
-            <v-icon right>mdi-menu-right</v-icon>
-          </v-btn>
-          <display-time :time="item.createdAt"></display-time>
-          <v-spacer/>
-          <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
-        </v-subheader>
+      <template v-else>
+        <v-card :key="item.id" :class="$vuetify.breakpoint.xs ? '' : 'ma-4'" :flat="$vuetify.breakpoint.xs">
+          <v-subheader>
+            <v-btn
+              v-if="category != item.category"
+              color="info"
+              depressed
+              small
+              class="mr-4"
+              :to="`${$route.path}?category=${item.category}`"
+            >
+              {{item.category}}
+              <v-icon right>mdi-menu-right</v-icon>
+            </v-btn>
+            <display-time :time="item.createdAt"></display-time>
+            <v-spacer/>
+            <v-btn icon v-if="fireUser && fireUser.uid === item.uid" :to="`${boardId}/${item.id}?action=write`"><v-icon>mdi-pencil</v-icon></v-btn>
+          </v-subheader>
 
-        <v-card color="transparent" flat :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
-          <v-card-title>
-            <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
-            {{item.title}}
-          </v-card-title>
-          <v-card-text>
-            <viewer v-if="item.summary" :initialValue="item.summary"></viewer>
-            <v-container v-else>
-              <v-row justify="center" align="center">
-                <v-progress-circular indeterminate></v-progress-circular>
-              </v-row>
-            </v-container>
+          <v-card color="transparent" flat :to="category ? `${boardId}/${item.id}?category=${category}`:`${boardId}/${item.id}`">
+            <v-card-title>
+              <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
+              {{item.title}}
+            </v-card-title>
+            <v-card-text>
+              <viewer v-if="item.summary" :initialValue="item.summary" @load="onViewerLoad" :options="tuiOptions"></viewer>
+              <v-container v-else>
+                <v-row justify="center" align="center">
+                  <v-progress-circular indeterminate></v-progress-circular>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions class="d-flex justify-center">
+              <v-btn text color="primary"><v-icon left>mdi-dots-horizontal</v-icon>더보기</v-btn>
+            </v-card-actions>
+          </v-card>
+          <v-card-actions>
+            <v-spacer/>
+            <display-user :user="item.user"></display-user>
+          </v-card-actions>
+          <v-card-actions>
+            <v-spacer/>
+            <v-sheet class="mr-4">
+              <v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
+              <span class="body-2">{{item.readCount}}</span>
+            </v-sheet>
+            <v-sheet class="mr-4">
+              <v-icon left :color="item.commentCount ? 'info' : ''">mdi-comment</v-icon>
+              <span class="body-2">{{item.commentCount}}</span>
+            </v-sheet>
+            <v-sheet class="mr-0">
+              <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
+              <span class="body-2">{{item.likeCount}}</span>
+            </v-sheet>
+          </v-card-actions>
+          <v-card-text class="mb-0">
+            <v-row justify="end">
+              <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>
+            </v-row>
           </v-card-text>
         </v-card>
-        <v-card-actions>
-          <v-spacer/>
-          <display-user :user="item.user"></display-user>
-        </v-card-actions>
-        <v-card-actions>
-          <v-spacer/>
-          <v-sheet class="mr-4">
-            <v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
-            <span class="body-2">{{item.readCount}}</span>
-          </v-sheet>
-          <v-sheet class="mr-4">
-            <v-icon left :color="item.commentCount ? 'info' : ''">mdi-comment</v-icon>
-            <span class="body-2">{{item.commentCount}}</span>
-          </v-sheet>
-          <v-sheet class="mr-0">
-            <v-icon left :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
-            <span class="body-2">{{item.likeCount}}</span>
-          </v-sheet>
-        </v-card-actions>
-        <v-card-text class="mb-0">
-          <v-row justify="end">
-            <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>
-          </v-row>
-        </v-card-text>
-      </v-card>
+        <v-divider v-if="i < items.length - 1 && $vuetify.breakpoint.xs" :key="i"/>
+      </template>
     </template>
     <v-list-item v-if="lastDoc && items.length < board.count">
       <v-btn
@@ -142,6 +135,7 @@ import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import getSummary from '@/util/getSummary'
 import newCheck from '@/util/newCheck'
+import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 const LIMIT = 5
 
@@ -150,6 +144,11 @@ export default {
   props: ['board', 'boardId', 'category', 'tag'],
   data () {
     return {
+      tuiOptions: {
+        linkAttribute: {
+          target: '_blank'
+        }
+      },
       items: [],
       unsubscribe: null,
       ref: null,
@@ -258,6 +257,9 @@ export default {
     liked (item) {
       if (!this.fireUser) return false
       return item.likeUids.includes(this.fireUser.uid)
+    },
+    onViewerLoad (v) {
+      addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
     }
   }
 }
