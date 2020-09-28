@@ -12,10 +12,11 @@
       <v-toolbar color="transparent" dense flat>
         <v-toolbar-title>
           <v-btn
-            color="info"
+            color="primary"
             depressed
             small
             class="mr-4"
+            outlined
             @click="goCategory"
           >
             {{article.category}}
@@ -23,17 +24,12 @@
           </v-btn>
         </v-toolbar-title>
         <v-spacer/>
-        <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
-          <v-btn @click="articleWrite" icon><v-icon>mdi-pencil</v-icon></v-btn>
-          <v-btn @click="remove" icon><v-icon>mdi-delete</v-icon></v-btn>
-        </template>
         <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-divider/>
-      <v-card-title>
-        <v-icon color="error" left v-if="newCheck(article.updatedAt)">mdi-fire</v-icon>
-        <span v-text="article.title"></span>
-      </v-card-title>
+      <v-card-subtitle class="text--primary body-1">
+        <display-title :item="article"/>
+      </v-card-subtitle>
       <v-card-text>
         <viewer v-if="content" :initialValue="content" @load="onViewerLoad" :options="tuiOptions"></viewer>
         <v-container v-else>
@@ -63,24 +59,37 @@
       </v-card-actions>
       <v-card-actions>
         <v-spacer/>
-        <v-sheet class="mr-4">
-          <v-icon left :color="article.readCount ? 'info' : ''">mdi-eye</v-icon>
-          <span class="body-2">{{article.readCount}}</span>
-        </v-sheet>
-        <v-sheet class="mr-0">
-          <v-icon left :color="article.commentCount ? 'info' : ''">mdi-comment</v-icon>
-          <span class="body-2">{{article.commentCount}}</span>
-        </v-sheet>
-        <v-btn text @click="like">
-          <v-icon left :color="liked ? 'success' : ''">mdi-thumb-up</v-icon>
-          <span class="body-2">{{article.likeCount}}</span>
+        <display-count :item="article" :column="false"></display-count>
+      </v-card-actions>
+      <v-card-actions>
+        <v-spacer/>
+        <v-btn text @click="like" :color="liked ? 'success' : ''">
+          <!-- <v-icon left>mdi-thumb-up</v-icon> -->
+          좋아요
+          <!-- <span class="body-2">{{article.likeCount}}</span> -->
         </v-btn>
       </v-card-actions>
       <v-card-text>
-        <v-row justify="end">
+        <v-row justify="start" align="center" class="px-4">
+          <v-btn
+            color="primary"
+            depressed
+            small
+            outlined
+            class="mr-4 mb-2"
+            @click="goCategory"
+          >
+            {{article.category}}
+            <v-icon right>mdi-menu-right</v-icon>
+          </v-btn>
           <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in article.tags" :key="tag" v-text="tag"></v-chip>
         </v-row>
       </v-card-text>
+      <v-card-actions v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
+        <v-spacer/>
+        <v-btn @click="articleWrite" text color="primary"><v-icon left>mdi-pencil</v-icon>수정</v-btn>
+        <v-btn @click="remove" text color="error"><v-icon left>mdi-delete</v-icon>삭제</v-btn>
+      </v-card-actions>
       <v-divider/>
       <v-card-actions class="py-0">
         <v-row no-gutters>
@@ -107,11 +116,13 @@ import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
 import DisplayUser from '@/components/display-user'
+import DisplayTitle from '@/components/display-title'
+import DisplayCount from '@/components/display-count'
 import newCheck from '@/util/newCheck'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
-  components: { DisplayTime, DisplayComment, DisplayUser },
+  components: { DisplayTime, DisplayComment, DisplayUser, DisplayTitle, DisplayCount },
   props: ['boardId', 'articleId', 'action', 'category', 'tag'],
   data () {
     return {
