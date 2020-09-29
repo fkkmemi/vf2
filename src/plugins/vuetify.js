@@ -18,7 +18,11 @@ const theme = {
       primary: '#344059',
       secondary: '#BFBFBF', // #FFCDD2
       accent: '#2C4027',
-      info: '#4E7DA6'
+      info: '#4E7DA6',
+      success: '#26A699',
+      warning: '#F29727',
+      error: '#F24C3D'
+
       // success: '#2C4027'
     }
     // dark: {

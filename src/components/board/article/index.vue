@@ -122,7 +122,6 @@ import DisplayUser from '@/components/display-user'
 import DisplayTitle from '@/components/display-title'
 import DisplayCount from '@/components/display-count'
 import getSummary from '@/util/getSummary'
-import newCheck from '@/util/newCheck'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 const LIMIT = 5
@@ -145,7 +144,6 @@ export default {
       sort: 'desc',
       loading: false,
       getSummary,
-      newCheck,
       loaded: false
     }
   },

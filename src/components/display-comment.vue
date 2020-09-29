@@ -1,24 +1,30 @@
 <template>
   <v-card flat>
-    <v-card-title>
-      <v-textarea
-        v-model="comment"
-        outlined
-        label="댓글 작성"
-        placeholder="Ctrl + Enter로 작성 가능"
-        append-icon="mdi-comment-plus"
-        @click:append="save"
-        @keypress.ctrl.enter="save"
-        hide-details
-        auto-grow
-        rows="1"
-        clearable />
-    </v-card-title>
+    <template v-if="items.length > 4">
+      <v-card-title>
+        <v-textarea
+          v-model="comment"
+          outlined
+          label="댓글 작성"
+          placeholder="Ctrl + Enter로 작성 가능"
+          append-icon="mdi-comment-plus"
+          @click:append="save"
+          @keypress.ctrl.enter="save"
+          hide-details
+          auto-grow
+          rows="1"
+          clearable />
+      </v-card-title>
+      <v-divider/>
+    </template>
     <template v-for="(item, i) in items">
       <v-list-item :key="item.id">
+        <v-list-item-icon v-if="isReplay(item)" >
+          <v-icon>mdi-subdirectory-arrow-right</v-icon>
+        </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-subtitle v-if="!item.edit" class="black--text white-space">
-            <v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon> {{item.comment}}
+            <v-icon color="error" left v-if="newCheck(item.updatedAt, 'minutes', 10)">mdi-fire</v-icon> {{item.comment}}
           </v-list-item-subtitle>
           <v-list-item-subtitle v-else>
             <v-textarea
@@ -49,6 +55,14 @@
             >
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
+            <v-btn
+              v-if="fireUser && !isReplay(item)"
+              icon
+              @click="item.replyEdit=!item.replyEdit"
+              :color="item.replyEdit ? 'warning' : ''"
+            >
+              <v-icon>mdi-comment-multiple</v-icon>
+            </v-btn>
             <v-btn color="error" icon @click="remove(item)" v-if="(fireUser && fireUser.uid === item.uid) || (user && user.level === 0)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
@@ -57,9 +71,24 @@
               <span>{{item.likeCount}}</span>
             </v-btn>
           </v-list-item-title>
+          <v-list-item-subtitle v-if="item.replyEdit">
+            <v-textarea
+              v-model="item.replyComment"
+              @click:append="saveReply(item)"
+              @keypress.ctrl.enter="saveReply(item)"
+              outlined
+              label="대댓글 작정"
+              placeholder="Ctrl + Enter로 작성 가능"
+              append-icon="mdi-comment-multiple"
+              hide-details
+              auto-grow
+              rows="1"
+              clearable
+              class="mt-2"></v-textarea>
+          </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-divider :key="i" v-if="i < items.length - 1"></v-divider>
+      <v-divider :key="i"></v-divider>
     </template>
     <v-list-item v-if="lastDoc && items.length < article.commentCount">
       <v-btn
@@ -72,6 +101,21 @@
         <v-icon>mdi-dots-horizontal</v-icon>더보기
       </v-btn>
     </v-list-item>
+    <!-- <v-divider/> -->
+    <v-card-title>
+      <v-textarea
+        v-model="comment"
+        outlined
+        label="댓글 작성"
+        placeholder="Ctrl + Enter로 작성 가능"
+        append-icon="mdi-comment-plus"
+        @click:append="save"
+        @keypress.ctrl.enter="save"
+        hide-details
+        auto-grow
+        rows="1"
+        clearable />
+    </v-card-title>
   </v-card>
 </template>
 <script>
@@ -80,6 +124,7 @@ import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import newCheck from '@/util/newCheck'
 const LIMIT = 5
+const REPLY_LIMIT = 1000
 
 export default {
   components: { DisplayTime, DisplayUser },
@@ -124,22 +169,23 @@ export default {
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
           item.edit = false
+          item.replyEdit = false
+          item.replyComment = ''
           this.items.push(item)
         } else {
           findItem.comment = item.comment
           findItem.likeCount = item.likeCount
           findItem.likeUids = item.likeUids
           findItem.updatedAt = item.updatedAt.toDate()
+          findItem.no = item.no
         }
       })
-      this.items.sort((before, after) => {
-        return Number(after.id) - Number(before.id)
-      })
+      this.items.sort((before, after) => before.no - after.no)
     },
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
       this.items = []
-      this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
+      this.unsubscribe = this.docRef.collection('comments').orderBy('no', 'asc').limit(LIMIT).onSnapshot(sn => {
         if (sn.empty) {
           this.items = []
           return
@@ -152,7 +198,7 @@ export default {
       if (this.loading) return
       this.loading = true
       try {
-        const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
+        const sn = await this.docRef.collection('comments').orderBy('no', 'asc').startAfter(this.lastDoc).limit(LIMIT).get()
         this.snapshotToItems(sn)
       } finally {
         this.loading = false
@@ -163,25 +209,69 @@ export default {
     },
     async save () {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
-      if (!this.comment) throw Error('내용을 작성해야 합니다')
       if (this.article.commentCount > 100) throw Error('댓글 개수 허용치를 넘었습니다')
+      if (!this.comment) throw Error('내용을 작성해야 합니다')
       if (this.comment.length > 300) throw Error('문자 허용치를 넘었습니다')
+
       const doc = {
         createdAt: new Date(),
         updatedAt: new Date(),
         comment: this.comment,
-        uid: this.$store.state.fireUser.uid,
+        uid: this.fireUser.uid,
         user: {
           email: this.user.email,
           photoURL: this.user.photoURL,
           displayName: this.user.displayName
         },
         likeCount: 0,
-        likeUids: []
+        likeUids: [],
+        no: this.article.commentCount * REPLY_LIMIT
       }
       const id = doc.createdAt.getTime().toString()
-      this.docRef.collection('comments').doc(id).set(doc)
+      await this.docRef.collection('comments').doc(id).set(doc)
       this.comment = ''
+    },
+    async saveReply (item) {
+      if (!this.fireUser) throw Error('로그인이 필요합니다')
+      if (this.article.commentCount > 100) throw Error('댓글 개수 허용치를 넘었습니다')
+      if (!item.replyComment) throw Error('내용을 작성해야 합니다')
+      if (item.replyComment.length > 300) throw Error('문자 허용치를 넘었습니다')
+      const min = item.no
+      const max = item.no + REPLY_LIMIT
+      const rs = this.items.filter(el => {
+        return el.no > min && el.no < max
+      })
+      let no = min + rs.length + 1
+      if (rs.length) no = last(rs).no + 1
+
+      const doc = {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        comment: item.replyComment,
+        uid: this.fireUser.uid,
+        user: {
+          email: this.user.email,
+          photoURL: this.user.photoURL,
+          displayName: this.user.displayName
+        },
+        likeCount: 0,
+        likeUids: [],
+        no: no
+      }
+      const id = doc.createdAt.getTime().toString()
+      await this.docRef.collection('comments').doc(id).set(doc)
+      item.replyComment = ''
+
+      const findItem = this.items.find(el => id === el.id)
+      if (findItem) return
+      doc.id = id
+      this.items.push(doc)
+      this.items.sort((before, after) => {
+        return before.no - after.no
+      })
+    },
+    isReplay (item) {
+      return item.no % REPLY_LIMIT
     },
     liked (item) {
       if (!this.fireUser) return false
@@ -212,12 +302,17 @@ export default {
       const i = this.items.findIndex(el => el.id === comment.id)
       this.items.splice(i, 1)
     },
-    async update (comment) {
-      comment.updatedAt = new Date()
+    async update (item) {
+      const doc = {
+        updatedAt: new Date(),
+        comment: item.replyComment
+      }
       try {
-        await this.docRef.collection('comments').doc(comment.id).update(comment)
+        await this.docRef.collection('comments').doc(item.id).update(doc)
       } finally {
-        comment.edit = false
+        item.edit = false
+        item.replyEdit = false
+        item.replyComment = ''
       }
     }
   }
