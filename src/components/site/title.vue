@@ -5,7 +5,7 @@
     </v-avatar>
     <v-tooltip bottom>
       <template v-slot:activator="{on}">
-        <span v-on="on" class="font-weight-light primary--text ml-2">
+        <span v-on="on" class="font-weight-light primary--text ml-2" @click="$route.path === '/' ? null: $router.push('/')">
           {{ title }}
         </span>
       </template>

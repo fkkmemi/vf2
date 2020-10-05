@@ -76,5 +76,9 @@ service cloud.firestore {
         allow write: if approvedLevel(5) && request.auth.uid in roomId.split('-');
       }
     }
+    match /plans/{planId} {
+      allow read: if approvedLevel(resource.data.level);
+      allow write: if approvedLevel(1) || request.auth.uid == resource.data.uid;      
+    }
   }
 }

@@ -47,7 +47,7 @@
                 <v-icon v-if="item.providerId === 'facebook.com'" small left color="#242a2e">
                   mdi-facebook
                 </v-icon>
-                {{item.email}}
+                {{hiddenEmail(item.email)}}
               </v-list-item-subtitle>
               <v-list-item-subtitle class="caption">
                 가입일: <display-time :time="item.createdAt"/>
@@ -83,6 +83,7 @@
 <script>
 import DisplayTime from '@/components/display-time'
 import constants from '@/util/constants'
+import hiddenEmail from '@/util/hiddenEmail'
 
 export default {
   components: { DisplayTime },
@@ -91,7 +92,8 @@ export default {
     return {
       loaded: false,
       show: true,
-      item: null
+      item: null,
+      hiddenEmail
     }
   },
   computed: {

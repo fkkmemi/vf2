@@ -8,7 +8,7 @@
         <v-btn icon @click="back"><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-divider/>
-      <v-card-text>
+      <v-card-text v-if="user">
         <v-row>
           <v-col cols="12" sm="3">
             <v-select
@@ -21,7 +21,7 @@
               label="유형"
               outlined hide-details />
           </v-col>
-          <v-col cols="12" sm="3">
+          <v-col cols="12" sm="3" v-if="user.level < 5">
             <v-select
               v-model="form.level"
               :items="levels"
