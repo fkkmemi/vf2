@@ -1,6 +1,6 @@
 {
   "name": "vf2",
-  "version": "1.167.2",
+  "version": "1.169.0",
   "private": true,
   "description": "Vue & Firebase 2",
   "scripts": {
