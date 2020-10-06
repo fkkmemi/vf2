@@ -6,15 +6,7 @@
     <v-card outlined :tile="xs">
       <v-toolbar color="transparent" dense flat>
         <v-toolbar-title>
-          <span v-if="!editable">{{plan.title}}</span>
-          <v-text-field
-            v-else
-            v-model="plan.title"
-            dense
-            hide-details
-            outlined
-            label="제목"
-            single-line/>
+          <span>{{plan.title}}</span>
         </v-toolbar-title>
         <v-spacer/>
         <v-btn @click="editable=!editable" icon>
@@ -25,7 +17,38 @@
         </v-btn>
       </v-toolbar>
       <v-divider/>
+      <v-card-text v-if="editable">
+        <v-row>
+          <v-col cols="12" sm="4">
+            <v-select
+              v-model="plan.level"
+              :items="levels"
+              label="권한"
+              outlined hide-details />
+          </v-col>
+          <v-col cols="12" sm="8">
+            <v-text-field
+              v-model="plan.title"
+              hide-details
+              outlined
+              label="제목"
+              />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              v-model="plan.description"
+              hide-details
+              outlined
+              label="내용"
+              auto-grow
+              />
+          </v-col>
+        </v-row>
+      </v-card-text>
       <v-card-text>
+        <v-alert border="left" type="info" class="white-space" dismissible>
+          {{plan.description}}
+        </v-alert>
         <v-timeline :dense="$vuetify.breakpoint.smAndDown">
           <v-timeline-item
             v-for="(item, i) in plan.items"
@@ -37,11 +60,13 @@
                 </v-toolbar-title>
               </v-toolbar>
               <v-card-subtitle>
-                <display-time :time="$moment(item.date).utcOffset(9)"/>
+                <display-time :time="$moment(item.date).utcOffset(9).toDate()"/>
               </v-card-subtitle>
               <v-card-text>
-                {{item.description}}
+                <!-- {{item.description}} -->
+                <viewer :initialValue="item.description"></viewer>
               </v-card-text>
+
             </v-card>
             <v-card v-else>
               <v-toolbar color="accent" dark dense flat>
@@ -151,11 +176,19 @@
           </v-timeline-item>
         </v-timeline>
       </v-card-text>
+      <v-card-actions v-if="editable">
+        <v-spacer/>
+        <v-btn @click="save" color="primary">
+          <v-icon>mdi-content-save</v-icon>
+          저장
+        </v-btn>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
 <script>
 import DisplayTime from '@/components/display-time'
+import constants from '@/util/constants'
 
 export default {
   components: { DisplayTime },
@@ -178,6 +211,7 @@ export default {
       plan: {
         title: '',
         description: '',
+        level: 0,
         items: []
       },
       menu: false,
@@ -195,6 +229,10 @@ export default {
     },
     user () {
       return this.$store.state.user
+    },
+    levels () {
+      if (!this.user) return []
+      return constants.levels.filter(level => level.value >= this.user.level)
     }
   },
   mounted () {
@@ -226,10 +264,9 @@ export default {
       const doc = {
         title: this.plan.title,
         description: this.plan.description,
+        level: this.plan.level,
         updatedAt: new Date(),
-        items: [],
-        uid: this.user.uid,
-        level: this.user.level
+        items: []
       }
       this.plan.items.forEach(v => {
         const item = {
@@ -239,8 +276,13 @@ export default {
         }
         doc.items.push(item)
       })
-      if (!this.exists) doc.createdAt = new Date()
-      this.ref.set(doc)
+      if (!this.exists) {
+        doc.createdAt = new Date()
+        doc.uid = this.user.uid
+        await this.ref.set(doc)
+      } else {
+        await this.ref.update(doc)
+      }
     }
   }
 }
