@@ -298,6 +298,14 @@ export default {
       comment.likeUids = item.likeUids
     },
     async remove (comment) {
+      const r = await this.$swal.fire({
+        title: '정말 삭제하시겠습니까?',
+        text: '삭제 후 되돌릴 수 없습니다.',
+        icon: 'error',
+        // confirmButtonText: 'Cool',
+        showCancelButton: true
+      })
+      if (!r.value) return
       await this.docRef.collection('comments').doc(comment.id).delete()
       const i = this.items.findIndex(el => el.id === comment.id)
       this.items.splice(i, 1)

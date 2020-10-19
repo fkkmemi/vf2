@@ -199,8 +199,15 @@ export default {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
     },
     async remove () {
-      throw Error('hi')
-      // await this.ref.delete()
+      const r = await this.$swal.fire({
+        title: '정말 삭제하시겠습니까?',
+        text: '삭제 후 되돌릴 수 없습니다.',
+        icon: 'error',
+        // confirmButtonText: 'Cool',
+        showCancelButton: true
+      })
+      if (!r.value) return
+      await this.ref.delete()
     },
     back () {
       const us = this.$route.path.split('/')

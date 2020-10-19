@@ -8435,6 +8435,11 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
+sweetalert2@^10.6.1:
+  version "10.6.1"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-10.6.1.tgz#343d980858494bd0073ac8de9be57bf2365df316"
+  integrity sha512-5cIPtYldmZ+EljMVRd5ml9xT72STU+N4kk57nO0oECQmjkCsJypAcEdL+h045otoAd3t9962FtewJYSKyJxOFQ==
+
 table@^5.2.3:
   version "5.4.6"
   resolved "https://registry.yarnpkg.com/table/-/table-5.4.6.tgz#1292d19500ce3f86053b05f0e8e7e4a3bb21079e"

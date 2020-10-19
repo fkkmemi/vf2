@@ -244,6 +244,14 @@ export default {
       if (isIntersecting) this.more()
     },
     async remove (item) {
+      const r = await this.$swal.fire({
+        title: '정말 삭제하시겠습니까?',
+        text: '삭제 후 되돌릴 수 없습니다.',
+        icon: 'error',
+        // confirmButtonText: 'Cool',
+        showCancelButton: true
+      })
+      if (!r.value) return
       await this.$firebase.firestore()
         .collection('boards').doc(item.id).delete()
       const i = this.items.findIndex(el => el.id === item.id)
