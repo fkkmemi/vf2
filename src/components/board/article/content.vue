@@ -199,7 +199,8 @@ export default {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
     },
     async remove () {
-      await this.ref.delete()
+      throw Error('hi')
+      // await this.ref.delete()
     },
     back () {
       const us = this.$route.path.split('/')
@@ -240,7 +241,7 @@ export default {
       if (arrow < 0) sn = await ref.endBefore(this.doc).limitToLast(1).get()
       else sn = await ref.startAfter(this.doc).limit(1).get()
 
-      if (sn.empty) return this.$toast.info('더이상 페이지가 없습니다')
+      if (sn.empty) throw Error('더이상 페이지가 없습니다')
       const doc = sn.docs[0]
 
       const us = this.$route.path.split('/')
