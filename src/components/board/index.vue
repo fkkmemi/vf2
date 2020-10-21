@@ -50,7 +50,7 @@
             <v-card height="100%">
               <v-subheader>
                 <v-icon color="error" left v-if="newCheck(item.updatedAt, 'days', 1)">mdi-fire</v-icon>
-                {{item.title}}
+                {{item.id}}
                 <v-spacer/>
                 <template v-if="user && user.level === 0">
                   <v-btn
@@ -69,6 +69,16 @@
               <v-card-text>
                 <v-alert border="left" type="info" outlined class="white-space">{{item.description}}</v-alert>
               </v-card-text>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    제목
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{item.title}}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>

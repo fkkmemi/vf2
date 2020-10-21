@@ -1,7 +1,7 @@
 <template>
   <v-footer app color="primary" dark absolute :footer="footer">
     <v-spacer></v-spacer>
-    <div>&copy; {{ new Date().getFullYear() + ' ' + footer }}</div>
+    <div>{{ footer }}</div>
     <v-btn v-if="$store.state.editable" icon @click="openDialog"><v-icon>mdi-pencil</v-icon></v-btn>
     <v-dialog v-model="dialog" max-width="400">
       <v-card>
@@ -30,7 +30,7 @@ export default {
   methods: {
     openDialog () {
       this.dialog = true
-      this.text = this.title
+      this.text = this.footer
     },
     async save () {
       try {
