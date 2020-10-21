@@ -24,6 +24,11 @@
           </v-btn>
         </v-toolbar-title>
         <v-spacer/>
+        <template v-if="(fireUser && fireUser.uid === article.uid) || (user && user.level === 0)">
+          <v-spacer/>
+          <v-btn @click="articleWrite" icon color="primary"><v-icon>mdi-pencil</v-icon></v-btn>
+          <v-btn @click="remove" icon color="error"><v-icon>mdi-delete</v-icon></v-btn>
+        </template>
         <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
       </v-toolbar>
       <v-divider/>
