@@ -250,3 +250,37 @@ exports.saveTempFiles = functions.region(region).storage
 //         .catch(e => console.error('tempFile remove err: ' + e.message))
 //     }
 //   })
+exports.seo = functions.https.onRequest(async (req, res) => {
+  const { parse } = require('node-html-parser')
+  const fs = require('fs')
+  const pluralize = require('pluralize')
+  const html = fs.readFileSync('index.html').toString()
+  const root = parse(html)
+
+  const ps = req.path.split('/')
+  ps.shift()
+  ps.forEach((v, i) => console.log(i, v))
+  if (ps.length !== 3) return res.send(html)
+  const mainCollection = pluralize(ps.shift())
+  const board = ps.shift()
+  const article = ps.shift()
+
+  const doc = await db.collection(mainCollection).doc(board).collection('articles').doc(article).get()
+
+  if (!doc.exists) return res.send(html)
+  const item = doc.data()
+
+  const child = root.lastChild.childNodes[0]
+  const title = child.childNodes[0]
+  const description = child.childNodes[1]
+  const ogTitle = child.childNodes[2]
+  const ogDescription = child.childNodes[3]
+  const ogImage = child.childNodes[4]
+
+  title.set_content(item.title)
+  description.setAttribute('content', item.summary.substr(0, 80))
+  ogTitle.setAttribute('content', item.title)
+  ogDescription.setAttribute('content', item.summary.substr(0, 80))
+  ogImage.setAttribute('content', item.images.length ? item.images[0].thumbUrl : '/logo.png')
+  res.status(200).send(root.toString())
+})
