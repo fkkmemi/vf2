@@ -60,9 +60,9 @@ exports.onDeleteBoard = functions.region(region).firestore
   })
 
 const removeOldTempFiles = async () => {
-  // const moment = require('moment')
+  const moment = require('moment')
   const sn = await db.collection('tempFiles')
-    // .where('createdAt', '<', moment().subtract(1, 'hours').toDate())
+    .where('createdAt', '<', moment().subtract(1, 'hours').toDate())
     .orderBy('createdAt')
     .limit(5)
     .get()
@@ -271,16 +271,19 @@ exports.seo = functions.https.onRequest(async (req, res) => {
   const item = doc.data()
 
   const child = root.lastChild.childNodes[0]
-  const title = child.childNodes[0]
-  const description = child.childNodes[1]
-  const ogTitle = child.childNodes[2]
-  const ogDescription = child.childNodes[3]
-  const ogImage = child.childNodes[4]
+  const titleNode = child.childNodes[0]
+  const descriptionNode = child.childNodes[1]
+  const ogTitleNode = child.childNodes[2]
+  const ogDescriptionNode = child.childNodes[3]
+  const ogImageNode = child.childNodes[4]
 
-  title.set_content(item.title)
-  description.setAttribute('content', item.summary.substr(0, 80))
-  ogTitle.setAttribute('content', item.title)
-  ogDescription.setAttribute('content', item.summary.substr(0, 80))
-  ogImage.setAttribute('content', item.images.length ? item.images[0].thumbUrl : '/logo.png')
+  const title = item.title
+  const description = item.summary.substr(0, 80)
+  const image = item.images.length ? item.images[0].thumbUrl : '/logo.png'
+  titleNode.set_content(title)
+  descriptionNode.setAttribute('content', description)
+  ogTitleNode.setAttribute('content', title)
+  ogDescriptionNode.setAttribute('content', description)
+  ogImageNode.setAttribute('content', image)
   res.status(200).send(root.toString())
 })
