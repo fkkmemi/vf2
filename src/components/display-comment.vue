@@ -314,7 +314,7 @@ export default {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
       if (this.article.commentCount > 100) throw Error('댓글 개수 허용치를 넘었습니다')
       if (!this.comment) throw Error('내용을 작성해야 합니다')
-      if (this.comment.length > 300) throw Error('문자 허용치를 넘었습니다')
+      if (this.comment.length > 10000) throw Error('문자 허용치를 넘었습니다')
 
       const rs = this.items.filter(el => el.no % 10000 === 0)
       const doc = {
@@ -347,7 +347,7 @@ export default {
       if (!this.fireUser) throw Error('로그인이 필요합니다')
       if (this.article.commentCount > 100) throw Error('댓글 개수 허용치를 넘었습니다')
       if (!item.replyComment) throw Error('내용을 작성해야 합니다')
-      if (item.replyComment.length > 300) throw Error('문자 허용치를 넘었습니다')
+      if (item.replyComment.length > 10000) throw Error('문자 허용치를 넘었습니다')
       const depth = this.replyDepth(item)
       if (depth > 1) throw Error('대대댓글은 허용하지 않습니다')
       let no = 0

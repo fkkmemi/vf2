@@ -5,26 +5,35 @@
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-subtitle class="text--primary body-1 d-flex align-center">
-        <v-chip v-if="!widget" color="accent" outlined small class="mr-4">{{index}}</v-chip>
-        <v-chip
-          v-if="!xs && !boardId"
-          color="primary" label small
-          exact class="mr-4"
-          :to="`/board/${item.boardId}?category=${item.category}`">
-          {{item.boardId}} > {{item.category}}
-          <!-- <v-icon right>mdi-menu-right</v-icon> -->
-        </v-chip>
+        <!-- <v-chip v-if="!widget" color="accent" outlined small class="mr-4">{{index}}</v-chip> -->
         <display-title :item="item"/>
         <v-spacer/>
       </v-list-item-subtitle>
-      <v-list-item-subtitle v-if="!widget" class="d-flex justify-space-between align-center">
-        <span class="font-italic caption"><display-time :time="item.createdAt"></display-time></span>
+      <v-list-item-subtitle v-if="!widget" class="d-flex align-center">
+        <span class="font-italic caption mr-4"><display-time :time="item.createdAt"></display-time></span>
         <v-spacer/>
         <display-user :user="item.user" :size="'small'" :uid="item.uid"></display-user>
+      </v-list-item-subtitle>
+      <v-list-item-subtitle v-if="!xs && !widget">
+        <v-btn
+          color="primary"
+          depressed
+          small
+          outlined
+          class="mr-4 mb-2 text-none"
+          :to="`/board/${item.boardId}?category=${item.category}`"
+        >
+          {{item.boardId}} > {{item.category}}
+          <v-icon right>mdi-menu-right</v-icon>
+        </v-btn>
+        <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>
       </v-list-item-subtitle>
     </v-list-item-content>
     <v-list-item-action v-if="!widget">
       <display-count :item="item" :column="true"></display-count>
+    </v-list-item-action>
+    <v-list-item-action v-else class="caption">
+      <v-chip color="accent" outlined small class="">{{item.commentCount}}</v-chip>
     </v-list-item-action>
   </v-list-item>
 </template>

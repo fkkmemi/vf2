@@ -7,18 +7,7 @@
       :tile="$vuetify.breakpoint.xs"
       :outlined="!$vuetify.breakpoint.xs"
       @click="$router.push(`/board/${item.boardId}/${item.id}?category=${item.category}`)">
-      <v-card-subtitle class="text--primary body-1 d-flex align-center">
-        <v-chip color="accent" outlined small class="mr-4">{{index}}</v-chip>
-        <v-chip
-          v-if="!boardId"
-          color="primary" label small
-          exact class="mr-4"
-          :to="`/board/${item.boardId}?category=${item.category}`">
-          {{item.boardId}} > {{item.category}}
-          <!-- <v-icon right>mdi-menu-right</v-icon> -->
-        </v-chip>
-        <v-spacer/>
-      </v-card-subtitle>
+
       <v-card-subtitle class="text--primary body-1">
         <display-title :item="item"/>
         <v-spacer/>
@@ -36,11 +25,6 @@
           <v-icon left>mdi-dots-horizontal</v-icon>자세히 보기
         </v-btn>
       </v-card-actions>
-      <!-- <v-card-actions>
-        <span class="font-italic caption"><display-time :time="item.createdAt" /></span>
-        <v-spacer/>
-        <display-user :user="item.user" size="small" />
-      </v-card-actions> -->
 
       <v-card-actions>
         <span class="font-italic caption ml-2"><display-time :time="item.createdAt"></display-time></span>
@@ -58,10 +42,10 @@
             depressed
             small
             outlined
-            class="mr-4 mb-2"
+            class="mr-4 mb-2 text-none"
             :to="`/board/${item.boardId}?category=${item.category}`"
           >
-            {{item.category}}
+            {{item.boardId}} > {{item.category}}
             <v-icon right>mdi-menu-right</v-icon>
           </v-btn>
           <v-chip small label outlined color="info" class="mr-2 mb-2" v-for="tag in item.tags" :key="tag" v-text="tag"></v-chip>

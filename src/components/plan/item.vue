@@ -58,6 +58,10 @@
                 <v-toolbar-title>
                 {{item.title}}
                 </v-toolbar-title>
+                <v-spacer/>
+                <v-btn v-if="item.to" :to="item.to" icon>
+                  <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
+                </v-btn>
               </v-toolbar>
               <v-card-subtitle>
                 <display-time :time="$moment(item.date).utcOffset(9).toDate()"/>
@@ -110,13 +114,21 @@
                     @input="item.menu = false"
                   ></v-date-picker>
                 </v-menu>
+                <v-text-field
+                  v-model="item.to"
+                  dense
+                  hide-details
+                  outlined
+                  label="링크"
+                  class="mb-4"
+                />
                 <v-textarea
                   v-model="item.description"
                   dense
                   hide-details
                   outlined
                   label="내용"
-                  auto-grow rows="2"></v-textarea>
+                  auto-grow rows="2"/>
               </v-card-text>
 
             </v-card>
@@ -223,6 +235,11 @@ export default {
       }
     }
   },
+  watch: {
+    id () {
+      this.fetch()
+    }
+  },
   computed: {
     xs () {
       return this.$vuetify.breakpoint.xs
@@ -274,6 +291,7 @@ export default {
           description: v.description,
           date: v.date
         }
+        if (v.to) item.to = v.to
         doc.items.push(item)
       })
       if (!this.exists) {
