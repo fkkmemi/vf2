@@ -8,7 +8,7 @@
             height="100%"
             @click="$router.push(toPath(item))">
             <v-img
-              :src="isGif(item.images[0].id) ? item.images[0].url : item.images[0].thumbUrl"
+              :src="srcFromItem(item)"
               :aspect-ratio="1"
               class="align-end"
             >
@@ -41,54 +41,24 @@
               :opacity="0.7"
               :value="item.overlay"
             >
-              <!-- <v-container fluid class=""> -->
-                <v-card color="transparent" flat tile class="" @click.native.stop="item.overlay = false">
-                  <v-card-text class="caption">
-                    <span>{{item.title}} afwefwefwera wfwe wefwefwefwefwefwe</span>
-                  </v-card-text>
-                  <v-card-actions class="font-italic caption hidden-xs-only">
-                    <v-spacer/>
-                    <display-count :item="item" :column="false"></display-count>
-                  </v-card-actions>
-                  <v-card-actions class="font-italic caption hidden-xs-only">
-                    <v-spacer/>
-                    <span><display-time :time="item.createdAt"></display-time></span>
-                  </v-card-actions>
-                  <v-card-actions class="font-italic caption hidden-xs-only">
-                    <v-spacer/>
-                    <display-user :user="item.user"></display-user>
-                  </v-card-actions>
+              <v-card color="transparent" flat tile class="" @click.native.stop="item.overlay = false">
+                <v-card-text class="caption">
+                  <span>{{item.title}} afwefwefwera wfwe wefwefwefwefwefwe</span>
+                </v-card-text>
+                <v-card-actions class="font-italic caption hidden-xs-only">
+                  <v-spacer/>
+                  <display-count :item="item" :column="false"></display-count>
+                </v-card-actions>
+                <v-card-actions class="font-italic caption hidden-xs-only">
+                  <v-spacer/>
+                  <span><display-time :time="item.createdAt"></display-time></span>
+                </v-card-actions>
+                <v-card-actions class="font-italic caption hidden-xs-only">
+                  <v-spacer/>
+                  <display-user :user="item.user"></display-user>
+                </v-card-actions>
 
-                </v-card>
-              <!-- </v-container> -->
-
-              <!-- <v-fade-transition>
-                <v-card color="red">
-                  <v-card-title>
-                    <v-spacer/>
-                    <v-btn
-                      color="success"
-                      @click.native.stop="item.overlay = false"
-                      icon
-                    >
-                      <v-icon>mdi-close</v-icon>
-                    </v-btn>
-
-                  </v-card-title>
-                  <v-card-text class="text--white body-1" :class="item.important > 0 ? 'text-truncate': ''">
-                    <span>{{item.title}}</span>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer/>
-                    <display-count :item="item" :column="false"></display-count>
-                  </v-card-actions>
-                  <v-card-actions>
-                    <span class="font-italic caption"><display-time :time="item.createdAt"></display-time></span>
-                    <v-spacer/>
-                    <display-user :user="item.user"></display-user>
-                  </v-card-actions>
-                </v-card>
-              </v-fade-transition> -->
+              </v-card>
             </v-overlay>
           </v-card>
         </v-col>
@@ -103,6 +73,7 @@ import DisplayCount from '@/components/display-count'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 import isGif from '@/util/isGif'
 import newCheck from '@/util/newCheck'
+import getImageUrlFromMd from '@/util/getImageUrlFromMd'
 const LIMIT = 5
 
 export default {
@@ -110,7 +81,6 @@ export default {
   props: ['items', 'boardId', 'category'],
   data () {
     return {
-      isGif,
       newCheck,
       vis: false
     }
@@ -119,6 +89,8 @@ export default {
     fireUser () {
       return this.$store.state.fireUser
     }
+  },
+  created () {
   },
   methods: {
     read (item) {
@@ -158,6 +130,12 @@ export default {
       const to = { path: `/board/${this.boardId}/${item.id}` }
       if (this.category) to.query = { category: this.category }
       return to
+    },
+    srcFromItem (item) {
+      if (!item.images.length) return getImageUrlFromMd(item.summary)
+      return isGif(item.images[0].id)
+        ? item.images[0].url
+        : item.images[0].thumbUrl
     }
   }
 }
