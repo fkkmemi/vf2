@@ -78,6 +78,7 @@ export default {
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
+          item.overlay = false
           this.items.push(item)
         } else {
           if (findItem.summary !== item.summary) {
