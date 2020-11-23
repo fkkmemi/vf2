@@ -2,11 +2,16 @@
   <v-container fluid>
     <v-row dense>
       <template v-for="item in items">
-        <v-col cols="6" sm="3" md="2" :key="item.id">
+        <v-col cols="6" sm="4" md="3" lg="2" :key="item.id">
           <v-card
             color=""
             height="100%"
             @click="$router.push(toPath(item))">
+            <v-system-bar color="secondary">
+              <span class="font-italic caption hidden-xs-only"><display-time :time="item.createdAt"></display-time></span>
+              <v-spacer/>
+              <display-count :item="item" :column="false" size="small"></display-count>
+            </v-system-bar>
             <v-img
               :src="srcFromItem(item)"
               :aspect-ratio="1"
@@ -15,50 +20,37 @@
               <v-card-actions>
                 <v-spacer/>
                 <v-btn
-                  small dark
-                  color="primary"
-                  @click.native.stop="like(item)"
-                >
-                  <v-icon left
-                    :color="liked(item) ? 'success': ''"
-                  >mdi-heart</v-icon>
-                  <span>{{item.likeCount > 9 ? '9+' : item.likeCount}}</span>
-                </v-btn>
-                <v-btn
-                  x-small fab dark color="primary" @click.native.stop="item.overlay=true">
+                  small dark color="primary" icon @click.native.stop="item.overlay=true">
                   <v-icon>mdi-information</v-icon>
                 </v-btn>
               </v-card-actions>
             </v-img>
-            <v-card-subtitle class="text-truncate align-center hidden-xs-only">
-              <v-icon v-if="item.important === 1" small left color="success">mdi-bell-ring</v-icon>
-              <v-icon v-else-if="item.important === 2" small left color="warning">mdi-alert-circle</v-icon>
-              <v-icon v-if="newCheck(item.updatedAt, 'hours', 1)" small color="error" left>mdi-fire</v-icon>
-              <span>{{item.title}}</span>
-            </v-card-subtitle>
+            <v-list-item class="text-truncate align-center hidden-xs-only">
+              <v-list-item-content>
+                <v-list-item-subtitle>
+                  <v-icon v-if="item.important === 1" small left color="success">mdi-bell-ring</v-icon>
+                  <v-icon v-else-if="item.important === 2" small left color="warning">mdi-alert-circle</v-icon>
+                  <v-icon v-if="newCheck(item.updatedAt, 'hours', 1)" small color="error" left>mdi-fire</v-icon>
+                  <span>{{item.title}}</span>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <display-user :user="item.user" size="small"></display-user>
+              </v-list-item-action>
+            </v-list-item>
             <v-overlay
               absolute
               :opacity="0.7"
               :value="item.overlay"
+              @click.native.stop="item.overlay = false"
             >
-              <v-card color="transparent" flat tile class="" @click.native.stop="item.overlay = false">
-                <v-card-text class="caption">
-                  <span>{{item.title}} afwefwefwera wfwe wefwefwefwefwefwe</span>
-                </v-card-text>
-                <v-card-actions class="font-italic caption hidden-xs-only">
-                  <v-spacer/>
-                  <display-count :item="item" :column="false"></display-count>
-                </v-card-actions>
-                <v-card-actions class="font-italic caption hidden-xs-only">
-                  <v-spacer/>
-                  <span><display-time :time="item.createdAt"></display-time></span>
-                </v-card-actions>
-                <v-card-actions class="font-italic caption hidden-xs-only">
-                  <v-spacer/>
-                  <display-user :user="item.user"></display-user>
-                </v-card-actions>
-
-              </v-card>
+              <v-container fill-height fluid>
+                <v-card color="transparent" flat tile>
+                  <v-card-subtitle class="white--text">
+                    <span>{{item.title}}</span>
+                  </v-card-subtitle>
+                </v-card>
+              </v-container>
             </v-overlay>
           </v-card>
         </v-col>
@@ -74,7 +66,7 @@ import addYoutubeIframe from '@/util/addYoutubeIframe'
 import isGif from '@/util/isGif'
 import newCheck from '@/util/newCheck'
 import getImageUrlFromMd from '@/util/getImageUrlFromMd'
-const LIMIT = 5
+// const LIMIT = 5
 
 export default {
   components: { DisplayTime, DisplayUser, DisplayCount },
@@ -102,29 +94,6 @@ export default {
     },
     onViewerLoad (v) {
       addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
-    },
-    async like (item) {
-      if (!this.fireUser) throw Error('로그인이 필요합니다')
-      const ref = this.$firebase.firestore()
-        .collection('boards').doc(this.boardId)
-        .collection('articles').doc(item.id)
-      if (this.liked(item)) {
-        await ref.update({
-          likeCount: this.$firebase.firestore.FieldValue.increment(-1),
-          likeUids: this.$firebase.firestore.FieldValue.arrayRemove(this.fireUser.uid)
-        })
-      } else {
-        await ref.update({
-          likeCount: this.$firebase.firestore.FieldValue.increment(1),
-          likeUids: this.$firebase.firestore.FieldValue.arrayUnion(this.fireUser.uid)
-        })
-      }
-      if (this.items.findIndex(el => el.id === item.id) < LIMIT) return
-      const doc = await ref.get()
-      const d = doc.data()
-      item.comment = d.comment
-      item.likeCount = d.likeCount
-      item.likeUids = d.likeUids
     },
     toPath (item) {
       const to = { path: `/board/${this.boardId}/${item.id}` }

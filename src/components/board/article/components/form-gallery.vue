@@ -69,7 +69,7 @@
             </v-row>
           </v-col>
           <v-col cols="12" sm="6">
-            <v-img v-if="exists" :src="form.content"></v-img>
+            <v-img v-if="form.content" :src="form.content"></v-img>
             <v-alert v-else border="left" type="info">이미지 없음</v-alert>
           </v-col>
         </v-row>

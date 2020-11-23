@@ -52,6 +52,10 @@ export default {
   computed: {
     fireUser () {
       return this.$store.state.fireUser
+    },
+    getCategory () {
+      if (!this.category) return '전체'
+      return this.category
     }
   },
   watch: {
@@ -131,7 +135,24 @@ export default {
           return
         }
         this.snapshotToItems(sn)
+        this.setMeta(this.board)
       })
+    },
+    setMeta (item) {
+      const descriptionNode = document.querySelector('head meta[name="description"]')
+      const ogTitleNode = document.querySelector('head meta[property="og:title"]')
+      const ogDescriptionNode = document.querySelector('head meta[property="og:description"]')
+      const ogImageNode = document.querySelector('head meta[property="og:image"]')
+
+      const title = item.title + ' ' + this.getCategory + ' 목록 : memi'
+      const description = item.description.substr(0, 80)
+      const image = '/logo.png'
+
+      document.title = title
+      descriptionNode.setAttribute('content', description)
+      ogTitleNode.setAttribute('content', title)
+      ogDescriptionNode.setAttribute('content', description)
+      ogImageNode.setAttribute('content', image)
     },
     async more () {
       if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')

@@ -134,6 +134,7 @@ export default {
     }
   },
   created () {
+    this.setMeta()
     this.fetch()
   },
   methods: {
@@ -152,6 +153,22 @@ export default {
         this.form.tags = item.tags
         this.form.type = item.type
       }
+    },
+    setMeta () {
+      const descriptionNode = document.querySelector('head meta[name="description"]')
+      const ogTitleNode = document.querySelector('head meta[property="og:title"]')
+      const ogDescriptionNode = document.querySelector('head meta[property="og:description"]')
+      const ogImageNode = document.querySelector('head meta[property="og:image"]')
+
+      const title = '게시판 수정 : memi'
+      const description = '게시판을 만들거나 수정합니다'
+      const image = '/logo.png'
+
+      document.title = title
+      descriptionNode.setAttribute('content', description)
+      ogTitleNode.setAttribute('content', title)
+      ogDescriptionNode.setAttribute('content', description)
+      ogImageNode.setAttribute('content', image)
     },
     async save () {
       if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
