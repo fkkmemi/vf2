@@ -70,3 +70,11 @@ export default {
   measurementId: "G-Z05F3DT444"
 }
 ```
+
+## algolia search key
+
+**.env.local**  
+```
+VUE_APP_ALGOLIA_APP_ID=your-id
+VUE_APP_ALGOLIA_SEARCH_KEY=your-search-key
+```

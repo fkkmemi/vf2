@@ -8,6 +8,7 @@ import './plugins/editor'
 import './plugins/moment'
 import './plugins/toast'
 import './plugins/swal'
+import './plugins/search'
 import './error'
 
 Vue.config.productionTip = false
