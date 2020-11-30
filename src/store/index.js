@@ -8,7 +8,8 @@ export default new Vuex.Store({
     editable: false,
     fireUser: null,
     user: null,
-    boardTypeList: localStorage.getItem('boardTypeList') === 'true'
+    boardTypeList: localStorage.getItem('boardTypeList') === 'true',
+    searchText: ''
   },
   mutations: {
     setEdit (state, edit) {
@@ -23,6 +24,9 @@ export default new Vuex.Store({
     toggleBoardType (state) {
       state.boardTypeList = !state.boardTypeList
       localStorage.setItem('boardTypeList', state.boardTypeList)
+    },
+    setSearchText (state, text) {
+      state.searchText = text
     }
   },
   actions: {
