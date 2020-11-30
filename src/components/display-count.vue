@@ -109,6 +109,7 @@ export default {
   methods: {
     liked (item) {
       if (!this.fireUser) return false
+      if (!item.likeUids) return false
       return item.likeUids.includes(this.fireUser.uid)
     }
   }

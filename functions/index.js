@@ -137,7 +137,10 @@ exports.onCreateBoardArticle = functions.region(region).firestore
       email: doc.user.email,
       displayName: doc.user.displayName,
       category: doc.category,
-      tags: doc.tags
+      tags: doc.tags,
+      readCount: doc.readCount,
+      commentCount: doc.commentCount,
+      likeCount: doc.likeCount
     }
 
     // Write to the algolia index
