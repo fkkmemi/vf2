@@ -22,10 +22,6 @@
       <v-spacer/>
       <display-user :user="{email: item.email, displayName: item.displayName }" size="small" />
     </v-card-actions>
-    <v-card-actions>
-      <v-spacer/>
-      <display-count :item="item" :column="false"></display-count>
-    </v-card-actions>
     <v-card-text>
       <v-row justify="start" align="center" class="px-4">
         <v-btn
@@ -48,12 +44,11 @@
 import DisplayTitle from '@/components/display-title'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
-import DisplayCount from '@/components/display-count'
 import getSummary from '@/util/getSummary'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
-  components: { DisplayTitle, DisplayTime, DisplayUser, DisplayCount },
+  components: { DisplayTitle, DisplayTime, DisplayUser },
   props: ['item'],
   data () {
     return {

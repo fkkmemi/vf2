@@ -33,12 +33,12 @@ export default {
   methods: {
     find () {
       if (!this.text) return
-      if (this.text.length < 2) throw Error('최소 2글자 이상 입력하세요.. 돈이 없어서 한글자는 힘들어요')
-      const to = {
-        query: { text: this.text }
-      }
+      // if (this.text.length < 2) throw Error('최소 2글자 이상 입력하세요.. 돈이 없어서 한글자는 힘들어요')
+      const to = {}
       if (this.$route.path !== '/search') to.path = '/search'
-      this.$router.push(to)
+      if (this.$route.query.text !== this.text) to.query = { text: this.text }
+      if (!Object.keys(to).length) return
+      this.$router.replace(to)
     }
   }
 }

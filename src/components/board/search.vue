@@ -8,8 +8,17 @@
     </v-alert>
   </v-container>
   <v-container v-else fluid class="">
-    <v-alert border="left" type="info">
-      {{text}} 로 검색된 게시물 은 총 {{result.nbHits}}건 입니다
+    <v-alert border="left" color="info" outlined>
+      <v-card-title class="body-1">
+        <v-icon>mdi-magnify</v-icon>
+        <span class="font-weight-bold mr-1">{{text}}</span>
+        (으)로 검색된 게시물 은 총
+        <span class="font-weight-bold ml-1">{{result.nbHits}}</span>
+        건 입니다
+        <v-spacer/>
+        <!-- free plan need logo!! https://www.algolia.com/press/?section=guidelines -->
+        <v-img contain max-width="200" src="https://res.cloudinary.com/hilnmyskv/image/upload/q_auto/v1595410010/Algolia_com_Website_assets/images/shared/algolia_logo/search-by-algolia-light-background.svg"></v-img>
+      </v-card-title>
     </v-alert>
     <template v-for="(hit) in result.hits">
       <display-search-item :item="hit" :key="hit.objectId" />
@@ -43,9 +52,15 @@ export default {
     async fetch () {
       if (this.text) this.$store.commit('setSearchText', this.text)
       try {
-        if (this.text.length < 2) throw Error('최소 2글자 이상 입력하세요.. 돈이 없어서 한글자는 힘들어요')
+        // if (this.text.length < 2) throw Error('최소 2글자 이상 입력하세요.. 돈이 없어서 한글자는 힘들어요')
         this.loaded = false
-        this.result = await this.$index.search(this.text)
+        const r = await this.$index.search(this.text)
+        r.hits.forEach(hit => {
+          hit.content = hit.content.substr(0, 300)
+          hit.createdAt = new Date(hit.createdAt)
+          hit.updatedAt = new Date(hit.updatedAt)
+        })
+        this.result = r
         // this.result = {
         //   hits: [
         //     { boardId: 'new', articleId: '1597111925832', readCount: 999, commentCount: 40, likeCount: 30, createdAt: '2020-08-11T02:12:39.891Z', title: '8·4대책 1주일.."이 정도 대책이면 떨어져야 하는 데 희한하네"', content: "<span class=\"colour\" style=\"color: rgb(51, 51, 51);\">(서울=연합뉴스) 김동규 홍국기 기자 = 정부가 6·17대책과 7·10대책으로 부동산 수요를 억누른 데 이어 13만2천가구 공급 계획이 담긴 8·4 대책을 발표한 지 일주일이 지났지만, 부동산 시장의 뚜렷한 변화는 나타나지 않고 있다.</span>\n<span class=\"colour\" style=\"color: rgb(51, 51, 51);\">다만, 기존 대책들과 맞물려 서울 외곽에서 다주택자·법인의 매물이 하나둘씩 나오고 있고, '패닉 바 ...", email: 'fkkmemi@gmail.com', displayName: 'memi dev', category: 'test', tags: ['vue', 'firebase', 'test'], objectID: '45493472', _highlightResult: { boardId: { value: 'new', matchLevel: 'none', matchedWords: [] }, articleId: { value: '1597111925832', matchLevel: 'none', matchedWords: [] }, createdAt: { value: '2020-08-11T02:12:39.891Z', matchLevel: 'none', matchedWords: [] }, title: { value: '8·4대책 1주일.."이 정도 대책이면 떨어져야 하는 데 희한하네"', matchLevel: 'none', matchedWords: [] }, content: { value: "<span class=\"colour\" style=\"color: rgb(51, 51, 51);\">(서울=연합<em>뉴스</em>) 김동규 홍국기 기자 = 정부가 6·17대책과 7·10대책으로 부동산 수요를 억누른 데 이어 13만2천가구 공급 계획이 담긴 8·4 대책을 발표한 지 일주일이 지났지만, 부동산 시장의 뚜렷한 변화는 나타나지 않고 있다.</span>\n<span class=\"colour\" style=\"color: rgb(51, 51, 51);\">다만, 기존 대책들과 맞물려 서울 외곽에서 다주택자·법인의 매물이 하나둘씩 나오고 있고, '패닉 바 ...", matchLevel: 'full', fullyHighlighted: false, matchedWords: ['뉴', '스'] }, email: { value: 'fkkmemi@gmail.com', matchLevel: 'none', matchedWords: [] }, displayName: { value: 'memi dev', matchLevel: 'none', matchedWords: [] }, category: { value: 'test', matchLevel: 'none', matchedWords: [] }, tags: [{ value: 'vue', matchLevel: 'none', matchedWords: [] }, { value: 'firebase', matchLevel: 'none', matchedWords: [] }, { value: 'test', matchLevel: 'none', matchedWords: [] }] } },
@@ -60,7 +75,7 @@ export default {
         //   params: 'query=%EB%89%B4%EC%8A%A4',
         //   processingTimeMS: 1
         // }
-        console.log(JSON.stringify(this.result, 2, null))
+        // console.log(JSON.stringify(this.result, 2, null))
       } finally {
         this.loaded = true
       }
