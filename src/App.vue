@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app color="primary" dark :clipped-left="$vuetify.breakpoint.lgAndUp">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <site-title :title="site.title"></site-title>
       <v-spacer/>
@@ -10,6 +10,7 @@
     <v-navigation-drawer
       app
       v-model="drawer"
+      :clipped="$vuetify.breakpoint.lgAndUp"
       :width="$store.state.editable ? 380 : null"
       >
       <!-- :width="$store.state.editable ? 380 : null" -->

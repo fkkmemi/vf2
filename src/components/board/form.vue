@@ -38,7 +38,8 @@
             <v-subheader>등록된 종류</v-subheader>
             <v-card-text>
               <v-chip
-                color="info"
+                color="primary"
+                outlined
                 label
                 small
                 v-for="(item, i) in form.categories"
@@ -102,6 +103,8 @@
   </v-container>
 </template>
 <script>
+import setMeta from '@/util/setMeta'
+
 export default {
   props: ['boardId', 'action'],
   data () {
@@ -134,11 +137,15 @@ export default {
     }
   },
   created () {
-    this.setMeta()
     this.fetch()
   },
   methods: {
     async fetch () {
+      setMeta({
+        title: '게시판 수정',
+        description: '게시판을 만들거나 수정합니다',
+        image: '/logo.png'
+      })
       this.ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
       this.loaded = false
       const doc = await this.ref.get()
@@ -153,22 +160,6 @@ export default {
         this.form.tags = item.tags
         this.form.type = item.type
       }
-    },
-    setMeta () {
-      const descriptionNode = document.querySelector('head meta[name="description"]')
-      const ogTitleNode = document.querySelector('head meta[property="og:title"]')
-      const ogDescriptionNode = document.querySelector('head meta[property="og:description"]')
-      const ogImageNode = document.querySelector('head meta[property="og:image"]')
-
-      const title = '게시판 수정 : memi'
-      const description = '게시판을 만들거나 수정합니다'
-      const image = '/logo.png'
-
-      document.title = title
-      descriptionNode.setAttribute('content', description)
-      ogTitleNode.setAttribute('content', title)
-      ogDescriptionNode.setAttribute('content', description)
-      ogImageNode.setAttribute('content', image)
     },
     async save () {
       if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')

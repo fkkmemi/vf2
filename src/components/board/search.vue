@@ -17,7 +17,7 @@
         건 입니다
         <v-spacer/>
         <!-- free plan need logo!! https://www.algolia.com/press/?section=guidelines -->
-        <v-img contain max-width="200" src="https://res.cloudinary.com/hilnmyskv/image/upload/q_auto/v1595410010/Algolia_com_Website_assets/images/shared/algolia_logo/search-by-algolia-light-background.svg"></v-img>
+        <v-img contain :max-width="120" src="https://res.cloudinary.com/hilnmyskv/image/upload/q_auto/v1595410010/Algolia_com_Website_assets/images/shared/algolia_logo/search-by-algolia-light-background.svg"></v-img>
       </v-card-title>
     </v-alert>
     <template v-for="(hit) in result.hits">
@@ -27,6 +27,7 @@
 </template>
 <script>
 import DisplaySearchItem from '@/components/display-search-item'
+import setMeta from '@/util/setMeta'
 
 export default {
   components: { DisplaySearchItem },
@@ -51,6 +52,11 @@ export default {
   methods: {
     async fetch () {
       if (this.text) this.$store.commit('setSearchText', this.text)
+      setMeta({
+        title: '검색 ' + this.text,
+        description: '검색 ' + this.text,
+        image: '/logo.png'
+      })
       try {
         // if (this.text.length < 2) throw Error('최소 2글자 이상 입력하세요.. 돈이 없어서 한글자는 힘들어요')
         this.loaded = false

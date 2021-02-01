@@ -31,6 +31,7 @@ import { last } from 'lodash'
 import ListCompact from './components/list-compact'
 import ListNormal from './components/list-normal'
 import ListGallery from './components/list-gallery'
+import setMeta from '@/util/setMeta'
 
 const LIMIT = 5
 
@@ -135,24 +136,12 @@ export default {
           return
         }
         this.snapshotToItems(sn)
-        this.setMeta(this.board)
+        setMeta({
+          title: this.board.title + ' ' + this.getCategory + ' 목록',
+          description: this.board.description.substr(0, 80),
+          image: '/logo.png'
+        })
       })
-    },
-    setMeta (item) {
-      const descriptionNode = document.querySelector('head meta[name="description"]')
-      const ogTitleNode = document.querySelector('head meta[property="og:title"]')
-      const ogDescriptionNode = document.querySelector('head meta[property="og:description"]')
-      const ogImageNode = document.querySelector('head meta[property="og:image"]')
-
-      const title = item.title + ' ' + this.getCategory + ' 목록 : memi'
-      const description = item.description.substr(0, 80)
-      const image = '/logo.png'
-
-      document.title = title
-      descriptionNode.setAttribute('content', description)
-      ogTitleNode.setAttribute('content', title)
-      ogDescriptionNode.setAttribute('content', description)
-      ogImageNode.setAttribute('content', image)
     },
     async more () {
       if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')

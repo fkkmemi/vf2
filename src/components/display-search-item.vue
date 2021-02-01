@@ -14,7 +14,7 @@
     </v-card-text>
     <v-card-actions class="d-flex justify-center">
       <v-btn text color="primary">
-        <v-icon left>mdi-dots-horizontal</v-icon>더보기
+        <v-icon left>mdi-dots-horizontal</v-icon>자세히 보기
       </v-btn>
     </v-card-actions>
     <v-card-actions>
