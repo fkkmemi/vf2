@@ -121,7 +121,7 @@ exports.onCreateBoardArticle = functions.region(region).firestore
     const doc = snap.data()
 
     let content = doc.summary
-    if (doc.summary && doc.summary.length >= 300) { // todo: 테스트중 전체 게시물일 때 300으로..
+    if (doc.summary && doc.summary.length >= 3000) { // todo: 테스트중 전체 게시물일 때 300으로..
       const ps = []
       ps.push('boards')
       ps.push(context.params.bid)
@@ -129,7 +129,7 @@ exports.onCreateBoardArticle = functions.region(region).firestore
       const bf = await admin.storage().bucket().file(ps.join('/'))
         .download()
         .catch(e => console.error('storage download err: ' + e.message))
-      content = bf.toString().substr(0, 9000) // reason: https://www.algolia.com/doc/faq/indexing/how-do-i-reduce-the-size-of-my-records/
+      content = bf.toString().substr(0, 5000) // reason: https://www.algolia.com/doc/faq/indexing/how-do-i-reduce-the-size-of-my-records/
     }
 
     const algoliaDoc = {
@@ -271,7 +271,7 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
     if (!isEqual(beforeDoc.tags, doc.tags)) algoliaDoc.tags = doc.tags
 
     let content = doc.summary
-    if (doc.summary && doc.summary.length >= 300) { // todo: 테스트중 전체 게시물일 때 300으로..
+    if (doc.summary && doc.summary.length >= 3000) { // todo: 테스트중 전체 게시물일 때 300으로..
       const ps = []
       ps.push('boards')
       ps.push(context.params.bid)
@@ -279,7 +279,7 @@ exports.onUpdateBoardArticle = functions.region(region).firestore
       const bf = await admin.storage().bucket().file(ps.join('/'))
         .download()
         .catch(e => console.error('storage download err: ' + e.message))
-      content = bf.toString().substr(0, 9000) // reason: https://www.algolia.com/doc/faq/indexing/how-do-i-reduce-the-size-of-my-records/
+      content = bf.toString().substr(0, 5000) // reason: https://www.algolia.com/doc/faq/indexing/how-do-i-reduce-the-size-of-my-records/
     }
     if (beforeDoc.summary !== content) algoliaDoc.content = content
 
@@ -386,11 +386,11 @@ exports.seo = functions.https.onRequest(async (req, res) => {
 
   const ps = req.path.split('/')
   ps.shift()
-  // ps.forEach((v, i) => console.log(i, v))
   if (ps.length !== 3) return res.send(html)
   const mainCollection = pluralize(ps.shift())
   const board = ps.shift()
   const article = ps.shift()
+  if (!article) return res.send(html)
 
   const doc = await db.collection(mainCollection).doc(board).collection('articles').doc(article).get()
 
@@ -405,7 +405,7 @@ exports.seo = functions.https.onRequest(async (req, res) => {
   const ogImageNode = child.childNodes[4]
 
   const title = item.title + ' : memi'
-  const description = item.summary.substr(0, 80)
+  const description = item.summary.substr(0, 80).replace(/(<([^>]+)>)/gi, '')
 
   const getImageUrlFromMd = (md) => {
     const ds = md.split('\n')

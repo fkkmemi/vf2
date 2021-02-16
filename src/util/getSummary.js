@@ -9,8 +9,8 @@ export default (text, limit, filter) => {
     if (t.length) ss.push(t)
   }
   const s = ss.join('\n')
-  if (s.length > limit) {
-    summary = s.substr(0, limit)
+  if (s.length > limit - 4) {
+    summary = s.substr(0, limit - 4)
     summary += ' ...'
   } else {
     summary = s
