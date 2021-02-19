@@ -29,8 +29,8 @@ exports.createUser = functions.region(region).auth.user().onCreate(async (user) 
   const time = new Date()
   const u = {
     email,
-    displayName,
-    photoURL,
+    displayName: displayName || '손님',
+    photoURL: photoURL || '/user.png',
     createdAt: time,
     level: email === functions.config().admin.email ? 0 : 5,
     visitedAt: time,

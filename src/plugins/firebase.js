@@ -8,12 +8,20 @@ import firebaseConfig from '../../firebaseConfig'
 import store from '../store/'
 
 firebase.initializeApp(firebaseConfig)
+firebase.auth().languageCode = 'ko'
+
 let unsubscribe = null
 
 const subscribe = (fu) => {
   const ref = firebase.firestore().collection('users').doc(fu.uid)
   unsubscribe = ref.onSnapshot(doc => {
-    if (doc.exists) store.commit('setUser', doc.data())
+    if (doc.exists) {
+      const user = doc.data()
+      user.uid = fu.uid
+      if (!user.displayName) user.displayName = fu.displayName || '손님'
+      if (!user.photoURL) user.photoURL = fu.photoURL || '/user.png'
+      store.commit('setUser', user)
+    }
   }, console.error)
 }
 

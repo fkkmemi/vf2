@@ -1,9 +1,9 @@
 <template>
   <div>
     <v-list-item>
-      <v-list-item-icon tile>
-        <v-img contain :max-height="50" :max-width="80" :src="site.image"></v-img>
-      </v-list-item-icon>
+      <v-list-item-avatar>
+        <v-img contain :src="site.image"></v-img>
+      </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title class="title">
           {{site.title}}
@@ -162,6 +162,7 @@
 import { version } from '../../../package.json'
 import DisplayTime from '@/components/display-time'
 import newCheck from '@/util/newCheck'
+import constants from '@/util/constants'
 
 export default {
   components: { DisplayTime },
@@ -192,14 +193,15 @@ export default {
         createdAt: new Date().getTime(),
         level: 5
       },
-      levels: [
-        { text: '개발자', value: 0 },
-        { text: '관리자', value: 1 },
-        { text: '게시판관리자', value: 2 },
-        { text: '게시판운영자', value: 3 },
-        { text: '사용자', value: 4 },
-        { text: '손님', value: 5 }
-      ]
+      // levels: [
+      //   { text: '개발자', value: 0 },
+      //   { text: '관리자', value: 1 },
+      //   { text: '게시판관리자', value: 2 },
+      //   { text: '게시판운영자', value: 3 },
+      //   { text: '사용자', value: 4 },
+      //   { text: '손님', value: 5 }
+      // ]
+      levels: constants.levels
     }
   },
   computed: {
